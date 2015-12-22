@@ -21,11 +21,16 @@
     "phpmd/phpmd": "@stable"
   },
 
+  "config": {
+    "bin-dir": "bin"
+  },
+
   "autoload": {
     "psr-4": {
       "VitessPdo\\": "src/VitessPdo/"
     }
   },
+
   "autoload-dev": {
     "psr-4": {
       "VitessPdoTest\\": "tests/VitessPdoTest/"

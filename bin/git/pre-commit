@@ -3,7 +3,7 @@ PATH="/usr/local/bin:$PATH"
 
 PROJECT=$(git rev-parse --show-toplevel)
 
-STAGED_FILES_CMD=`git diff --cached --name-only --diff-filter=ACMR HEAD | grep \\\\.php$ | grep -v ^app/DoctrineMigrations | grep -v ^app/SymfonyRequirements.php | grep -v ^app/check.php | grep -v ^app/AppKernel.php | grep -v ^app/config/php-di.config.php`
+STAGED_FILES_CMD=`git diff --cached --name-only --diff-filter=ACMR HEAD | grep \\\\.php$`
 
 # Determine if a file list is passed
 if [ "$#" -eq 1 ]
@@ -37,7 +37,7 @@ done
 if [ "$FILES" != "" ]
 then
     echo "Running Code Sniffer..."
-    ./bin/phpcs --standard=PSR2 --encoding=utf-8 -p $FILES
+    ./vendor/bin/phpcs --standard=PSR2 --encoding=utf-8 -p $FILES
     if [ $? != 0 ]
     then
         if [ -n "$STATIC_ANALYSIS_IGNORE_ERRORS" ]
@@ -54,7 +54,7 @@ fi
 echo "Checking PHP Mess Detector..."
 for FILE in $SFILES
 do
-    ./bin/phpmd $PROJECT/$FILE text bin/static_analysis/phpmd.ruleset.xml
+    ./vendor/bin/phpmd $PROJECT/$FILE text cleancode,codesize,controversial,design,naming,unusedcode
     if [ $? != 0 ]
     then
         if [ -n "$STATIC_ANALYSIS_IGNORE_ERRORS" ]
