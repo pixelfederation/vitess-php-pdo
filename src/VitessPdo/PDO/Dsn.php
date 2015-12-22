@@ -59,7 +59,13 @@ class Dsn
         return $this->driver;
     }
 
-
+    /**
+     * @return Config
+     */
+    public function getConfig()
+    {
+        return $this->config;
+    }
 
     /**
      *
@@ -69,7 +75,7 @@ class Dsn
         $dsnParts = explode(":", $this->dsnString);
 
         if ((count($dsnParts)) !== 2) {
-            throw new Exception("Invalid dsn string - too many colons.");
+            throw new Exception("Invalid dsn string - exactly one colon has to be present.");
         }
 
         $this->driver = new Driver($dsnParts[0]);
