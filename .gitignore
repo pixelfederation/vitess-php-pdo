@@ -1,2 +1,5 @@
 .idea
 vendor
+bin
+!bin/setup-dev
+!bin/git/*
