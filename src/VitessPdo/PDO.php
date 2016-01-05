@@ -61,6 +61,16 @@ class PDO
     private $queryAnalyzer;
 
     /**
+     * @var string
+     */
+    private $lastInsertId = self::DEFAULT_LAST_INSERT_ID;
+
+    /**
+     * @const string
+     */
+    const DEFAULT_LAST_INSERT_ID = '0';
+
+    /**
      * PDO constructor.
      *
      * @param       $dsn
@@ -112,6 +122,10 @@ class PDO
 
         if (!$isInTransaction) {
             $this->commit();
+        }
+
+        if ($this->queryAnalyzer->isInsertQuery($statement)) {
+            $this->lastInsertId = $cursor->getInsertId();
         }
 
         return $cursor->getRowsAffected();
@@ -181,6 +195,16 @@ class PDO
     }
 
     /**
+     * @param string $name
+     * @return string
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function lastInsertId($name = null)
+    {
+        return $this->lastInsertId;
+    }
+
+    /**
      * @return VTGateTx
      */
     private function getTransaction()
@@ -198,6 +222,7 @@ class PDO
     private function resetTransaction()
     {
         $this->transaction = null;
+        $this->lastInsertId = self::DEFAULT_LAST_INSERT_ID;
     }
 
     /**

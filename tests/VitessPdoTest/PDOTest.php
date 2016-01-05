@@ -105,4 +105,18 @@ class PDOTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(false, $pdo->inTransaction());
         // @todo - check if data exists in db
     }
+
+    public function testLastInsertId()
+    {
+        $dsn = "vitess:dbname=test_keyspace;host=localhost;port=15991";
+
+        $pdo = new PDO($dsn);
+
+        $pdo->beginTransaction();
+        $rows = $pdo->exec("INSERT INTO user (name) VALUES ('test_user')");
+        $this->assertEquals(1, $rows);
+        $this->assertNotEquals('0', $pdo->lastInsertId());
+        $pdo->commit();
+        $this->assertEquals('0', $pdo->lastInsertId());
+    }
 }
