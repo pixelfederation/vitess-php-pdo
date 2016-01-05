@@ -6,12 +6,17 @@
     {
       "type": "git",
       "url": "git@git.pixelfederation.com:shared/Vitess.Client.PHP.git"
+    },
+    {
+      "type": "git",
+      "url": "https://github.com/stanley-cheung/Protobuf-PHP.git"
     }
   ],
   "minimum-stability": "dev",
   "require": {
     "php": ">=5.5.0",
-    "vitess/php-client": "dev-master"
+    "vitess/php-client": "dev-master",
+    "grpc/grpc": "dev-master#8a8a8760eb243fe758452a2e2bed6e2821b992f1"
   },
 
   "require-dev": {

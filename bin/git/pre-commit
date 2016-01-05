@@ -37,7 +37,7 @@ done
 if [ "$FILES" != "" ]
 then
     echo "Running Code Sniffer..."
-    ./vendor/bin/phpcs --standard=PSR2 --encoding=utf-8 -p $FILES
+    ./bin/phpcs --standard=PSR2 --encoding=utf-8 -p $FILES
     if [ $? != 0 ]
     then
         if [ -n "$STATIC_ANALYSIS_IGNORE_ERRORS" ]
@@ -54,7 +54,7 @@ fi
 echo "Checking PHP Mess Detector..."
 for FILE in $SFILES
 do
-    ./vendor/bin/phpmd $PROJECT/$FILE text cleancode,codesize,controversial,design,naming,unusedcode
+    ./bin/phpmd $PROJECT/$FILE text cleancode,codesize,controversial,design,naming,unusedcode
     if [ $? != 0 ]
     then
         if [ -n "$STATIC_ANALYSIS_IGNORE_ERRORS" ]
