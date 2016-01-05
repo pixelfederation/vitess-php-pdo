@@ -14,6 +14,7 @@ use VTGateConn;
 use VTGrpcClient;
 use VTGateTx;
 use topodata\TabletType;
+use VTException;
 use Grpc;
 use PDO as CorePDO;
 use PDOException;
@@ -107,12 +108,12 @@ class PDO
      */
     public function exec($statement)
     {
-        $isInTransaction = $this->isInTransaction();
+        $isInTransaction = $this->inTransaction();
         $transaction = $this->getTransaction();
         $cursor = $transaction->execute($this->vitessCtx, $statement, [], TabletType::MASTER);
 
         if (!$isInTransaction) {
-            $this->commitTransaction();
+            $this->commit();
         }
 
         return $cursor->getRowsAffected();
@@ -121,9 +122,64 @@ class PDO
     /**
      * @return bool
      */
-    private function isInTransaction()
+    public function inTransaction()
     {
         return $this->transaction !== null;
+    }
+
+    /**
+     * @return bool
+     */
+    public function beginTransaction()
+    {
+        if ($this->inTransaction()) {
+            return false;
+        }
+
+        $this->getTransaction();
+
+        return true;
+    }
+
+    /**
+     * @return bool
+     */
+    public function commit()
+    {
+        if (!$this->inTransaction()) {
+            return false;
+        }
+
+        try {
+            $this->transaction->commit($this->vitessCtx);
+        } catch (VTException $e) {
+            return false;
+        } finally {
+            $this->resetTransaction();
+        }
+
+        return true;
+    }
+
+    /**
+     * @return bool
+     */
+    public function rollback()
+    {
+        if (!$this->inTransaction()) {
+            throw new PDOException("No transaction is active.");
+        }
+
+        try {
+            $transaction = $this->getTransaction();
+            $transaction->rollback($this->vitessCtx);
+        } catch (VTException $e) {
+            return false;
+        } finally {
+            $this->resetTransaction();
+        }
+
+        return true;
     }
 
     /**
@@ -139,15 +195,10 @@ class PDO
     }
 
     /**
-     * @throws \VTException
+     * @return void
      */
-    private function commitTransaction()
+    private function resetTransaction()
     {
-        if (!$this->isInTransaction()) {
-            throw new PDOException("Not in a transaction.");
-        }
-
-        $this->transaction->commit($this->vitessCtx);
         $this->transaction = null;
     }
 
