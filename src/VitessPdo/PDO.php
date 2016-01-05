@@ -77,7 +77,6 @@ class PDO
 
     /**
      * @param array $options
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      * @SuppressWarnings(PHPMD.StaticAccess)
      */
     private function connect(array $options)
@@ -93,12 +92,11 @@ class PDO
             throw new PDOException("Error while connecting to vitess: " . $e->getMessage(), $e->getCode(), $e);
         }
 
-        // Vitess doesn't support SET NAMES queries yet
-//        if (isset($options[CorePDO::MYSQL_ATTR_INIT_COMMAND])) {
-//            $query = $options[CorePDO::MYSQL_ATTR_INIT_COMMAND];
-//            $this->vtgateConnection->execute($this->vitessCtx, $query, [], TabletType::MASTER);
-//        }
-        //new \PDOStatement();
+        if (isset($options[CorePDO::MYSQL_ATTR_INIT_COMMAND])) {
+            // Vitess doesn't support SET NAMES queries yet
+            // $query = $options[CorePDO::MYSQL_ATTR_INIT_COMMAND];
+            // $this->vtgateConnection->execute($this->vitessCtx, $query, [], TabletType::MASTER);
+        }
     }
 
     /**
