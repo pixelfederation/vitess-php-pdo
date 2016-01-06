@@ -403,7 +403,7 @@
             "source": {
                 "type": "git",
                 "url": "git@git.pixelfederation.com:shared/Vitess.Client.PHP.git",
-                "reference": "5390bce6930fa9ceb333f3e7ba829cac561fc425"
+                "reference": "d6f0f2f9dec1092f4f24035e626ed70d8f505688"
             },
             "require": {
                 "datto/protobuf-php": "dev-master",
@@ -420,7 +420,7 @@
             },
             "description": "PHP client for Vitess (a copy from the original Vitess repository (https://github.com/youtube/vitess)",
             "homepage": "https://github.com/youtube/vitess",
-            "time": "2016-01-05 15:23:11"
+            "time": "2016-01-06 14:46:02"
         }
     ],
     "packages-dev": [
@@ -1886,12 +1886,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
-                "reference": "5bc31de9878863fdf5919d0944c528d31654fe3e"
+                "reference": "9db3e5a309bd5f3dfd974f5b42d820904352c4d8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/yaml/zipball/5bc31de9878863fdf5919d0944c528d31654fe3e",
-                "reference": "5bc31de9878863fdf5919d0944c528d31654fe3e",
+                "url": "https://api.github.com/repos/symfony/yaml/zipball/9db3e5a309bd5f3dfd974f5b42d820904352c4d8",
+                "reference": "9db3e5a309bd5f3dfd974f5b42d820904352c4d8",
                 "shasum": ""
             },
             "require": {
@@ -1927,7 +1927,7 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
-            "time": "2016-01-04 14:51:32"
+            "time": "2016-01-06 10:01:46"
         }
     ],
     "aliases": [],

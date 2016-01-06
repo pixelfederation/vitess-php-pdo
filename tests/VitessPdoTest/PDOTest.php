@@ -8,6 +8,7 @@
 namespace VitessPdoTest;
 
 use VitessPdo\PDO;
+use VitessPdo\PDO\PDOStatement;
 use Exception;
 use PDOException;
 
@@ -118,5 +119,22 @@ class PDOTest extends \PHPUnit_Framework_TestCase
         $this->assertNotEquals('0', $pdo->lastInsertId());
         $pdo->commit();
         $this->assertEquals('0', $pdo->lastInsertId());
+    }
+
+    public function testPrepare()
+    {
+        $dsn = "vitess:dbname=test_keyspace;host=localhost;port=15991";
+
+        $pdo = new PDO($dsn);
+        $stmt = $pdo->prepare("SELECT * FROM user");
+
+        $this->assertInstanceOf(PDOStatement::class, $stmt);
+
+        $result = $stmt->execute();
+        $this->assertTrue($result);
+
+        $users = $stmt->fetchAll();
+        $this->assertInternalType('array', $users);
+        $this->assertNotEmpty($users);
     }
 }

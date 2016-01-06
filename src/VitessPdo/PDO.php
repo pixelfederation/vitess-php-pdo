@@ -8,17 +8,11 @@
 namespace VitessPdo;
 
 use VitessPdo\PDO\Dsn;
+use VitessPdo\PDO\PDOStatement;
 use VitessPdo\PDO\QueryAnalyzer;
-use VTContext;
-use VTGateConn;
-use VTGrpcClient;
-use VTGateTx;
-use topodata\TabletType;
-use VTException;
+use VitessPdo\PDO\Vitess;
 use Grpc;
 use PDO as CorePDO;
-use PDOException;
-use Exception;
 
 /**
  * Description of class PDO
@@ -36,24 +30,9 @@ class PDO
     private $dsn;
 
     /**
-     * @var VTContext
+     * @var Vitess
      */
-    private $vitessCtx;
-
-    /**
-     * @var VTGrpcClient
-     */
-    private $grpcClient;
-
-    /**
-     * @var VTGateConn
-     */
-    private $vtgateConnection;
-
-    /**
-     * @var VTGateTx
-     */
-    private $transaction = null;
+    private $vitess;
 
     /**
      * @var QueryAnalyzer
@@ -87,20 +66,14 @@ class PDO
 
     /**
      * @param array $options
-     * @SuppressWarnings(PHPMD.StaticAccess)
      */
     private function connect(array $options)
     {
-        try {
-            $this->vitessCtx        = VTContext::getDefault();
-            $host                   = $this->dsn->getConfig()->getHost();
-            $port                   = $this->dsn->getConfig()->getPort();
-            $this->grpcClient       = new VTGrpcClient("{$host}:{$port}");
-            $this->vtgateConnection = new VTGateConn($this->grpcClient);
-            $this->queryAnalyzer    = new QueryAnalyzer();
-        } catch (Exception $e) {
-            throw new PDOException("Error while connecting to vitess: " . $e->getMessage(), $e->getCode(), $e);
-        }
+        $host = $this->dsn->getConfig()->getHost();
+        $port = $this->dsn->getConfig()->getPort();
+        $connectionString = "{$host}:{$port}";
+        $this->vitess = new Vitess($connectionString);
+        $this->queryAnalyzer = new QueryAnalyzer();
 
         if (isset($options[CorePDO::MYSQL_ATTR_INIT_COMMAND])) {
             // Vitess doesn't support SET NAMES queries yet
@@ -116,13 +89,7 @@ class PDO
      */
     public function exec($statement)
     {
-        $isInTransaction = $this->inTransaction();
-        $transaction = $this->getTransaction();
-        $cursor = $transaction->execute($this->vitessCtx, $statement, [], TabletType::MASTER);
-
-        if (!$isInTransaction) {
-            $this->commit();
-        }
+        $cursor = $this->vitess->executeWrite($statement);
 
         if ($this->queryAnalyzer->isInsertQuery($statement)) {
             $this->lastInsertId = $cursor->getInsertId();
@@ -136,7 +103,7 @@ class PDO
      */
     public function inTransaction()
     {
-        return $this->transaction !== null;
+        return $this->vitess->isInTransaction();
     }
 
     /**
@@ -144,13 +111,7 @@ class PDO
      */
     public function beginTransaction()
     {
-        if ($this->inTransaction()) {
-            return false;
-        }
-
-        $this->getTransaction();
-
-        return true;
+        return $this->vitess->beginTransaction();
     }
 
     /**
@@ -158,19 +119,9 @@ class PDO
      */
     public function commit()
     {
-        if (!$this->inTransaction()) {
-            return false;
-        }
+        $this->resetLastInsertId();
 
-        try {
-            $this->transaction->commit($this->vitessCtx);
-        } catch (VTException $e) {
-            return false;
-        } finally {
-            $this->resetTransaction();
-        }
-
-        return true;
+        return $this->vitess->commitTransaction();
     }
 
     /**
@@ -178,20 +129,9 @@ class PDO
      */
     public function rollback()
     {
-        if (!$this->inTransaction()) {
-            throw new PDOException("No transaction is active.");
-        }
+        $this->resetLastInsertId();
 
-        try {
-            $transaction = $this->getTransaction();
-            $transaction->rollback($this->vitessCtx);
-        } catch (VTException $e) {
-            return false;
-        } finally {
-            $this->resetTransaction();
-        }
-
-        return true;
+        return $this->vitess->rollbackTransaction();
     }
 
     /**
@@ -205,24 +145,14 @@ class PDO
     }
 
     /**
-     * @return VTGateTx
+     * @param string $statement
+     * @param array $driverOptions
+     * @return PDOStatement
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    private function getTransaction()
+    public function prepare($statement, array $driverOptions = [])
     {
-        if (!$this->transaction) {
-            $this->transaction = $this->vtgateConnection->begin($this->vitessCtx);
-        }
-
-        return $this->transaction;
-    }
-
-    /**
-     * @return void
-     */
-    private function resetTransaction()
-    {
-        $this->transaction = null;
-        $this->lastInsertId = self::DEFAULT_LAST_INSERT_ID;
+        return new PDOStatement($statement, $this->vitess);
     }
 
     /**
@@ -230,6 +160,14 @@ class PDO
      */
     public function __destruct()
     {
-        $this->vtgateConnection->close();
+        unset($this->vitess);
+    }
+
+    /**
+     *
+     */
+    private function resetLastInsertId()
+    {
+        $this->lastInsertId = self::DEFAULT_LAST_INSERT_ID;
     }
 }
