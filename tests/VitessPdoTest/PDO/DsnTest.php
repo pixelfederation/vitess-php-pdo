@@ -11,6 +11,11 @@ use VitessPdo\PDO\Dsn;
 use VitessPdo\PDO\Exception as DriverException;
 use Exception;
 
+/**
+ * Class DsnTest
+ *
+ * @package VitessPdoTest\PDO
+ */
 class DsnTest extends \PHPUnit_Framework_TestCase
 {
 
@@ -25,12 +30,12 @@ class DsnTest extends \PHPUnit_Framework_TestCase
         try {
             $dsn = new Dsn($dsnString);
         } catch (Exception $e) {
-            $this->fail("Error while constructing Dsn object: " . $e->getMessage());
+            self::fail("Error while constructing Dsn object: " . $e->getMessage());
         }
 
-        $this->assertNotNull($dsn);
-        $this->assertNotNull($dsn->getDriver());
-        $this->assertNotNull($dsn->getConfig());
+        self::assertNotNull($dsn);
+        self::assertNotNull($dsn->getDriver());
+        self::assertNotNull($dsn->getConfig());
     }
 
     /**

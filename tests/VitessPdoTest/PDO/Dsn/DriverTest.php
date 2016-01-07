@@ -11,6 +11,11 @@ use VitessPdo\PDO\Dsn\Driver;
 use VitessPdo\PDO\Exception as DriverException;
 use Exception;
 
+/**
+ * Class DriverTest
+ *
+ * @package VitessPdoTest\PDO\Dsn
+ */
 class DriverTest extends \PHPUnit_Framework_TestCase
 {
 
@@ -25,11 +30,11 @@ class DriverTest extends \PHPUnit_Framework_TestCase
         try {
             $driver = new Driver($protocol);
         } catch (Exception $e) {
-            $this->fail("Error while constructing the driver: " . $e->getMessage());
+            self::fail("Error while constructing the driver: " . $e->getMessage());
         }
 
-        $this->assertNotNull($driver);
-        $this->assertEquals("vitess", $driver->getProtocol());
+        self::assertNotNull($driver);
+        self::assertEquals("vitess", $driver->getProtocol());
     }
 
     /**

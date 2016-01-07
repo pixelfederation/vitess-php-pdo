@@ -11,6 +11,11 @@ use VitessPdo\PDO\Dsn\Config;
 use VitessPdo\PDO\Exception as DriverException;
 use Exception;
 
+/**
+ * Class ConfigTest
+ *
+ * @package VitessPdoTest\PDO\Dsn
+ */
 class ConfigTest extends \PHPUnit_Framework_TestCase
 {
 
@@ -25,13 +30,13 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         try {
             $config = new Config($configString);
         } catch (Exception $e) {
-            $this->fail("Error while constructing the driver: " . $e->getMessage());
+            self::fail("Error while constructing the driver: " . $e->getMessage());
         }
 
-        $this->assertNotNull($config);
-        $this->assertEquals("localhost", $config->getHost());
-        $this->assertEquals("testdb", $config->getDbName());
-        $this->assertEquals(15991, $config->getPort());
+        self::assertNotNull($config);
+        self::assertEquals("localhost", $config->getHost());
+        self::assertEquals("testdb", $config->getDbName());
+        self::assertEquals(15991, $config->getPort());
     }
 
     public function testParamMissing()

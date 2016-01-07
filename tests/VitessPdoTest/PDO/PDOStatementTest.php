@@ -7,11 +7,17 @@
 
 namespace VitessPdoTest\PDO;
 
+use VitessPdo\PDO\ParamProcessor;
 use VitessPdo\PDO\Vitess;
 use VitessPdo\PDO\PDOStatement;
 use VTCursor;
 use Exception;
 
+/**
+ * Class PDOStatementTest
+ *
+ * @package VitessPdoTest\PDO
+ */
 class PDOStatementTest extends \PHPUnit_Framework_TestCase
 {
 
@@ -21,9 +27,9 @@ class PDOStatementTest extends \PHPUnit_Framework_TestCase
     public function testConstructor()
     {
         try {
-            new PDOStatement("SELECT * FROM user", $this->getVitessStub());
+            $this->getNewStatement();
         } catch (Exception $e) {
-            $this->fail($e->getMessage());
+            self::fail($e->getMessage());
         }
     }
 
@@ -32,15 +38,26 @@ class PDOStatementTest extends \PHPUnit_Framework_TestCase
      */
     public function testExecute()
     {
-        $stmt = new PDOStatement("SELECT * FROM user", $this->getVitessStub(false));
+        $stmt = $this->getNewStatement(false);
         $result = $stmt->execute();
 
-        $this->assertTrue($result);
+        self::assertTrue($result);
 
         $users = $stmt->fetchAll();
-        $this->assertInternalType('array', $users);
-        $this->assertNotEmpty($users);
-        $this->assertCount(2, $users);
+        self::assertInternalType('array', $users);
+        self::assertNotEmpty($users);
+        self::assertCount(2, $users);
+    }
+
+    /**
+     * @param boolean $empty
+     *
+     * @return PDOStatement
+     * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+     */
+    private function getNewStatement($empty = true)
+    {
+        return new PDOStatement("SELECT * FROM user", $this->getVitessStub($empty), new ParamProcessor());
     }
 
     /**
@@ -55,7 +72,7 @@ class PDOStatementTest extends \PHPUnit_Framework_TestCase
                     ->getMock();
 
         if (!$empty) {
-            $stub->expects($this->any())->method('executeRead')
+            $stub->expects(self::any())->method('executeRead')
                 ->willReturn($this->getVTCursorStub());
         }
 
@@ -71,8 +88,8 @@ class PDOStatementTest extends \PHPUnit_Framework_TestCase
                      ->disableOriginalConstructor()
                      ->getMock();
 
-        $stub->expects($this->exactly(3))->method('next')
-            ->will($this->onConsecutiveCalls(
+        $stub->expects(self::exactly(3))->method('next')
+            ->will(self::onConsecutiveCalls(
                 [
                     'user_id' => 1,
                     'name' => 'user_1'

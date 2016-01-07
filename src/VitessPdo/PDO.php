@@ -8,10 +8,10 @@
 namespace VitessPdo;
 
 use VitessPdo\PDO\Dsn;
+use VitessPdo\PDO\ParamProcessor;
 use VitessPdo\PDO\PDOStatement;
 use VitessPdo\PDO\QueryAnalyzer;
 use VitessPdo\PDO\Vitess;
-use Grpc;
 use PDO as CorePDO;
 
 /**
@@ -38,6 +38,11 @@ class PDO
      * @var QueryAnalyzer
      */
     private $queryAnalyzer;
+
+    /**
+     * @var ParamProcessor
+     */
+    private $paramProcessor;
 
     /**
      * @var string
@@ -74,6 +79,7 @@ class PDO
         $connectionString = "{$host}:{$port}";
         $this->vitess = new Vitess($connectionString);
         $this->queryAnalyzer = new QueryAnalyzer();
+        $this->paramProcessor = new ParamProcessor();
 
         if (isset($options[CorePDO::MYSQL_ATTR_INIT_COMMAND])) {
             // Vitess doesn't support SET NAMES queries yet
@@ -152,7 +158,7 @@ class PDO
      */
     public function prepare($statement, array $driverOptions = [])
     {
-        return new PDOStatement($statement, $this->vitess);
+        return new PDOStatement($statement, $this->vitess, $this->paramProcessor);
     }
 
     /**

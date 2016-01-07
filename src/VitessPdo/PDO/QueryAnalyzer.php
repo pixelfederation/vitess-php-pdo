@@ -64,6 +64,26 @@ class QueryAnalyzer
     }
 
     /**
+     * @param string $sqlNormalized
+     *
+     * @return boolean
+     */
+    public function isUpdateQueryNormalized($sqlNormalized)
+    {
+        return substr($sqlNormalized, 0, 6) === "update";
+    }
+
+    /**
+     * @param string $sqlNormalized
+     *
+     * @return boolean
+     */
+    public function isDeleteQueryNormalized($sqlNormalized)
+    {
+        return substr($sqlNormalized, 0, 6) === "delete";
+    }
+
+    /**
      * @param string $sql
      *
      * @return string
@@ -80,26 +100,6 @@ class QueryAnalyzer
      */
     private function isInsertQueryNormalized($sqlNormalized)
     {
-        return strpos($sqlNormalized, "insert") === 0;
-    }
-
-    /**
-     * @param string $sqlNormalized
-     *
-     * @return boolean
-     */
-    public function isUpdateQueryNormalized($sqlNormalized)
-    {
-        return strpos($sqlNormalized, "update") === 0;
-    }
-
-    /**
-     * @param string $sqlNormalized
-     *
-     * @return boolean
-     */
-    public function isDeleteQueryNormalized($sqlNormalized)
-    {
-        return strpos($sqlNormalized, "delete") === 0;
+        return substr($sqlNormalized, 0, 6) === "insert";
     }
 }

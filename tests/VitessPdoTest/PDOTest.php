@@ -11,7 +11,14 @@ use VitessPdo\PDO;
 use VitessPdo\PDO\PDOStatement;
 use Exception;
 use PDOException;
+use PDO as CorePDO;
 
+/**
+ * Class PDOTest
+ *
+ * @package VitessPdoTest
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ */
 class PDOTest extends \PHPUnit_Framework_TestCase
 {
 
@@ -24,9 +31,9 @@ class PDOTest extends \PHPUnit_Framework_TestCase
 
         try {
             $pdo = new PDO($dsn);
-            $this->assertInstanceOf(PDO::class, $pdo);
+            self::assertInstanceOf(PDO::class, $pdo);
         } catch (Exception $e) {
-            $this->fail(sprintf("Failed creating the PDO instance with an exception: '%s'", $e->getMessage()));
+            self::fail(sprintf("Failed creating the PDO instance with an exception: '%s'", $e->getMessage()));
         }
     }
 
@@ -56,7 +63,7 @@ class PDOTest extends \PHPUnit_Framework_TestCase
         $pdo = new PDO($dsn);
         $rows = $pdo->exec("INSERT INTO user (name) VALUES ('test_user')");
 
-        $this->assertEquals(1, $rows);
+        self::assertEquals(1, $rows);
     }
 
     public function testTransactions()
@@ -65,19 +72,19 @@ class PDOTest extends \PHPUnit_Framework_TestCase
 
         $pdo = new PDO($dsn);
 
-        $this->assertEquals(false, $pdo->inTransaction());
+        self::assertEquals(false, $pdo->inTransaction());
 
         $commitResult = $pdo->commit();
-        $this->assertFalse($commitResult);
+        self::assertFalse($commitResult);
 
         $pdo->beginTransaction();
-        $this->assertEquals(true, $pdo->inTransaction());
+        self::assertEquals(true, $pdo->inTransaction());
         $rows = $pdo->exec("INSERT INTO user (name) VALUES ('test_user')");
-        $this->assertEquals(1, $rows);
-        $this->assertEquals(true, $pdo->inTransaction());
+        self::assertEquals(1, $rows);
+        self::assertEquals(true, $pdo->inTransaction());
         $commitResult = $pdo->commit();
-        $this->assertTrue($commitResult);
-        $this->assertEquals(false, $pdo->inTransaction());
+        self::assertTrue($commitResult);
+        self::assertEquals(false, $pdo->inTransaction());
     }
 
     public function testTransactionRollbackException()
@@ -89,7 +96,7 @@ class PDOTest extends \PHPUnit_Framework_TestCase
         $this->expectException(PDOException::class);
         $this->expectExceptionMessage("No transaction is active.");
         $rollbackResult = $pdo->rollback();
-        $this->assertFalse($rollbackResult);
+        self::assertFalse($rollbackResult);
     }
 
     public function testTransactionRollback()
@@ -100,10 +107,10 @@ class PDOTest extends \PHPUnit_Framework_TestCase
 
         $pdo->beginTransaction();
         $rows = $pdo->exec("INSERT INTO user (name) VALUES ('test_user')");
-        $this->assertEquals(1, $rows);
+        self::assertEquals(1, $rows);
         $rollbackResult = $pdo->rollback();
-        $this->assertTrue($rollbackResult);
-        $this->assertEquals(false, $pdo->inTransaction());
+        self::assertTrue($rollbackResult);
+        self::assertEquals(false, $pdo->inTransaction());
         // @todo - check if data exists in db
     }
 
@@ -115,10 +122,10 @@ class PDOTest extends \PHPUnit_Framework_TestCase
 
         $pdo->beginTransaction();
         $rows = $pdo->exec("INSERT INTO user (name) VALUES ('test_user')");
-        $this->assertEquals(1, $rows);
-        $this->assertNotEquals('0', $pdo->lastInsertId());
+        self::assertEquals(1, $rows);
+        self::assertNotEquals('0', $pdo->lastInsertId());
         $pdo->commit();
-        $this->assertEquals('0', $pdo->lastInsertId());
+        self::assertEquals('0', $pdo->lastInsertId());
     }
 
     public function testPrepare()
@@ -128,13 +135,175 @@ class PDOTest extends \PHPUnit_Framework_TestCase
         $pdo = new PDO($dsn);
         $stmt = $pdo->prepare("SELECT * FROM user");
 
-        $this->assertInstanceOf(PDOStatement::class, $stmt);
+        self::assertInstanceOf(PDOStatement::class, $stmt);
 
         $result = $stmt->execute();
-        $this->assertTrue($result);
+        self::assertTrue($result);
 
         $users = $stmt->fetchAll();
-        $this->assertInternalType('array', $users);
-        $this->assertNotEmpty($users);
+        self::assertInternalType('array', $users);
+        self::assertNotEmpty($users);
+    }
+
+    public function testPrepareWithUnnamedParams()
+    {
+        $dsn = "vitess:dbname=test_keyspace;host=localhost;port=15991";
+
+        $pdo = new PDO($dsn);
+        $stmt = $pdo->prepare("SELECT * FROM user WHERE user_id IN (?, ?)");
+
+        self::assertInstanceOf(PDOStatement::class, $stmt);
+
+        $result = $stmt->execute([151, 152]);
+        self::assertTrue($result);
+
+        $users = $stmt->fetchAll();
+        self::assertInternalType('array', $users);
+        self::assertNotEmpty($users);
+        // warning! this doesn't have to work on sharded tables, if the data is in multiple shards
+        self::assertCount(2, $users);
+    }
+
+    public function testPrepareWithNamedParams()
+    {
+        $dsn = "vitess:dbname=test_keyspace;host=localhost;port=15991";
+
+        $pdo = new PDO($dsn);
+        $stmt = $pdo->prepare("SELECT * FROM user WHERE user_id IN (:id1, :id2)");
+
+        self::assertInstanceOf(PDOStatement::class, $stmt);
+
+        $result = $stmt->execute(['id1' => 151, 'id2' => 152]);
+        self::assertTrue($result);
+
+        $users = $stmt->fetchAll();
+        self::assertInternalType('array', $users);
+        self::assertNotEmpty($users);
+        // warning! this doesn't have to work on sharded tables, if the data is in multiple shards
+        self::assertCount(2, $users);
+    }
+
+    public function testPrepareWithNamedParamsString()
+    {
+        self::markTestIncomplete(
+            'this test currently fails because of this vittess error: '
+            . 'uncaught panic: runtime error: comparing uncomparable type []uint8, vtgate: http://localhost:15001/'
+        );
+
+        $dsn = "vitess:dbname=test_keyspace;host=localhost;port=15991";
+
+        $pdo = new PDO($dsn);
+        $stmt = $pdo->prepare("SELECT * FROM user WHERE name = :name");
+
+        self::assertInstanceOf(PDOStatement::class, $stmt);
+
+        $result = $stmt->execute(['name' => 'test_user']);
+        self::assertTrue($result);
+
+        $users = $stmt->fetchAll();
+        self::assertInternalType('array', $users);
+        self::assertNotEmpty($users);
+    }
+
+    public function testPrepareWithMixedParams()
+    {
+        $dsn = "vitess:dbname=test_keyspace;host=localhost;port=15991";
+
+        $pdo = new PDO($dsn);
+        $stmt = $pdo->prepare("SELECT * FROM user WHERE user_id IN (:id1, ?)");
+
+        self::assertInstanceOf(PDOStatement::class, $stmt);
+
+
+        $result = $stmt->execute(['id1' => 151, 152]);
+        self::assertFalse($result);
+    }
+
+    public function testPrepareWithUnnamedParamsBoundExtra()
+    {
+        $dsn = "vitess:dbname=test_keyspace;host=localhost;port=15991";
+
+        $pdo = new PDO($dsn);
+        $stmt = $pdo->prepare("SELECT * FROM user WHERE user_id IN (?, ?)");
+
+        self::assertInstanceOf(PDOStatement::class, $stmt);
+        $stmt->bindValue(1, 151, CorePDO::PARAM_INT);
+        $stmt->bindValue(2, 152, CorePDO::PARAM_INT);
+
+        $result = $stmt->execute();
+        self::assertTrue($result);
+
+        $users = $stmt->fetchAll();
+        self::assertInternalType('array', $users);
+        self::assertNotEmpty($users);
+        // warning! this doesn't have to work on sharded tables, if the data is in multiple shards
+        self::assertCount(2, $users);
+    }
+
+    public function testPrepareWithNamedParamsBoundExtra()
+    {
+        $dsn = "vitess:dbname=test_keyspace;host=localhost;port=15991";
+
+        $pdo = new PDO($dsn);
+        $stmt = $pdo->prepare("SELECT * FROM user WHERE user_id IN (:id1, :id2)");
+
+        self::assertInstanceOf(PDOStatement::class, $stmt);
+        $stmt->bindValue('id1', 151, CorePDO::PARAM_INT);
+        $stmt->bindValue('id2', 152, CorePDO::PARAM_INT);
+
+        $result = $stmt->execute();
+        self::assertTrue($result);
+
+        $users = $stmt->fetchAll();
+        self::assertInternalType('array', $users);
+        self::assertNotEmpty($users);
+        // warning! this doesn't have to work on sharded tables, if the data is in multiple shards
+        self::assertCount(2, $users);
+    }
+
+    public function testPrepareWithUnnamedParams2BoundExtra()
+    {
+        $dsn = "vitess:dbname=test_keyspace;host=localhost;port=15991";
+
+        $pdo = new PDO($dsn);
+        $stmt = $pdo->prepare("SELECT * FROM user WHERE user_id IN (?, ?)");
+
+        self::assertInstanceOf(PDOStatement::class, $stmt);
+        $id1 = 151;
+        $id2 = 152;
+        $stmt->bindParam(1, $id1, CorePDO::PARAM_INT);
+        $stmt->bindParam(2, $id2, CorePDO::PARAM_INT);
+
+        $result = $stmt->execute();
+        self::assertTrue($result);
+
+        $users = $stmt->fetchAll();
+        self::assertInternalType('array', $users);
+        self::assertNotEmpty($users);
+        // warning! this doesn't have to work on sharded tables, if the data is in multiple shards
+        self::assertCount(2, $users);
+    }
+
+    public function testPrepareWithNamedParams2BoundExtra()
+    {
+        $dsn = "vitess:dbname=test_keyspace;host=localhost;port=15991";
+
+        $pdo = new PDO($dsn);
+        $stmt = $pdo->prepare("SELECT * FROM user WHERE user_id IN (:id1, :id2)");
+
+        self::assertInstanceOf(PDOStatement::class, $stmt);
+        $id1 = 151;
+        $id2 = 152;
+        $stmt->bindParam('id1', $id1, CorePDO::PARAM_INT);
+        $stmt->bindParam('id2', $id2, CorePDO::PARAM_INT);
+
+        $result = $stmt->execute();
+        self::assertTrue($result);
+
+        $users = $stmt->fetchAll();
+        self::assertInternalType('array', $users);
+        self::assertNotEmpty($users);
+        // warning! this doesn't have to work on sharded tables, if the data is in multiple shards
+        self::assertCount(2, $users);
     }
 }
