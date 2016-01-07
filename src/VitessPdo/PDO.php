@@ -82,10 +82,11 @@ class PDO
         $this->queryAnalyzer = new QueryAnalyzer();
         $this->paramProcessor = new ParamProcessor();
 
-        if (isset($options[CorePDO::MYSQL_ATTR_INIT_COMMAND])) {
+        if (array_key_exists(CorePDO::MYSQL_ATTR_INIT_COMMAND, $options)) {
             // Vitess doesn't support SET NAMES queries yet
             // $query = $options[CorePDO::MYSQL_ATTR_INIT_COMMAND];
             // $this->vtgateConnection->execute($this->vitessCtx, $query, [], TabletType::MASTER);
+            return;
         }
     }
 
