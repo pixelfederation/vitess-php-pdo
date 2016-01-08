@@ -87,16 +87,16 @@ class PDOStatement
     {
         try {
             if ($inputParameters) {
-                // remove following line, when vitess is fixed
+                if (array_key_exists(0, $inputParameters)) {
+                    $inputParameters = $this->repairUnnamedParamsArray($inputParameters);
+                }
+
                 $this->params = $inputParameters;
-                // uncoment following lines, when vitess is fixed
+
+                // string conversion problem in Vitess, uncomment after fixed
                 // foreach ($inputParameters as $key => $value) {
                 //     $this->bindValue($key, $value); // default type is string
                 // }
-            }
-
-            if (array_key_exists(0, $this->params)) {
-                $this->params = $this->repairUnnamedParamsArray($this->params);
             }
 
             $this->cursor = $this->vitess->executeRead($this->query, $this->params);
@@ -217,7 +217,7 @@ class PDOStatement
     {
         try {
             if (is_int($parameter)) {
-                --$parameter;
+                $parameter = "v{$parameter}";
             }
 
             $variable = $this->paramProcessor->process($value, $dataType);

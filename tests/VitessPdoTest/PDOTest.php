@@ -185,11 +185,6 @@ class PDOTest extends \PHPUnit_Framework_TestCase
 
     public function testPrepareWithNamedParamsString()
     {
-        self::markTestIncomplete(
-            'this test currently fails because of this vittess error: '
-            . 'uncaught panic: runtime error: comparing uncomparable type []uint8, vtgate: http://localhost:15001/'
-        );
-
         $dsn = "vitess:dbname=test_keyspace;host=localhost;port=15991";
 
         $pdo = new PDO($dsn);
