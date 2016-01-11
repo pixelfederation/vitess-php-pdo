@@ -319,6 +319,36 @@ class PDO
     }
 
     /**
+     * Retrieve a database connection attribute
+     *
+     * This function returns the value of a database connection attribute. To retrieve PDOStatement attributes,
+     * refer to PDOStatement::getAttribute().
+     * Note that some database/driver combinations may not support all of the database connection attributes.
+     *
+     * @param int $attribute - One of the PDO::ATTR_* constants. The constants that apply to database
+     *                         connections are as follows:
+     *                          PDO::ATTR_AUTOCOMMIT
+     *                          PDO::ATTR_CASE
+     *                          PDO::ATTR_CLIENT_VERSION
+     *                          PDO::ATTR_CONNECTION_STATUS
+     *                          PDO::ATTR_DRIVER_NAME
+     *                          PDO::ATTR_ERRMODE
+     *                          PDO::ATTR_ORACLE_NULLS
+     *                          PDO::ATTR_PERSISTENT
+     *                          PDO::ATTR_PREFETCH
+     *                          PDO::ATTR_SERVER_INFO
+     *                          PDO::ATTR_SERVER_VERSION
+     *                          PDO::ATTR_TIMEOUT
+     *
+     * @return mixed - A successful call returns the value of the requested PDO attribute.
+     *                 An unsuccessful call returns null.
+     */
+    public function getAttribute($attribute)
+    {
+        return $this->attributes->get($attribute);
+    }
+
+    /**
      * @return void
      */
     public function __destruct()

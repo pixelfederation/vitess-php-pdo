@@ -69,6 +69,10 @@ class Attributes
      */
     public function get($attribute)
     {
+        if (!isset($this->attributes[$attribute])) {
+            return null;
+        }
+
         return $this->attributes[$attribute];
     }
 

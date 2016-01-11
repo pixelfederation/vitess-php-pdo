@@ -377,4 +377,15 @@ class PDOTest extends \PHPUnit_Framework_TestCase
         $result = $stmt->execute();
         self::assertFalse($result);
     }
+
+    public function testGetAttribute()
+    {
+        $pdo = new PDO($this->dsn);
+
+        $result = $pdo->getAttribute(CorePDO::ATTR_ERRMODE);
+        self::assertEquals(CorePDO::ERRMODE_EXCEPTION, $result);
+
+        $result = $pdo->getAttribute(CorePDO::ATTR_ORACLE_NULLS);
+        self::assertNull($result);
+    }
 }
