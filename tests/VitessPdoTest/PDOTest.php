@@ -23,14 +23,17 @@ class PDOTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
+     * @var string
+     */
+    private $dsn = "vitess:dbname=test_keyspace;host=localhost;port=15991";
+
+    /**
      *
      */
     public function testCorrectConstruct()
     {
-        $dsn = "vitess:dbname=test_keyspace;host=localhost;port=15991";
-
         try {
-            $pdo = new PDO($dsn);
+            $pdo = new PDO($this->dsn);
             self::assertInstanceOf(PDO::class, $pdo);
         } catch (Exception $e) {
             self::fail(sprintf("Failed creating the PDO instance with an exception: '%s'", $e->getMessage()));
@@ -58,9 +61,7 @@ class PDOTest extends \PHPUnit_Framework_TestCase
 
     public function testExecFunctionInsert()
     {
-        $dsn = "vitess:dbname=test_keyspace;host=localhost;port=15991";
-
-        $pdo = new PDO($dsn);
+        $pdo = new PDO($this->dsn);
         $rows = $pdo->exec("INSERT INTO user (name) VALUES ('test_user')");
 
         self::assertEquals(1, $rows);
@@ -68,9 +69,7 @@ class PDOTest extends \PHPUnit_Framework_TestCase
 
     public function testTransactions()
     {
-        $dsn = "vitess:dbname=test_keyspace;host=localhost;port=15991";
-
-        $pdo = new PDO($dsn);
+        $pdo = new PDO($this->dsn);
 
         self::assertEquals(false, $pdo->inTransaction());
 
@@ -89,9 +88,7 @@ class PDOTest extends \PHPUnit_Framework_TestCase
 
     public function testTransactionRollbackException()
     {
-        $dsn = "vitess:dbname=test_keyspace;host=localhost;port=15991";
-
-        $pdo = new PDO($dsn);
+        $pdo = new PDO($this->dsn);
 
         $this->expectException(PDOException::class);
         $this->expectExceptionMessage("No transaction is active.");
@@ -101,9 +98,7 @@ class PDOTest extends \PHPUnit_Framework_TestCase
 
     public function testTransactionRollback()
     {
-        $dsn = "vitess:dbname=test_keyspace;host=localhost;port=15991";
-
-        $pdo = new PDO($dsn);
+        $pdo = new PDO($this->dsn);
 
         $pdo->beginTransaction();
         $rows = $pdo->exec("INSERT INTO user (name) VALUES ('test_user')");
@@ -116,9 +111,7 @@ class PDOTest extends \PHPUnit_Framework_TestCase
 
     public function testLastInsertId()
     {
-        $dsn = "vitess:dbname=test_keyspace;host=localhost;port=15991";
-
-        $pdo = new PDO($dsn);
+        $pdo = new PDO($this->dsn);
 
         $pdo->beginTransaction();
         $rows = $pdo->exec("INSERT INTO user (name) VALUES ('test_user')");
@@ -130,9 +123,7 @@ class PDOTest extends \PHPUnit_Framework_TestCase
 
     public function testPrepare()
     {
-        $dsn = "vitess:dbname=test_keyspace;host=localhost;port=15991";
-
-        $pdo = new PDO($dsn);
+        $pdo = new PDO($this->dsn);
         $stmt = $pdo->prepare("SELECT * FROM user");
 
         self::assertInstanceOf(PDOStatement::class, $stmt);
@@ -147,9 +138,7 @@ class PDOTest extends \PHPUnit_Framework_TestCase
 
     public function testPrepareWithUnnamedParams()
     {
-        $dsn = "vitess:dbname=test_keyspace;host=localhost;port=15991";
-
-        $pdo = new PDO($dsn);
+        $pdo = new PDO($this->dsn);
         $stmt = $pdo->prepare("SELECT * FROM user WHERE user_id IN (?, ?)");
 
         self::assertInstanceOf(PDOStatement::class, $stmt);
@@ -166,9 +155,7 @@ class PDOTest extends \PHPUnit_Framework_TestCase
 
     public function testPrepareWithNamedParams()
     {
-        $dsn = "vitess:dbname=test_keyspace;host=localhost;port=15991";
-
-        $pdo = new PDO($dsn);
+        $pdo = new PDO($this->dsn);
         $stmt = $pdo->prepare("SELECT * FROM user WHERE user_id IN (:id1, :id2)");
 
         self::assertInstanceOf(PDOStatement::class, $stmt);
@@ -185,9 +172,7 @@ class PDOTest extends \PHPUnit_Framework_TestCase
 
     public function testPrepareWithNamedParamsString()
     {
-        $dsn = "vitess:dbname=test_keyspace;host=localhost;port=15991";
-
-        $pdo = new PDO($dsn);
+        $pdo = new PDO($this->dsn);
         $stmt = $pdo->prepare("SELECT * FROM user WHERE name = :name");
 
         self::assertInstanceOf(PDOStatement::class, $stmt);
@@ -202,9 +187,7 @@ class PDOTest extends \PHPUnit_Framework_TestCase
 
     public function testPrepareWithMixedParams()
     {
-        $dsn = "vitess:dbname=test_keyspace;host=localhost;port=15991";
-
-        $pdo = new PDO($dsn);
+        $pdo = new PDO($this->dsn);
         $stmt = $pdo->prepare("SELECT * FROM user WHERE user_id IN (:id1, ?)");
 
         self::assertInstanceOf(PDOStatement::class, $stmt);
@@ -216,9 +199,7 @@ class PDOTest extends \PHPUnit_Framework_TestCase
 
     public function testPrepareWithUnnamedParamsBoundExtra()
     {
-        $dsn = "vitess:dbname=test_keyspace;host=localhost;port=15991";
-
-        $pdo = new PDO($dsn);
+        $pdo = new PDO($this->dsn);
         $stmt = $pdo->prepare("SELECT * FROM user WHERE user_id IN (?, ?)");
 
         self::assertInstanceOf(PDOStatement::class, $stmt);
@@ -237,9 +218,7 @@ class PDOTest extends \PHPUnit_Framework_TestCase
 
     public function testPrepareWithNamedParamsBoundExtra()
     {
-        $dsn = "vitess:dbname=test_keyspace;host=localhost;port=15991";
-
-        $pdo = new PDO($dsn);
+        $pdo = new PDO($this->dsn);
         $stmt = $pdo->prepare("SELECT * FROM user WHERE user_id IN (:id1, :id2)");
 
         self::assertInstanceOf(PDOStatement::class, $stmt);
@@ -258,9 +237,7 @@ class PDOTest extends \PHPUnit_Framework_TestCase
 
     public function testPrepareWithUnnamedParams2BoundExtra()
     {
-        $dsn = "vitess:dbname=test_keyspace;host=localhost;port=15991";
-
-        $pdo = new PDO($dsn);
+        $pdo = new PDO($this->dsn);
         $stmt = $pdo->prepare("SELECT * FROM user WHERE user_id IN (?, ?)");
 
         self::assertInstanceOf(PDOStatement::class, $stmt);
@@ -281,9 +258,7 @@ class PDOTest extends \PHPUnit_Framework_TestCase
 
     public function testPrepareWithNamedParams2BoundExtra()
     {
-        $dsn = "vitess:dbname=test_keyspace;host=localhost;port=15991";
-
-        $pdo = new PDO($dsn);
+        $pdo = new PDO($this->dsn);
         $stmt = $pdo->prepare("SELECT * FROM user WHERE user_id IN (:id1, :id2)");
 
         self::assertInstanceOf(PDOStatement::class, $stmt);
