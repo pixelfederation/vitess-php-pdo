@@ -99,14 +99,21 @@ class PDOTest extends \PHPUnit_Framework_TestCase
     public function testTransactionRollback()
     {
         $pdo = new PDO($this->dsn);
+        $name = 'test_user_rollback';
 
         $pdo->beginTransaction();
-        $rows = $pdo->exec("INSERT INTO user (name) VALUES ('test_user')");
+        $rows = $pdo->exec("INSERT INTO user (name) VALUES ('{$name}')");
         self::assertEquals(1, $rows);
         $rollbackResult = $pdo->rollback();
         self::assertTrue($rollbackResult);
         self::assertEquals(false, $pdo->inTransaction());
-        // @todo - check if data exists in db
+
+        $stmt = $pdo->prepare("SELECT * FROM user WHERE name = :name");
+        $result = $stmt->execute(['name' => $name]);
+        self::assertTrue($result);
+
+        $users = $stmt->fetchAll();
+        self::assertEmpty($users);
     }
 
     public function testLastInsertId()
