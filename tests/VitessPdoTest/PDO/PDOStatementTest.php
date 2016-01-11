@@ -7,6 +7,7 @@
 
 namespace VitessPdoTest\PDO;
 
+use VitessPdo\PDO\Attributes;
 use VitessPdo\PDO\ParamProcessor;
 use VitessPdo\PDO\Vitess;
 use VitessPdo\PDO\PDOStatement;
@@ -57,7 +58,12 @@ class PDOStatementTest extends \PHPUnit_Framework_TestCase
      */
     private function getNewStatement($empty = true)
     {
-        return new PDOStatement("SELECT * FROM user", $this->getVitessStub($empty), new ParamProcessor());
+        return new PDOStatement(
+            "SELECT * FROM user",
+            $this->getVitessStub($empty),
+            new Attributes(),
+            new ParamProcessor()
+        );
     }
 
     /**

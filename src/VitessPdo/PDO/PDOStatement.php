@@ -11,6 +11,7 @@ use VitessPdo\PDO;
 use VTCursor;
 use PDO as CorePDO;
 use \Exception as CoreException;
+use PDOException;
 
 /**
  * Represents a prepared statement and, after the statement is executed, an associated result set.
@@ -25,6 +26,11 @@ class PDOStatement
      * @var string
      */
     private $query;
+
+    /**
+     * @var Attributes
+     */
+    private $attributes;
 
     /**
      * @var array
@@ -51,12 +57,14 @@ class PDOStatement
      *
      * @param string $query
      * @param Vitess $vitess
+     * @param Attributes $attributes
      * @param ParamProcessor $paramProcessor
      */
-    public function __construct($query, Vitess $vitess, ParamProcessor $paramProcessor)
+    public function __construct($query, Vitess $vitess, Attributes $attributes, ParamProcessor $paramProcessor)
     {
         $this->query  = $query;
         $this->vitess = $vitess;
+        $this->attributes = $attributes;
         $this->paramProcessor = $paramProcessor;
     }
 
@@ -81,6 +89,7 @@ class PDOStatement
      *                                      in input_parameters than in the SQL specified in the PDO::prepare(),
      *                                      then the statement will fail and an error is emitted.
      * @return bool
+     * @throws PDOException
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function execute(array $inputParameters = null)
@@ -99,8 +108,18 @@ class PDOStatement
                 // }
             }
 
-            $this->cursor = $this->vitess->executeRead($this->query, $this->params);
+            $cursorOrFalse = $this->vitess->executeRead($this->query, $this->params);
+
+            if ($cursorOrFalse === false) {
+                return false;
+            }
+
+            $this->cursor = $cursorOrFalse;
         } catch (CoreException $e) {
+            if ($e instanceof PDOException && $this->attributes->isErrorModeException()) {
+                throw $e;
+            }
+
             return false;
         }
 

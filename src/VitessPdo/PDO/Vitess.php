@@ -21,6 +21,7 @@ use PDOException;
  *
  * @author  mfris
  * @package VitessPdo\PDO
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class Vitess
 {
@@ -46,13 +47,22 @@ class Vitess
     private $transaction = null;
 
     /**
+     * @var Attributes
+     */
+    private $attributes;
+
+    /**
      * Vitess constructor.
      *
      * @param string $connectionString
+     * @param Attributes $attributes
+     * @throws PDOException
      * @SuppressWarnings(PHPMD.StaticAccess)
      */
-    public function __construct($connectionString)
+    public function __construct($connectionString, Attributes $attributes)
     {
+        $this->attributes = $attributes;
+
         try {
             $this->ctx        = VTContext::getDefault();
             $this->grpcClient = new VTGrpcClient($connectionString);
@@ -96,6 +106,8 @@ class Vitess
         try {
             $this->transaction->commit($this->ctx);
         } catch (VTException $e) {
+            $this->handleException($e);
+
             return false;
         } finally {
             $this->resetTransaction();
@@ -106,6 +118,7 @@ class Vitess
 
     /**
      * @return bool
+     * @throws PDOException
      */
     public function rollbackTransaction()
     {
@@ -117,6 +130,8 @@ class Vitess
             $transaction = $this->getTransaction();
             $transaction->rollback($this->ctx);
         } catch (VTException $e) {
+            $this->handleException($e);
+
             return false;
         } finally {
             $this->resetTransaction();
@@ -130,13 +145,20 @@ class Vitess
      * @param array $params
      *
      * @return VTCursor
-     * @throws VTException
+     * @throws PDOException
      */
     public function executeWrite($sql, array $params = [])
     {
         $isInTransaction = $this->isInTransaction();
         $transaction = $this->getTransaction();
-        $cursor = $transaction->execute($this->ctx, $sql, $params, TabletType::MASTER);
+
+        $cursor = null;
+
+        try {
+            $cursor = $transaction->execute($this->ctx, $sql, $params, TabletType::MASTER);
+        } catch (VTException $e) {
+            $this->handleException($e);
+        }
 
         if (!$isInTransaction) {
             $this->commitTransaction();
@@ -148,11 +170,20 @@ class Vitess
     /**
      * @param string $sql
      * @param array $params
-     * @return VTCursor
+     * @return VTCursor|false
+     * @throws PDOException
      */
     public function executeRead($sql, array $params = [])
     {
-        $cursor = $this->connection->execute($this->ctx, $sql, $params, TabletType::REPLICA);
+        $cursor = null;
+
+        try {
+            $cursor = $this->connection->execute($this->ctx, $sql, $params, TabletType::REPLICA);
+        } catch (VTException $e) {
+            $this->handleException($e);
+
+            return false;
+        }
 
         return $cursor;
     }
@@ -175,6 +206,24 @@ class Vitess
     private function resetTransaction()
     {
         $this->transaction = null;
+    }
+
+    /**
+     * @param VTException $exception
+     *
+     * @throws PDOException
+     */
+    private function handleException(VTException $exception)
+    {
+        switch (true) {
+            case $this->attributes->isErrorModeWarning():
+                trigger_error($exception->getMessage(), E_WARNING);
+                break;
+
+            case $this->attributes->isErrorModeException():
+                throw new PDOException("Vitess exception - check previous exception stack.", 0, $exception);
+                break;
+        }
     }
 
     /**

@@ -7,6 +7,7 @@
 
 namespace VitessPdo;
 
+use VitessPdo\PDO\Attributes;
 use VitessPdo\PDO\Dsn;
 use VitessPdo\PDO\ParamProcessor;
 use VitessPdo\PDO\PDOStatement;
@@ -46,6 +47,11 @@ class PDO
     private $paramProcessor;
 
     /**
+     * @var Attributes
+     */
+    private $attributes;
+
+    /**
      * @var string
      */
     private $lastInsertId = self::DEFAULT_LAST_INSERT_ID;
@@ -78,7 +84,8 @@ class PDO
         $host = $this->dsn->getConfig()->getHost();
         $port = $this->dsn->getConfig()->getPort();
         $connectionString = "{$host}:{$port}";
-        $this->vitess = new Vitess($connectionString);
+        $this->attributes = new Attributes();
+        $this->vitess = new Vitess($connectionString, $this->attributes);
         $this->queryAnalyzer = new QueryAnalyzer();
         $this->paramProcessor = new ParamProcessor();
 
@@ -244,7 +251,71 @@ class PDO
      */
     public function prepare($statement, array $driverOptions = [])
     {
-        return new PDOStatement($statement, $this->vitess, $this->paramProcessor);
+        return new PDOStatement($statement, $this->vitess, $this->attributes, $this->paramProcessor);
+    }
+
+    /**
+     * Sets an attribute on the database handle. Some of the available generic attributes are listed below;
+     * some drivers may make use of additional driver specific attributes.
+     *
+     * PDO::ATTR_CASE: Force column names to a specific case.
+     * (NOT IMPLEMENTED YET)
+     *  - PDO::CASE_LOWER: Force column names to lower case.
+     *  - PDO::CASE_NATURAL: Leave column names as returned by the database driver.
+     *  - PDO::CASE_UPPER: Force column names to upper case.
+     *
+     * PDO::ATTR_ERRMODE: Error reporting.
+     *  - PDO::ERRMODE_SILENT: Just set error codes.
+     *  - PDO::ERRMODE_WARNING: Raise E_WARNING.
+     *  - PDO::ERRMODE_EXCEPTION: Throw exceptions.
+     *
+     * PDO::ATTR_ORACLE_NULLS (available with all drivers, not just Oracle): Conversion of NULL and empty strings.
+     * (NOT IMPLEMENTED YET)
+     *  - PDO::NULL_NATURAL: No conversion.
+     *  - PDO::NULL_EMPTY_STRING: Empty string is converted to NULL.
+     *  - PDO::NULL_TO_STRING: NULL is converted to an empty string.
+     *
+     * PDO::ATTR_STRINGIFY_FETCHES: Convert numeric values to strings when fetching. Requires bool.
+     * (NOT IMPLEMENTED YET)
+     *
+     *  PDO::ATTR_STATEMENT_CLASS: Set user-supplied statement class derived from PDOStatement. Cannot be used
+     *  with persistent PDO instances. Requires array(string classname, array(mixed constructor_args)).
+     * (NOT IMPLEMENTED YET)
+     *
+     * PDO::ATTR_TIMEOUT: Specifies the timeout duration in seconds. Not all drivers support this option,
+     * and its meaning may differ from driver to driver. For example, sqlite will wait for up to this time value
+     * before giving up on obtaining an writable lock, but other drivers may interpret this as a connect or a read
+     * timeout interval. Requires int.
+     * (NOT IMPLEMENTED YET)
+     *
+     * PDO::ATTR_AUTOCOMMIT (available in OCI, Firebird and MySQL): Whether to autocommit every single statement.
+     * (NOT IMPLEMENTED YET)
+     *
+     * PDO::ATTR_EMULATE_PREPARES Enables or disables emulation of prepared statements. Some drivers do not support
+     * native prepared statements or have limited support for them. Use this setting to force PDO to either always
+     * emulate prepared statements (if TRUE), or to try to use native prepared statements (if FALSE).
+     * It will always fall back to emulating the prepared statement if the driver cannot successfully prepare
+     * the current query. Requires bool.
+     * (NOT IMPLEMENTED YET)
+     *
+     * PDO::MYSQL_ATTR_USE_BUFFERED_QUERY (available in MySQL): Use buffered queries.
+     * (NOT IMPLEMENTED YET)
+     *
+     * PDO::ATTR_DEFAULT_FETCH_MODE: Set default fetch mode. Description of modes is available
+     * in PDOStatement::fetch() documentation.
+     * (NOT IMPLEMENTED YET)
+     *
+     * @param int $attribute
+     * @param mixed $value
+     *
+     * @return bool - Returns TRUE on success or FALSE on failure.
+     * @throws PDO\Exception
+     */
+    public function setAttribute($attribute, $value)
+    {
+        $this->attributes->set($attribute, $value);
+
+        return true;
     }
 
     /**

@@ -9,6 +9,7 @@ namespace VitessPdoTest;
 
 use VitessPdo\PDO;
 use VitessPdo\PDO\PDOStatement;
+use VitessPdo\PDO\Exception as VitessPDOException;
 use Exception;
 use PDOException;
 use PDO as CorePDO;
@@ -26,6 +27,49 @@ class PDOTest extends \PHPUnit_Framework_TestCase
      * @var string
      */
     private $dsn = "vitess:dbname=test_keyspace;host=localhost;port=15991";
+
+    /**
+     * @var array
+     */
+    private $errors;
+
+    /**
+     *
+     */
+    protected function setUp()
+    {
+        $this->errors = [];
+        set_error_handler([$this, "errorHandler"]);
+    }
+
+    /**
+     * @param int $errno
+     * @param string $errstr
+     * @param string $errfile
+     * @param int $errline
+     * @param array $errcontext
+     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
+     */
+    public function errorHandler($errno, $errstr, $errfile, $errline, $errcontext)
+    {
+        $this->errors[] = compact("errno", "errstr", "errfile", "errline", "errcontext");
+    }
+
+    /**
+     * @param int $errno
+     */
+    public function assertError($errno)
+    {
+        foreach ($this->errors as $error) {
+            if ($error["errno"] === $errno) {
+                return;
+            }
+        }
+        self::fail(
+            "Error with level " . $errno . " not found in " .
+            var_export($this->errors, true)
+        );
+    }
 
     /**
      *
@@ -199,9 +243,8 @@ class PDOTest extends \PHPUnit_Framework_TestCase
 
         self::assertInstanceOf(PDOStatement::class, $stmt);
 
-
-        $result = $stmt->execute(['id1' => 151, 152]);
-        self::assertFalse($result);
+        $this->expectException(PDOException::class);
+        $stmt->execute(['id1' => 151, 152]);
     }
 
     public function testPrepareWithUnnamedParamsBoundExtra()
@@ -282,5 +325,56 @@ class PDOTest extends \PHPUnit_Framework_TestCase
         self::assertNotEmpty($users);
         // warning! this doesn't have to work on sharded tables, if the data is in multiple shards
         self::assertCount(2, $users);
+    }
+
+    public function testSetAttributeNotImplemented()
+    {
+        $this->expectException(VitessPDOException::class);
+        $this->expectExceptionMessageRegExp('/^PDO parameter not implemented/');
+        $pdo = new PDO($this->dsn);
+        $pdo->setAttribute(CorePDO::ATTR_CASE, CorePDO::CASE_LOWER);
+    }
+
+    public function testSetAttribute()
+    {
+        $pdo = new PDO($this->dsn);
+        $result = $pdo->setAttribute(CorePDO::ATTR_ERRMODE, CorePDO::ERRMODE_SILENT);
+        self::assertTrue($result);
+    }
+
+    public function testSetAttributeErrModeSilent()
+    {
+        $pdo = new PDO($this->dsn);
+
+        $pdo->setAttribute(CorePDO::ATTR_ERRMODE, CorePDO::ERRMODE_SILENT);
+        $stmt = $pdo->prepare("SELECT * FROM non_existent_table");
+        $result = $stmt->execute();
+        self::assertFalse($result);
+    }
+
+    /**
+     *
+     */
+    public function testSetAttributeErrModeWarning()
+    {
+        $pdo = new PDO($this->dsn);
+
+        $pdo->setAttribute(CorePDO::ATTR_ERRMODE, CorePDO::ERRMODE_WARNING);
+        $stmt = $pdo->prepare("SELECT * FROM non_existent_table");
+        $result = $stmt->execute();
+        $this->assertError(E_WARNING);
+        self::assertFalse($result);
+    }
+
+    public function testSetAttributeErrModeException()
+    {
+        $pdo = new PDO($this->dsn);
+
+        $this->expectException(PDOException::class);
+
+        $pdo->setAttribute(CorePDO::ATTR_ERRMODE, CorePDO::ERRMODE_EXCEPTION);
+        $stmt = $pdo->prepare("SELECT * FROM non_existent_table");
+        $result = $stmt->execute();
+        self::assertFalse($result);
     }
 }
