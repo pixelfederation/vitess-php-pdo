@@ -19,11 +19,17 @@ class Attributes
 {
 
     /**
+     * @const string
+     */
+    const DRIVER_NAME = 'vitess';
+
+    /**
      * @var array
      */
     private $attributes = [
         CorePDO::ATTR_ERRMODE => CorePDO::ERRMODE_EXCEPTION,
         CorePDO::ATTR_DEFAULT_FETCH_MODE => CorePDO::FETCH_BOTH,
+        CorePDO::ATTR_DRIVER_NAME => self::DRIVER_NAME,
     ];
 
     /**
@@ -32,6 +38,7 @@ class Attributes
     private static $implementedAttributes = [
         CorePDO::ATTR_ERRMODE => CorePDO::ATTR_ERRMODE,
         CorePDO::ATTR_DEFAULT_FETCH_MODE => CorePDO::ATTR_DEFAULT_FETCH_MODE,
+        CorePDO::ATTR_DRIVER_NAME => CorePDO::ATTR_DRIVER_NAME,
     ];
 
     /**
@@ -66,9 +73,14 @@ class Attributes
      * @param string $attribute
      *
      * @return mixed
+     * @throws Exception
      */
     public function get($attribute)
     {
+        if (!$this->isImplemented($attribute)) {
+            throw new Exception("PDO parameter not implemented - {$attribute}");
+        }
+
         if (!isset($this->attributes[$attribute])) {
             return null;
         }
@@ -78,6 +90,7 @@ class Attributes
 
     /**
      * @return bool
+     * @throws Exception
      */
     public function isErrorModeSilent()
     {
@@ -86,6 +99,7 @@ class Attributes
 
     /**
      * @return bool
+     * @throws Exception
      */
     public function isErrorModeWarning()
     {
@@ -94,6 +108,7 @@ class Attributes
 
     /**
      * @return bool
+     * @throws Exception
      */
     public function isErrorModeException()
     {
