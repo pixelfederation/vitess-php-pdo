@@ -19,6 +19,7 @@ use PDO as CorePDO;
  *
  * @package VitessPdoTest
  * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.TooManyMethods)
  */
 class PDOTest extends \PHPUnit_Framework_TestCase
 {
@@ -387,6 +388,14 @@ class PDOTest extends \PHPUnit_Framework_TestCase
 
         $result = $pdo->getAttribute(CorePDO::ATTR_ORACLE_NULLS);
         self::assertNull($result);
+    }
+
+    public function testGetAttributeDriverName()
+    {
+        $pdo = new PDO($this->dsn);
+
+        $driverName = $pdo->getAttribute(CorePDO::ATTR_DRIVER_NAME);
+        self::assertEquals(PDO\Attributes::DRIVER_NAME, $driverName);
     }
 
     public function testQuote()

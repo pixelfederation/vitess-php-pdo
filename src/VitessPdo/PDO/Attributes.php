@@ -77,10 +77,6 @@ class Attributes
      */
     public function get($attribute)
     {
-        if (!$this->isImplemented($attribute)) {
-            throw new Exception("PDO parameter not implemented - {$attribute}");
-        }
-
         if (!isset($this->attributes[$attribute])) {
             return null;
         }
