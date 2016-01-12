@@ -402,4 +402,20 @@ class PDOTest extends \PHPUnit_Framework_TestCase
         $str3 = $pdo->quote("Co'mpl''ex \"st'\"ring");
         self::assertEquals("'Co''mpl''''ex \"st''\"ring'", $str3);
     }
+
+    public function testQuery()
+    {
+        $pdo = new PDO($this->dsn);
+        $stmt = $pdo->query("SELECT * FROM user");
+
+        self::assertInstanceOf(PDOStatement::class, $stmt);
+
+        $users = $stmt->fetchAll();
+        self::assertInternalType('array', $users);
+        self::assertNotEmpty($users);
+
+        $stmt = $pdo->query("SELECT * FROM non_existent_table");
+
+        self::assertFalse($stmt);
+    }
 }

@@ -53,6 +53,11 @@ class PDOStatement
     private $cursor;
 
     /**
+     * @var array
+     */
+    private $rows;
+
+    /**
      * PDOStatement constructor.
      *
      * @param string $query
@@ -94,6 +99,8 @@ class PDOStatement
      */
     public function execute(array $inputParameters = null)
     {
+        $this->rows = null;
+
         try {
             if ($inputParameters) {
                 if (array_key_exists(0, $inputParameters)) {
@@ -173,13 +180,15 @@ class PDOStatement
         $fetchArgument = CorePDO::FETCH_COLUMN,
         array $ctorArgs = []
     ) {
-        $rows = [];
+        if ($this->rows === null) {
+            $this->rows = [];
 
-        while (($row = $this->cursor->next()) !== false) {
-            $rows[] = $row;
+            while (($row = $this->cursor->next()) !== false) {
+                $this->rows[] = $row;
+            }
         }
 
-        return $rows;
+        return $this->rows;
     }
 
     /**

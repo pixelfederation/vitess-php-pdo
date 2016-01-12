@@ -14,6 +14,7 @@ use VitessPdo\PDO\PDOStatement;
 use VitessPdo\PDO\QueryAnalyzer;
 use VitessPdo\PDO\Vitess;
 use PDO as CorePDO;
+use Exception;
 
 /**
  * Represents a connection between PHP and a database server.
@@ -22,6 +23,7 @@ use PDO as CorePDO;
  * @author  mfris
  * @package VitessPdo
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
  */
 class PDO
 {
@@ -122,6 +124,52 @@ class PDO
         }
 
         return $cursor->getRowsAffected();
+    }
+
+    /**
+     * Executes an SQL statement, returning a result set as a PDOStatement object
+     *
+     * public PDOStatement PDO::query ( string $statement )
+     * public PDOStatement PDO::query ( string $statement, int $PDO::FETCH_COLUMN, int $colno )
+     * public PDOStatement PDO::query ( string $statement, int $PDO::FETCH_CLASS, string $classname, array $ctorargs )
+     * public PDOStatement PDO::query ( string $statement, int $PDO::FETCH_INTO, object $object )
+     *
+     * PDO::query() executes an SQL statement in a single function call, returning the result set (if any) returned
+     * by the statement as a PDOStatement object.
+     *
+     * For a query that you need to issue multiple times, you will realize better performance if you prepare
+     * a PDOStatement object using PDO::prepare() and issue the statement with multiple calls
+     * to PDOStatement::execute().
+     *
+     * If you do not fetch all of the data in a result set before issuing your next call to PDO::query(), your call
+     * may fail. Call PDOStatement::closeCursor() to release the database resources associated with the PDOStatement
+     * object before issuing your next call to PDO::query().
+     *
+     * Note:
+     * Although this function is only documented as having a single parameter, you may pass additional arguments
+     * to this function. They will be treated as though you called PDOStatement::setFetchMode()
+     * on the resultant statement object.
+     *
+     * @param string     $statement      - The SQL statement to prepare and execute.
+     *                                 Data inside the query should be properly escaped.
+     * @param int        $fetchStyle
+     * @param mixed      $fetchArgument
+     * @param array|null $ctorArgs
+     *
+     * @return PDOStatement|false    - PDO::query() returns a PDOStatement object, or FALSE on failure.
+     */
+    public function query($statement, $fetchStyle = CorePdo::FETCH_BOTH, $fetchArgument = null, array $ctorArgs = null)
+    {
+        $pdoStatement = $this->prepare($statement);
+
+        try {
+            $pdoStatement->execute();
+            $pdoStatement->fetchAll($fetchStyle, $fetchArgument, $ctorArgs);
+        } catch (Exception $e) {
+            return false;
+        }
+
+        return $pdoStatement;
     }
 
     /**
