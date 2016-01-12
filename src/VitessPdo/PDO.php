@@ -349,6 +349,38 @@ class PDO
     }
 
     /**
+     * Quotes a string for use in a query.
+     *
+     * PDO::quote() places quotes around the input string (if required) and escapes special characters within the input
+     * string, using a quoting style appropriate to the underlying driver.
+     *
+     * If you are using this function to build SQL statements, you are strongly recommended to use PDO::prepare()
+     * to prepare SQL statements with bound parameters instead of using PDO::quote() to interpolate user input into
+     * an SQL statement. Prepared statements with bound parameters are not only more portable, more convenient,
+     * immune to SQL injection, but are often much faster to execute than interpolated queries, as both the server
+     * and client side can cache a compiled form of the query.
+     *
+     * Not all PDO drivers implement this method (notably PDO_ODBC). Consider using prepared statements instead.
+     *
+     * CAUTION
+     * Security: the default character set
+     *
+     * The character set must be set either on the server level, or within the database connection itself
+     * (depending on the driver) for it to affect PDO::quote(). See the driver-specific documentation
+     * for more information.
+     *
+     * @param string $string        - The string to be quoted.
+     * @param int $parameterType    - Provides a data type hint for drivers that have alternate quoting styles.
+     *
+     * @return string               - Returns a quoted string that is theoretically safe to pass into an SQL statement.
+     *                                Returns FALSE if the driver does not support quoting in this way.
+     */
+    public function quote($string, $parameterType = CorePDO::PARAM_STR)
+    {
+        return "'" . $this->paramProcessor->process($string, $parameterType) . "'";
+    }
+
+    /**
      * @return void
      */
     public function __destruct()

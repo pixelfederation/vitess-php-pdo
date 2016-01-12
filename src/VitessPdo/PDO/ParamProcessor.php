@@ -21,6 +21,16 @@ class ParamProcessor
     /**
      * @var array
      */
+    private static $strReplaceFrom = ['\\', "\0", "\n", "\r", "'", "\x1a"];
+
+    /**
+     * @var array
+     */
+    private static $strReplaceTo = ['\\\\', '\\0', '\\n', '\\r', "''", '\\Z'];
+
+    /**
+     * @var array
+     */
     private static $typeHandlers = [
         CorePDO::PARAM_BOOL => 'boolean',
         CorePDO::PARAM_INT => 'integer',
@@ -64,7 +74,7 @@ class ParamProcessor
      */
     private function boolean($value)
     {
-        return boolval($value);
+        return (bool) $value;
     }
 
     /**
@@ -75,7 +85,7 @@ class ParamProcessor
      */
     private function integer($value)
     {
-        return intval($value);
+        return (int) $value;
     }
 
     /**
@@ -98,7 +108,7 @@ class ParamProcessor
      */
     private function string($value)
     {
-        return $this->escapeString(strval($value));
+        return $this->escapeString((string) $value);
     }
 
     /**
@@ -108,19 +118,10 @@ class ParamProcessor
      */
     private function escapeString($value)
     {
-        $return = '';
-        $len = strlen($value);
-
-        for ($i = 0; $i < $len; ++$i) {
-            $char = $value[$i];
-            $ord = ord($char);
-
-            if (!($char !== "'" && $char !== "\"" && $char !== '\\' && $ord >= 32 && $ord <= 126)) {
-                $char = '\\x' . dechex($ord);
-            }
-
-            $return .= $char;
+        if (!empty($value) && is_string($value)) {
+            return str_replace(self::$strReplaceFrom, self::$strReplaceTo, $value);
         }
-        return $return;
+
+        return $value;
     }
 }

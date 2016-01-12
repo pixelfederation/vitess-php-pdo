@@ -388,4 +388,18 @@ class PDOTest extends \PHPUnit_Framework_TestCase
         $result = $pdo->getAttribute(CorePDO::ATTR_ORACLE_NULLS);
         self::assertNull($result);
     }
+
+    public function testQuote()
+    {
+        $pdo = new PDO($this->dsn);
+
+        $str1 = $pdo->quote('Nice');
+        self::assertEquals("'Nice'", $str1);
+
+        $str2 = $pdo->quote('Naughty \' string');
+        self::assertEquals("'Naughty '' string'", $str2);
+
+        $str3 = $pdo->quote("Co'mpl''ex \"st'\"ring");
+        self::assertEquals("'Co''mpl''''ex \"st''\"ring'", $str3);
+    }
 }
