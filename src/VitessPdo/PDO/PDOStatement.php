@@ -106,13 +106,10 @@ class PDOStatement
                 if (array_key_exists(0, $inputParameters)) {
                     $inputParameters = $this->repairUnnamedParamsArray($inputParameters);
                 }
-
-                $this->params = $inputParameters;
-
-                // string conversion problem in Vitess, uncomment after fixed
-                // foreach ($inputParameters as $key => $value) {
-                //     $this->bindValue($key, $value); // default type is string
-                // }
+                
+                foreach ($inputParameters as $key => $value) {
+                    $this->bindValue($key, $value); // default type is string
+                }
             }
 
             $cursorOrFalse = $this->vitess->executeRead($this->query, $this->params);
