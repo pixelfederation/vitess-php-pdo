@@ -286,6 +286,35 @@ class PDOStatement
     }
 
     /**
+     * Returns a single column from the next row of a result set
+     *
+     * Returns a single column from the next row of a result set or FALSE if there are no more rows.
+     *
+     * Note:
+     * PDOStatement::fetchColumn() should not be used to retrieve boolean columns, as it is impossible to distinguish
+     * a value of FALSE from there being no more rows to retrieve. Use PDOStatement::fetch() instead.
+     *
+     * Warning:
+     * There is no way to return another column from the same row if you use PDOStatement::fetchColumn()
+     * to retrieve data.
+     *
+     * @param int $columnNumber - 0-indexed number of the column you wish to retrieve from the row. If no value
+     *                            is supplied, PDOStatement::fetchColumn() fetches the first column.
+     *
+     * @return mixed            - returns a single column in the next row of a result set.
+     */
+    public function fetchColumn($columnNumber = 0)
+    {
+        $row = $this->fetch();
+
+        if ($row) {
+            return $row[$columnNumber];
+        }
+
+        return false;
+    }
+
+    /**
      * Binds a parameter to the specified variable name
      *
      * Binds a PHP variable to a corresponding named or question mark placeholder in the SQL statement that was used

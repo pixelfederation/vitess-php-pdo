@@ -354,6 +354,32 @@ class PDOTest extends \PHPUnit_Framework_TestCase
         self::assertEquals(2, $count);
     }
 
+    public function testPrepareWithNamedParams2BoundExtraFetchColumn()
+    {
+        $pdo = new PDO($this->dsn);
+        $stmt = $pdo->prepare("SELECT * FROM user WHERE user_id IN (:id1, :id2)");
+
+        self::assertInstanceOf(PDOStatement::class, $stmt);
+        $id1 = 151;
+        $id2 = 152;
+        $stmt->bindParam('id1', $id1, CorePDO::PARAM_INT);
+        $stmt->bindParam('id2', $id2, CorePDO::PARAM_INT);
+
+        $result = $stmt->execute();
+        self::assertTrue($result);
+
+        $count = 0;
+
+        while (($userId = $stmt->fetchColumn()) !== false) {
+            self::assertInternalType('string', $userId);
+            self::assertEquals($id1 + $count, $userId);
+            $count++;
+        }
+
+        // warning! this doesn't have to work on sharded tables, if the data is in multiple shards
+        self::assertEquals(2, $count);
+    }
+
     public function testSetAttributeNotImplemented()
     {
         $this->expectException(VitessPDOException::class);

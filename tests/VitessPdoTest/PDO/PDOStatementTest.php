@@ -89,6 +89,39 @@ class PDOStatementTest extends \PHPUnit_Framework_TestCase
     /**
      *
      */
+    public function testFetchColumn()
+    {
+        $stmt = $this->getNewStatement(false);
+        $result = $stmt->execute();
+
+        self::assertTrue($result);
+        $count = 0;
+
+        while (($userId = $stmt->fetchColumn()) !== false) {
+            $count++;
+            self::assertInternalType('string', $userId);
+            self::assertGreaterThan(0, (int) $userId);
+            self::assertEquals($count, $userId);
+        }
+
+        self::assertEquals(2, $count);
+
+        $stmt = $this->getNewStatement(false);
+        $result = $stmt->execute();
+
+        self::assertTrue($result);
+        $count = 0;
+
+        while (($userId = $stmt->fetchColumn(1)) !== false) {
+            $count++;
+            self::assertInternalType('string', $userId);
+            self::assertEquals("user_{$count}", $userId);
+        }
+    }
+
+    /**
+     *
+     */
     public function testCloseCursor()
     {
         $stmt = $this->getNewStatement(false);
@@ -146,12 +179,16 @@ class PDOStatementTest extends \PHPUnit_Framework_TestCase
         $stub->expects(self::exactly(3))->method('next')
             ->will(self::onConsecutiveCalls(
                 [
-                    'user_id' => 1,
-                    'name' => 'user_1'
+                    0         => '1',
+                    'user_id' => '1',
+                    1         => 'user_1',
+                    'name'    => 'user_1'
                 ],
                 [
-                    'user_id' => 2,
-                    'name' => 'user_2'
+                    0         => '2',
+                    'user_id' => '2',
+                    1         => 'user_2',
+                    'name'    => 'user_2'
                 ],
                 false
             ));
