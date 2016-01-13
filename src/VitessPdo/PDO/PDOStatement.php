@@ -106,7 +106,7 @@ class PDOStatement
                 if (array_key_exists(0, $inputParameters)) {
                     $inputParameters = $this->repairUnnamedParamsArray($inputParameters);
                 }
-                
+
                 foreach ($inputParameters as $key => $value) {
                     $this->bindValue($key, $value); // default type is string
                 }

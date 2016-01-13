@@ -158,7 +158,7 @@ class PDO
      *
      * @return PDOStatement|false    - PDO::query() returns a PDOStatement object, or FALSE on failure.
      */
-    public function query($statement, $fetchStyle = CorePdo::FETCH_BOTH, $fetchArgument = null, array $ctorArgs = null)
+    public function query($statement, $fetchStyle = CorePdo::FETCH_BOTH, $fetchArgument = null, array $ctorArgs = [])
     {
         $pdoStatement = $this->prepare($statement);
 
