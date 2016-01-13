@@ -112,7 +112,7 @@ class PDOStatement
      */
     public function execute(array $inputParameters = null)
     {
-        $this->rows = null;
+        $this->reset();
 
         try {
             if ($inputParameters) {
@@ -352,6 +352,26 @@ class PDOStatement
     }
 
     /**
+     * Closes the cursor, enabling the statement to be executed again.
+     *
+     * PDOStatement::closeCursor() frees up the connection to the server so that other SQL statements may be issued,
+     * but leaves the statement in a state that enables it to be executed again.
+     *
+     * This method is useful for database drivers that do not support executing a PDOStatement object when a previously
+     * executed PDOStatement object still has unfetched rows. If your database driver suffers from this limitation,
+     * the problem may manifest itself in an out-of-sequence error.
+     *
+     * PDOStatement::closeCursor() is implemented either as an optional driver specific method (allowing for
+     * maximum efficiency), or as the generic PDO fallback if no driver specific function is installed.
+     *
+     * @return bool - Returns TRUE on success or FALSE on failure.
+     */
+    public function closeCursor()
+    {
+        return true;
+    }
+
+    /**
      * @param array $params
      *
      * @return array
@@ -375,5 +395,14 @@ class PDOStatement
     private function isFetchStyleSupported($fetchMode)
     {
         return isset(self::$supportedFetchoModes[$fetchMode]);
+    }
+
+    /**
+     *
+     */
+    private function reset()
+    {
+        $this->rowIndex = -1;
+        $this->rows = null;
     }
 }

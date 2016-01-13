@@ -87,6 +87,19 @@ class PDOStatementTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     *
+     */
+    public function testCloseCursor()
+    {
+        $stmt = $this->getNewStatement(false);
+        $stmt->execute();
+        $stmt->fetch();
+        $stmt->fetch();
+        $stmt->fetch();
+        self::assertTrue($stmt->closeCursor());
+    }
+
+    /**
      * @param boolean $empty
      *
      * @return PDOStatement
