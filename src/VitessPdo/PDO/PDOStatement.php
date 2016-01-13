@@ -58,6 +58,19 @@ class PDOStatement
     private $rows;
 
     /**
+     * @var int
+     */
+    private $rowIndex = -1;
+
+    /**
+     * @var array
+     */
+    private static $supportedFetchoModes = [
+        CorePDO::FETCH_BOTH => CorePDO::FETCH_BOTH,
+        CorePDO::FETCH_ASSOC => CorePDO::FETCH_ASSOC,
+    ];
+
+    /**
      * PDOStatement constructor.
      *
      * @param string $query
@@ -170,13 +183,18 @@ class PDOStatement
      *                  it in PHP, consider using the database server to manipulate the result sets. For example,
      *                  use the WHERE and ORDER BY clauses in SQL to restrict results before retrieving
      *                  and processing them with PHP.
+     * @throws Exception
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function fetchAll(
-        $fetchStyle = CorePDO::ATTR_DEFAULT_FETCH_MODE,
+        $fetchStyle = CorePDO::FETCH_BOTH,
         $fetchArgument = CorePDO::FETCH_COLUMN,
         array $ctorArgs = []
     ) {
+        if (!$this->isFetchStyleSupported($fetchStyle)) {
+            throw new Exception("Fetch style not supported: {$fetchStyle}");
+        }
+
         if ($this->rows === null) {
             $this->rows = [];
 
@@ -186,6 +204,85 @@ class PDOStatement
         }
 
         return $this->rows;
+    }
+
+    /**
+     * Fetches the next row from a result set.
+     *
+     * Fetches a row from a result set associated with a PDOStatement object. The fetch_style parameter
+     * determines how PDO returns the row.
+     *
+     * @param int $fetchStyle - Controls how the next row will be returned to the caller. This value must be
+     *                          one of the PDO::FETCH_* constants, defaulting to value of PDO::ATTR_DEFAULT_FETCH_MODE
+     *                          (which defaults to PDO::FETCH_BOTH).
+     *
+     *                          - PDO::FETCH_ASSOC: returns an array indexed by column name as returned in your
+     *                            result set
+     *                          - PDO::FETCH_BOTH (default): returns an array indexed by both column name and 0-indexed
+     *                            column number as returned in your result set
+     *                          - PDO::FETCH_BOUND: returns TRUE and assigns the values of the columns in your result
+     *                            set to the PHP variables to which they were bound with the PDOStatement::bindColumn()
+     *                            method
+     *                          - PDO::FETCH_CLASS: returns a new instance of the requested class, mapping the columns
+     *                            of the result set to named properties in the class. If fetch_style includes
+     *                            PDO::FETCH_CLASSTYPE (e.g. PDO::FETCH_CLASS | PDO::FETCH_CLASSTYPE) then the name
+     *                            of the class is determined from a value of the first column.
+     *                            NOT IMPLEMENTED
+     *                          - PDO::FETCH_INTO: updates an existing instance of the requested class, mapping
+     *                            the columns of the result set to named properties in the class
+     *                            NOT IMPLEMENTED
+     *                          - PDO::FETCH_LAZY: combines PDO::FETCH_BOTH and PDO::FETCH_OBJ, creating the object
+     *                            variable names as they are accessed
+     *                            NOT IMPLEMENTED
+     *                          - PDO::FETCH_NAMED: returns an array with the same form as PDO::FETCH_ASSOC, except
+     *                            that if there are multiple columns with the same name, the value referred to by that
+     *                            key will be an array of all the values in the row that had that column name
+     *                            NOT IMPLEMENTED
+     *                          - PDO::FETCH_NUM: returns an array indexed by column number as returned in your result
+     *                            set, starting at column 0
+     *                            NOT IMPLEMENTED
+     *                          - PDO::FETCH_OBJ: returns an anonymous object with property names that correspond
+     *                            to the column names returned in your result set
+     *                            NOT IMPLEMENTED
+     *
+     * @param int $cursorOrientation - For a PDOStatement object representing a scrollable cursor, this value determines
+     *                                 which row will be returned to the caller. This value must be one
+     *                                 of the PDO::FETCH_ORI_* constants, defaulting to PDO::FETCH_ORI_NEXT. To request
+     *                                 a scrollable cursor for your PDOStatement object, you must set
+     *                                 the PDO::ATTR_CURSOR attribute to PDO::CURSOR_SCROLL when you prepare the SQL
+     *                                 statement with PDO::prepare().
+     *
+     * @param int $cursorOffset - For a PDOStatement object representing a scrollable cursor for which
+     *                            the cursor_orientation parameter is set to PDO::FETCH_ORI_ABS, this value specifies
+     *                            the absolute number of the row in the result set that shall be fetched.
+     *
+     *                            For a PDOStatement object representing a scrollable cursor for which
+     *                            the cursor_orientation parameter is set to PDO::FETCH_ORI_REL, this value specifies
+     *                            the row to fetch relative to the cursor position before PDOStatement::fetch()
+     *                            was called.
+     *
+     * @return mixed - The return value of this function on success depends on the fetch type.
+     *                 In all cases, FALSE is returned on failure.
+     *
+     * @throws Exception
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function fetch(
+        $fetchStyle = CorePDO::FETCH_BOTH,
+        $cursorOrientation = CorePDO::FETCH_ORI_NEXT,
+        $cursorOffset = 0
+    ) {
+        if (!$this->isFetchStyleSupported($fetchStyle)) {
+            throw new Exception("Fetch style not supported: {$fetchStyle}");
+        }
+
+        $rows = $this->fetchAll($fetchStyle);
+
+        if (isset($rows[++$this->rowIndex])) {
+            return $rows[$this->rowIndex];
+        }
+
+        return false;
     }
 
     /**
@@ -268,5 +365,15 @@ class PDOStatement
         }
 
         return $newParams;
+    }
+
+    /**
+     * @param int $fetchMode
+     *
+     * @return bool
+     */
+    private function isFetchStyleSupported($fetchMode)
+    {
+        return isset(self::$supportedFetchoModes[$fetchMode]);
     }
 }

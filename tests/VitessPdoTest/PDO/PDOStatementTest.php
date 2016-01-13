@@ -11,8 +11,10 @@ use VitessPdo\PDO\Attributes;
 use VitessPdo\PDO\ParamProcessor;
 use VitessPdo\PDO\Vitess;
 use VitessPdo\PDO\PDOStatement;
+use VitessPdo\PDO\Exception as VitessPDOException;
 use VTCursor;
 use Exception;
+use PDO as CorePDO;
 
 /**
  * Class PDOStatementTest
@@ -48,6 +50,40 @@ class PDOStatementTest extends \PHPUnit_Framework_TestCase
         self::assertInternalType('array', $users);
         self::assertNotEmpty($users);
         self::assertCount(2, $users);
+    }
+
+    /**
+     *
+     */
+    public function testFetch()
+    {
+        $stmt = $this->getNewStatement(false);
+        $result = $stmt->execute();
+
+        self::assertTrue($result);
+        $count = 0;
+
+        while (($row = $stmt->fetch()) !== false) {
+            $count++;
+            self::assertInternalType('array', $row);
+            self::assertNotEmpty($row);
+        }
+
+        self::assertEquals(2, $count);
+    }
+
+    /**
+     *
+     */
+    public function testFetchStyleNotImplementedException()
+    {
+        $stmt = $this->getNewStatement();
+        $result = $stmt->execute();
+
+        self::assertTrue($result);
+        $this->expectException(VitessPDOException::class);
+        $this->expectExceptionMessageRegExp('/^Fetch style not supported/');
+        $stmt->fetch(CorePDO::FETCH_CLASS);
     }
 
     /**
