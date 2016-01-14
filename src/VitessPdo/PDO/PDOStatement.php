@@ -18,6 +18,7 @@ use PDOException;
  *
  * @author  mfris
  * @package VitessPdo\PDO
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class PDOStatement
 {
@@ -65,7 +66,16 @@ class PDOStatement
     /**
      * @var array
      */
-    private static $supportedFetchoModes = [
+    private static $supportedFetchAllModes = [
+        CorePDO::FETCH_BOTH => CorePDO::FETCH_BOTH,
+        CorePDO::FETCH_ASSOC => CorePDO::FETCH_ASSOC,
+        CorePDO::FETCH_COLUMN => CorePDO::FETCH_COLUMN,
+    ];
+
+    /**
+     * @var array
+     */
+    private static $supportedFetchModes = [
         CorePDO::FETCH_BOTH => CorePDO::FETCH_BOTH,
         CorePDO::FETCH_ASSOC => CorePDO::FETCH_ASSOC,
     ];
@@ -191,7 +201,7 @@ class PDOStatement
         $fetchArgument = CorePDO::FETCH_COLUMN,
         array $ctorArgs = []
     ) {
-        if (!$this->isFetchStyleSupported($fetchStyle)) {
+        if (!$this->isFetchAllStyleSupported($fetchStyle)) {
             throw new Exception("Fetch style not supported: {$fetchStyle}");
         }
 
@@ -199,7 +209,17 @@ class PDOStatement
             $this->rows = [];
 
             while (($row = $this->cursor->next()) !== false) {
-                $this->rows[] = $row;
+                /* @var $row array */
+                switch ($fetchStyle) {
+                    case CorePDO::FETCH_ASSOC:
+                    case CorePDO::FETCH_BOTH:
+                        $this->rows[] = $row;
+                        break;
+
+                    case CorePDO::FETCH_COLUMN:
+                        $this->rows[] = isset($row[$fetchArgument]) ? $row[$fetchArgument] : null;
+                        break;
+                }
             }
         }
 
@@ -421,9 +441,19 @@ class PDOStatement
      *
      * @return bool
      */
+    private function isFetchAllStyleSupported($fetchMode)
+    {
+        return isset(self::$supportedFetchAllModes[$fetchMode]);
+    }
+
+    /**
+     * @param int $fetchMode
+     *
+     * @return bool
+     */
     private function isFetchStyleSupported($fetchMode)
     {
-        return isset(self::$supportedFetchoModes[$fetchMode]);
+        return isset(self::$supportedFetchModes[$fetchMode]);
     }
 
     /**

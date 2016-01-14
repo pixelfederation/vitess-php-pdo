@@ -372,7 +372,8 @@ class PDOTest extends \PHPUnit_Framework_TestCase
 
         while (($userId = $stmt->fetchColumn()) !== false) {
             self::assertInternalType('string', $userId);
-            self::assertEquals($id1 + $count, $userId);
+            // order is not ensured and ORDER BY cannot be used because of the multi shard query
+            self::assertTrue(in_array($userId, [$id1, $id2]));
             $count++;
         }
 

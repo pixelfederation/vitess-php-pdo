@@ -55,6 +55,26 @@ class PDOStatementTest extends \PHPUnit_Framework_TestCase
     /**
      *
      */
+    public function testExecuteFetchAllFetchColumn()
+    {
+        $stmt = $this->getNewStatement(false);
+        $result = $stmt->execute();
+
+        self::assertTrue($result);
+
+        $usersIds = $stmt->fetchAll(CorePDO::FETCH_COLUMN, 0);
+        self::assertInternalType('array', $usersIds);
+        self::assertNotEmpty($usersIds);
+        self::assertCount(2, $usersIds);
+
+        foreach ($usersIds as $userId) {
+            self::assertInternalType('string', $userId);
+        }
+    }
+
+    /**
+     *
+     */
     public function testFetch()
     {
         $stmt = $this->getNewStatement(false);
