@@ -9,6 +9,7 @@ namespace VitessPdo\PDO;
 
 use VitessPdo\PDO;
 use VTCursor;
+use VTProto;
 use PDO as CorePDO;
 use \Exception as CoreException;
 use PDOException;
@@ -66,18 +67,30 @@ class PDOStatement
     /**
      * @var array
      */
-    private static $supportedFetchAllModes = [
+    private static $supportedFetchAllStyles = [
         CorePDO::FETCH_BOTH => CorePDO::FETCH_BOTH,
         CorePDO::FETCH_ASSOC => CorePDO::FETCH_ASSOC,
+        CorePDO::FETCH_NUM => CorePDO::FETCH_NUM,
         CorePDO::FETCH_COLUMN => CorePDO::FETCH_COLUMN,
     ];
 
     /**
      * @var array
      */
-    private static $supportedFetchModes = [
+    private static $supportedFetchStyles = [
         CorePDO::FETCH_BOTH => CorePDO::FETCH_BOTH,
         CorePDO::FETCH_ASSOC => CorePDO::FETCH_ASSOC,
+        CorePDO::FETCH_NUM => CorePDO::FETCH_NUM,
+    ];
+
+    /**
+     * @var array
+     */
+    private static $pdo2VitessFetchStyles = [
+        CorePDO::FETCH_BOTH => VTProto::FETCH_MODE_BOTH,
+        CorePDO::FETCH_ASSOC => VTProto::FETCH_MODE_ASSOC,
+        CorePDO::FETCH_NUM => VTProto::FETCH_MODE_NUM,
+        CorePDO::FETCH_COLUMN => VTProto::FETCH_MODE_NUM,
     ];
 
     /**
@@ -207,12 +220,14 @@ class PDOStatement
 
         if ($this->rows === null) {
             $this->rows = [];
+            $vitessFetchStyle = $this->getVitessFetchStyle($fetchStyle);
 
-            while (($row = $this->cursor->next()) !== false) {
+            while (($row = $this->cursor->next($vitessFetchStyle)) !== false) {
                 /* @var $row array */
                 switch ($fetchStyle) {
                     case CorePDO::FETCH_ASSOC:
                     case CorePDO::FETCH_BOTH:
+                    case CorePDO::FETCH_NUM:
                         $this->rows[] = $row;
                         break;
 
@@ -325,7 +340,7 @@ class PDOStatement
      */
     public function fetchColumn($columnNumber = 0)
     {
-        $row = $this->fetch();
+        $row = $this->fetch(CorePDO::FETCH_NUM);
 
         if ($row) {
             return $row[$columnNumber];
@@ -443,7 +458,7 @@ class PDOStatement
      */
     private function isFetchAllStyleSupported($fetchMode)
     {
-        return isset(self::$supportedFetchAllModes[$fetchMode]);
+        return isset(self::$supportedFetchAllStyles[$fetchMode]);
     }
 
     /**
@@ -453,7 +468,22 @@ class PDOStatement
      */
     private function isFetchStyleSupported($fetchMode)
     {
-        return isset(self::$supportedFetchModes[$fetchMode]);
+        return isset(self::$supportedFetchStyles[$fetchMode]);
+    }
+
+    /**
+     * @param int $pdoFetchStyle
+     *
+     * @return int
+     * @throws Exception
+     */
+    private function getVitessFetchStyle($pdoFetchStyle)
+    {
+        if (!isset(self::$pdo2VitessFetchStyles[$pdoFetchStyle])) {
+            throw new Exception("Fetch style not supported by Vitess client: {$pdoFetchStyle}");
+        }
+
+        return self::$pdo2VitessFetchStyles[$pdoFetchStyle];
     }
 
     /**

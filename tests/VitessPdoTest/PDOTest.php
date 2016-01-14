@@ -322,10 +322,83 @@ class PDOTest extends \PHPUnit_Framework_TestCase
         self::assertTrue($result);
 
         $users = $stmt->fetchAll();
+        $count = 0;
+
+        self::assertInternalType('array', $users);
+        foreach ($users as $user) {
+            $count++;
+            self::assertInternalType('array', $user);
+            self::assertNotEmpty($user);
+            self::assertArrayHasKey('user_id', $user);
+            self::assertArrayHasKey(0, $user);
+        }
+
+        // warning! this doesn't have to work on sharded tables, if the data is in multiple shards
+        self::assertEquals(2, $count);
+    }
+
+    public function testPrepareWithNamedParams2BoundExtraFetchAllAssoc()
+    {
+        $pdo = new PDO($this->dsn);
+        $stmt = $pdo->prepare("SELECT * FROM user WHERE user_id IN (:id1, :id2)");
+
+        self::assertInstanceOf(PDOStatement::class, $stmt);
+        $id1 = 151;
+        $id2 = 152;
+        $stmt->bindParam('id1', $id1, CorePDO::PARAM_INT);
+        $stmt->bindParam('id2', $id2, CorePDO::PARAM_INT);
+
+        $result = $stmt->execute();
+        self::assertTrue($result);
+
+        $users = $stmt->fetchAll(CorePDO::FETCH_ASSOC);
         self::assertInternalType('array', $users);
         self::assertNotEmpty($users);
+
+        $count = 0;
+
+        foreach ($users as $user) {
+            $count++;
+            self::assertInternalType('array', $user);
+            self::assertNotEmpty($user);
+            self::assertArrayHasKey('user_id', $user);
+            self::assertArrayNotHasKey(0, $user);
+        }
+
         // warning! this doesn't have to work on sharded tables, if the data is in multiple shards
-        self::assertCount(2, $users);
+        self::assertEquals(2, $count);
+    }
+
+    public function testPrepareWithNamedParams2BoundExtraFetchAllNum()
+    {
+        $pdo = new PDO($this->dsn);
+        $stmt = $pdo->prepare("SELECT * FROM user WHERE user_id IN (:id1, :id2)");
+
+        self::assertInstanceOf(PDOStatement::class, $stmt);
+        $id1 = 151;
+        $id2 = 152;
+        $stmt->bindParam('id1', $id1, CorePDO::PARAM_INT);
+        $stmt->bindParam('id2', $id2, CorePDO::PARAM_INT);
+
+        $result = $stmt->execute();
+        self::assertTrue($result);
+
+        $users = $stmt->fetchAll(CorePDO::FETCH_NUM);
+        self::assertInternalType('array', $users);
+        self::assertNotEmpty($users);
+
+        $count = 0;
+
+        foreach ($users as $user) {
+            $count++;
+            self::assertInternalType('array', $user);
+            self::assertNotEmpty($user);
+            self::assertArrayNotHasKey('user_id', $user);
+            self::assertArrayHasKey(0, $user);
+        }
+
+        // warning! this doesn't have to work on sharded tables, if the data is in multiple shards
+        self::assertEquals(2, $count);
     }
 
     public function testPrepareWithNamedParams2BoundExtraFetch()

@@ -41,7 +41,7 @@ class PDOStatementTest extends \PHPUnit_Framework_TestCase
      */
     public function testExecute()
     {
-        $stmt = $this->getNewStatement(false);
+        $stmt = $this->getNewStatement(CorePDO::FETCH_BOTH);
         $result = $stmt->execute();
 
         self::assertTrue($result);
@@ -55,9 +55,56 @@ class PDOStatementTest extends \PHPUnit_Framework_TestCase
     /**
      *
      */
+    public function testExecuteFetchAll()
+    {
+        $stmt = $this->getNewStatement(CorePDO::FETCH_BOTH);
+        $result = $stmt->execute();
+
+        self::assertTrue($result);
+
+        $users = $stmt->fetchAll(CorePDO::FETCH_BOTH);
+        self::assertInternalType('array', $users);
+        self::assertNotEmpty($users);
+        self::assertCount(2, $users);
+
+        foreach ($users as $user) {
+            self::assertArrayHasKey(0, $user);
+            self::assertArrayHasKey('user_id', $user);
+        }
+
+        $stmt = $this->getNewStatement(CorePDO::FETCH_ASSOC);
+        $stmt->execute();
+
+        $users = $stmt->fetchAll(CorePDO::FETCH_ASSOC);
+        self::assertInternalType('array', $users);
+        self::assertNotEmpty($users);
+        self::assertCount(2, $users);
+
+        foreach ($users as $user) {
+            self::assertArrayNotHasKey(0, $user);
+            self::assertArrayHasKey('user_id', $user);
+        }
+
+        $stmt = $this->getNewStatement(CorePDO::FETCH_NUM);
+        $stmt->execute();
+
+        $users = $stmt->fetchAll(CorePDO::FETCH_NUM);
+        self::assertInternalType('array', $users);
+        self::assertNotEmpty($users);
+        self::assertCount(2, $users);
+
+        foreach ($users as $user) {
+            self::assertArrayHasKey(0, $user);
+            self::assertArrayNotHasKey('user_id', $user);
+        }
+    }
+
+    /**
+     *
+     */
     public function testExecuteFetchAllFetchColumn()
     {
-        $stmt = $this->getNewStatement(false);
+        $stmt = $this->getNewStatement(CorePDO::FETCH_BOTH);
         $result = $stmt->execute();
 
         self::assertTrue($result);
@@ -77,7 +124,7 @@ class PDOStatementTest extends \PHPUnit_Framework_TestCase
      */
     public function testFetch()
     {
-        $stmt = $this->getNewStatement(false);
+        $stmt = $this->getNewStatement(CorePDO::FETCH_BOTH);
         $result = $stmt->execute();
 
         self::assertTrue($result);
@@ -111,7 +158,7 @@ class PDOStatementTest extends \PHPUnit_Framework_TestCase
      */
     public function testFetchColumn()
     {
-        $stmt = $this->getNewStatement(false);
+        $stmt = $this->getNewStatement(CorePDO::FETCH_BOTH);
         $result = $stmt->execute();
 
         self::assertTrue($result);
@@ -126,7 +173,7 @@ class PDOStatementTest extends \PHPUnit_Framework_TestCase
 
         self::assertEquals(2, $count);
 
-        $stmt = $this->getNewStatement(false);
+        $stmt = $this->getNewStatement(CorePDO::FETCH_BOTH);
         $result = $stmt->execute();
 
         self::assertTrue($result);
@@ -144,7 +191,7 @@ class PDOStatementTest extends \PHPUnit_Framework_TestCase
      */
     public function testCloseCursor()
     {
-        $stmt = $this->getNewStatement(false);
+        $stmt = $this->getNewStatement(CorePDO::FETCH_BOTH);
         $stmt->execute();
         $stmt->fetch();
         $stmt->fetch();
@@ -153,35 +200,52 @@ class PDOStatementTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param boolean $empty
+     * @param int $fetchMode
      *
      * @return PDOStatement
      * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
      */
-    private function getNewStatement($empty = true)
+    private function getNewStatement($fetchMode = null)
     {
         return new PDOStatement(
             "SELECT * FROM user",
-            $this->getVitessStub($empty),
+            $this->getVitessStub($fetchMode),
             new Attributes(),
             new ParamProcessor()
         );
     }
 
     /**
-     * @param boolean $empty
+     * @param int $fetchMode
+     *
      * @return Vitess
      * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
      */
-    private function getVitessStub($empty = true)
+    private function getVitessStub($fetchMode = null)
     {
         $stub = $this->getMockBuilder(Vitess::class)
-                    ->disableOriginalConstructor()
-                    ->getMock();
+            ->disableOriginalConstructor()
+            ->getMock();
 
-        if (!$empty) {
+        $cursor = null;
+
+        switch ($fetchMode) {
+            case CorePDO::FETCH_BOTH:
+                $cursor = $this->getVTCursorStubFetchBoth();
+                break;
+
+            case CorePDO::FETCH_ASSOC:
+                $cursor = $this->getVTCursorStubFetchAssoc();
+                break;
+
+            case CorePDO::FETCH_NUM:
+                $cursor = $this->getVTCursorStubFetchNum();
+                break;
+        }
+
+        if ($cursor) {
             $stub->expects(self::any())->method('executeRead')
-                ->willReturn($this->getVTCursorStub());
+                ->willReturn($cursor);
         }
 
         return $stub;
@@ -190,11 +254,11 @@ class PDOStatementTest extends \PHPUnit_Framework_TestCase
     /**
      * @return VTCursor
      */
-    private function getVTCursorStub()
+    private function getVTCursorStubFetchBoth()
     {
         $stub = $this->getMockBuilder(VTCursor::class)
-                     ->disableOriginalConstructor()
-                     ->getMock();
+            ->disableOriginalConstructor()
+            ->getMock();
 
         $stub->expects(self::exactly(3))->method('next')
             ->will(self::onConsecutiveCalls(
@@ -209,6 +273,56 @@ class PDOStatementTest extends \PHPUnit_Framework_TestCase
                     'user_id' => '2',
                     1         => 'user_2',
                     'name'    => 'user_2'
+                ],
+                false
+            ));
+
+        return $stub;
+    }
+
+    /**
+     * @return VTCursor
+     */
+    private function getVTCursorStubFetchAssoc()
+    {
+        $stub = $this->getMockBuilder(VTCursor::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $stub->expects(self::exactly(3))->method('next')
+            ->will(self::onConsecutiveCalls(
+                [
+                    'user_id' => '1',
+                    'name'    => 'user_1'
+                ],
+                [
+                    'user_id' => '2',
+                    'name'    => 'user_2'
+                ],
+                false
+            ));
+
+        return $stub;
+    }
+
+    /**
+     * @return VTCursor
+     */
+    private function getVTCursorStubFetchNum()
+    {
+        $stub = $this->getMockBuilder(VTCursor::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $stub->expects(self::exactly(3))->method('next')
+            ->will(self::onConsecutiveCalls(
+                [
+                    0         => '1',
+                    1         => 'user_1',
+                ],
+                [
+                    0         => '2',
+                    1         => 'user_2',
                 ],
                 false
             ));
