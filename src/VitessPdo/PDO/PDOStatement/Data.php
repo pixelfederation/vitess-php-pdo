@@ -105,9 +105,7 @@ class Data
     private function filterRowsKeysByFunction($rows, $function)
     {
         if (empty($rows)) {
-            $this->rows[CorePDO::FETCH_ASSOC] = [];
-
-            return;
+            return [];
         }
 
         $strKeyEmptyArray = array_flip(array_filter(array_keys($rows[0]), $function));
