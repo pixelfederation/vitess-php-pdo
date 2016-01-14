@@ -106,6 +106,8 @@ class Data
     {
         if (empty($rows)) {
             $this->rows[CorePDO::FETCH_ASSOC] = [];
+
+            return;
         }
 
         $strKeyEmptyArray = array_flip(array_filter(array_keys($rows[0]), $function));
