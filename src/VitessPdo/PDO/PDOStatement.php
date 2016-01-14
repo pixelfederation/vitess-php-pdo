@@ -8,8 +8,7 @@
 namespace VitessPdo\PDO;
 
 use VitessPdo\PDO;
-use VTCursor;
-use VTProto;
+use VitessPdo\PDO\PDOStatement\Cursor;
 use PDO as CorePDO;
 use \Exception as CoreException;
 use PDOException;
@@ -50,48 +49,9 @@ class PDOStatement
     private $paramProcessor;
 
     /**
-     * @var VTCursor
+     * @var Cursor
      */
     private $cursor;
-
-    /**
-     * @var array
-     */
-    private $rows;
-
-    /**
-     * @var int
-     */
-    private $rowIndex = -1;
-
-    /**
-     * @var array
-     */
-    private static $supportedFetchAllStyles = [
-        CorePDO::FETCH_BOTH => CorePDO::FETCH_BOTH,
-        CorePDO::FETCH_ASSOC => CorePDO::FETCH_ASSOC,
-        CorePDO::FETCH_NUM => CorePDO::FETCH_NUM,
-        CorePDO::FETCH_COLUMN => CorePDO::FETCH_COLUMN,
-    ];
-
-    /**
-     * @var array
-     */
-    private static $supportedFetchStyles = [
-        CorePDO::FETCH_BOTH => CorePDO::FETCH_BOTH,
-        CorePDO::FETCH_ASSOC => CorePDO::FETCH_ASSOC,
-        CorePDO::FETCH_NUM => CorePDO::FETCH_NUM,
-    ];
-
-    /**
-     * @var array
-     */
-    private static $pdo2VitessFetchStyles = [
-        CorePDO::FETCH_BOTH => VTProto::FETCH_MODE_BOTH,
-        CorePDO::FETCH_ASSOC => VTProto::FETCH_MODE_ASSOC,
-        CorePDO::FETCH_NUM => VTProto::FETCH_MODE_NUM,
-        CorePDO::FETCH_COLUMN => VTProto::FETCH_MODE_NUM,
-    ];
 
     /**
      * PDOStatement constructor.
@@ -150,11 +110,11 @@ class PDOStatement
 
             $cursorOrFalse = $this->vitess->executeRead($this->query, $this->params);
 
-            if ($cursorOrFalse === false) {
+            if (!$cursorOrFalse) {
                 return false;
             }
 
-            $this->cursor = $cursorOrFalse;
+            $this->cursor = new Cursor($cursorOrFalse);
         } catch (CoreException $e) {
             if ($e instanceof PDOException && $this->attributes->isErrorModeException()) {
                 throw $e;
@@ -214,31 +174,11 @@ class PDOStatement
         $fetchArgument = CorePDO::FETCH_COLUMN,
         array $ctorArgs = []
     ) {
-        if (!$this->isFetchAllStyleSupported($fetchStyle)) {
-            throw new Exception("Fetch style not supported: {$fetchStyle}");
+        if (!$this->cursor) {
+            throw new Exception("Statement not executed yet.");
         }
 
-        if ($this->rows === null) {
-            $this->rows = [];
-            $vitessFetchStyle = $this->getVitessFetchStyle($fetchStyle);
-
-            while (($row = $this->cursor->next($vitessFetchStyle)) !== false) {
-                /* @var $row array */
-                switch ($fetchStyle) {
-                    case CorePDO::FETCH_ASSOC:
-                    case CorePDO::FETCH_BOTH:
-                    case CorePDO::FETCH_NUM:
-                        $this->rows[] = $row;
-                        break;
-
-                    case CorePDO::FETCH_COLUMN:
-                        $this->rows[] = isset($row[$fetchArgument]) ? $row[$fetchArgument] : null;
-                        break;
-                }
-            }
-        }
-
-        return $this->rows;
+        return $this->cursor->fetchAll($fetchStyle, $fetchArgument);
     }
 
     /**
@@ -307,17 +247,11 @@ class PDOStatement
         $cursorOrientation = CorePDO::FETCH_ORI_NEXT,
         $cursorOffset = 0
     ) {
-        if (!$this->isFetchStyleSupported($fetchStyle)) {
-            throw new Exception("Fetch style not supported: {$fetchStyle}");
+        if (!$this->cursor) {
+            throw new Exception("Statement not executed yet.");
         }
 
-        $rows = $this->fetchAll($fetchStyle);
-
-        if (isset($rows[++$this->rowIndex])) {
-            return $rows[$this->rowIndex];
-        }
-
-        return false;
+        return $this->cursor->fetch($fetchStyle);
     }
 
     /**
@@ -452,46 +386,10 @@ class PDOStatement
     }
 
     /**
-     * @param int $fetchMode
-     *
-     * @return bool
-     */
-    private function isFetchAllStyleSupported($fetchMode)
-    {
-        return isset(self::$supportedFetchAllStyles[$fetchMode]);
-    }
-
-    /**
-     * @param int $fetchMode
-     *
-     * @return bool
-     */
-    private function isFetchStyleSupported($fetchMode)
-    {
-        return isset(self::$supportedFetchStyles[$fetchMode]);
-    }
-
-    /**
-     * @param int $pdoFetchStyle
-     *
-     * @return int
-     * @throws Exception
-     */
-    private function getVitessFetchStyle($pdoFetchStyle)
-    {
-        if (!isset(self::$pdo2VitessFetchStyles[$pdoFetchStyle])) {
-            throw new Exception("Fetch style not supported by Vitess client: {$pdoFetchStyle}");
-        }
-
-        return self::$pdo2VitessFetchStyles[$pdoFetchStyle];
-    }
-
-    /**
      *
      */
     private function reset()
     {
-        $this->rowIndex = -1;
-        $this->rows = null;
+        $this->cursor = null;
     }
 }

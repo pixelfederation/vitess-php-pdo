@@ -144,12 +144,13 @@ class PDOStatementTest extends \PHPUnit_Framework_TestCase
      */
     public function testFetchStyleNotImplementedException()
     {
-        $stmt = $this->getNewStatement();
+        $stmt = $this->getNewStatement(CorePDO::FETCH_BOTH);
         $result = $stmt->execute();
 
         self::assertTrue($result);
         $this->expectException(VitessPDOException::class);
         $this->expectExceptionMessageRegExp('/^Fetch style not supported/');
+        $stmt->fetchAll();
         $stmt->fetch(CorePDO::FETCH_CLASS);
     }
 
@@ -200,6 +201,19 @@ class PDOStatementTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     *
+     */
+    public function testFetchColumnAfterFetchAll()
+    {
+        $stmt = $this->getNewStatement(CorePDO::FETCH_BOTH);
+        $stmt->execute();
+        $stmt->fetchAll();
+        $userId = $stmt->fetchColumn(0);
+
+        self::assertEquals('1', $userId);
+    }
+
+    /**
      * @param int $fetchMode
      *
      * @return PDOStatement
@@ -227,25 +241,9 @@ class PDOStatementTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $cursor = null;
-
-        switch ($fetchMode) {
-            case CorePDO::FETCH_BOTH:
-                $cursor = $this->getVTCursorStubFetchBoth();
-                break;
-
-            case CorePDO::FETCH_ASSOC:
-                $cursor = $this->getVTCursorStubFetchAssoc();
-                break;
-
-            case CorePDO::FETCH_NUM:
-                $cursor = $this->getVTCursorStubFetchNum();
-                break;
-        }
-
-        if ($cursor) {
+        if ($fetchMode) {
             $stub->expects(self::any())->method('executeRead')
-                ->willReturn($cursor);
+                ->willReturn($this->getVTCursorStubFetchBoth());
         }
 
         return $stub;
@@ -273,56 +271,6 @@ class PDOStatementTest extends \PHPUnit_Framework_TestCase
                     'user_id' => '2',
                     1         => 'user_2',
                     'name'    => 'user_2'
-                ],
-                false
-            ));
-
-        return $stub;
-    }
-
-    /**
-     * @return VTCursor
-     */
-    private function getVTCursorStubFetchAssoc()
-    {
-        $stub = $this->getMockBuilder(VTCursor::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $stub->expects(self::exactly(3))->method('next')
-            ->will(self::onConsecutiveCalls(
-                [
-                    'user_id' => '1',
-                    'name'    => 'user_1'
-                ],
-                [
-                    'user_id' => '2',
-                    'name'    => 'user_2'
-                ],
-                false
-            ));
-
-        return $stub;
-    }
-
-    /**
-     * @return VTCursor
-     */
-    private function getVTCursorStubFetchNum()
-    {
-        $stub = $this->getMockBuilder(VTCursor::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $stub->expects(self::exactly(3))->method('next')
-            ->will(self::onConsecutiveCalls(
-                [
-                    0         => '1',
-                    1         => 'user_1',
-                ],
-                [
-                    0         => '2',
-                    1         => 'user_2',
                 ],
                 false
             ));
