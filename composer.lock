@@ -403,7 +403,7 @@
             "source": {
                 "type": "git",
                 "url": "git@git.pixelfederation.com:shared/Vitess.Client.PHP.git",
-                "reference": "954f6d2bb4ba7eb1f86d6ee02ba1f4d1f5b76cf7"
+                "reference": "8090b2b7a7c9bcaafacbb1cee81af49ab1173667"
             },
             "require": {
                 "datto/protobuf-php": "dev-master",
@@ -420,7 +420,7 @@
             },
             "description": "PHP client for Vitess (a copy from the original Vitess repository (https://github.com/youtube/vitess)",
             "homepage": "https://github.com/youtube/vitess",
-            "time": "2016-01-14 16:29:35"
+            "time": "2016-01-14 18:04:53"
         }
     ],
     "packages-dev": [
