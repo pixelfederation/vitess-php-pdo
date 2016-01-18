@@ -403,7 +403,7 @@
             "source": {
                 "type": "git",
                 "url": "git@git.pixelfederation.com:shared/Vitess.Client.PHP.git",
-                "reference": "8090b2b7a7c9bcaafacbb1cee81af49ab1173667"
+                "reference": "22b58e21f317e31fee5d785e5c69247ccb7d7b23"
             },
             "require": {
                 "datto/protobuf-php": "dev-master",
@@ -420,7 +420,7 @@
             },
             "description": "PHP client for Vitess (a copy from the original Vitess repository (https://github.com/youtube/vitess)",
             "homepage": "https://github.com/youtube/vitess",
-            "time": "2016-01-14 18:04:53"
+            "time": "2016-01-18 12:28:44"
         }
     ],
     "packages-dev": [
@@ -1526,12 +1526,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/squizlabs/PHP_CodeSniffer.git",
-                "reference": "8e126925fd3e5d896ec574567af49150fc7e46b1"
+                "reference": "7271b28e04ebc1fbec31b31f6ae22ad478425156"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/8e126925fd3e5d896ec574567af49150fc7e46b1",
-                "reference": "8e126925fd3e5d896ec574567af49150fc7e46b1",
+                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/7271b28e04ebc1fbec31b31f6ae22ad478425156",
+                "reference": "7271b28e04ebc1fbec31b31f6ae22ad478425156",
                 "shasum": ""
             },
             "require": {
@@ -1595,7 +1595,7 @@
                 "phpcs",
                 "standards"
             ],
-            "time": "2016-01-13 23:15:29"
+            "time": "2016-01-18 05:26:11"
         },
         {
             "name": "symfony/config",
