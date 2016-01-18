@@ -124,6 +124,14 @@ class Cursor
     }
 
     /**
+     * @return int
+     */
+    public function getAffectedRows()
+    {
+        return $this->vitessCursor->getRowsAffected();
+    }
+
+    /**
      * @return bool
      */
     private function isInitialized()

@@ -21,6 +21,7 @@ use PDO as CorePDO;
  * Class PDOStatementTest
  *
  * @package VitessPdoTest\PDO
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
  */
 class PDOStatementTest extends \PHPUnit_Framework_TestCase
 {
@@ -235,6 +236,40 @@ class PDOStatementTest extends \PHPUnit_Framework_TestCase
         self::assertEquals('1', $userId);
     }
 
+    public function testExecuteInsert()
+    {
+        $vitess = $this->getMockBuilder(Vitess::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $cursor = $this->getMockBuilder(VTCursor::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $cursor->expects(self::exactly(3))->method('getRowsAffected')
+            ->willReturn(1);
+
+        $vitess->expects(self::exactly(3))->method('executeWrite')
+            ->willReturn($cursor);
+
+        $stmt = new PDOStatement(
+            "INSERT INTO user (`name`) VALUES (:name)",
+            $vitess,
+            new Attributes(),
+            new ParamProcessor(),
+            new QueryAnalyzer()
+        );
+
+        for ($i = 0; $i < 3; $i++) {
+            $result = $stmt->execute([
+                'name' => 'test___' . $i
+            ]);
+
+            self::assertTrue($result);
+            self::assertEquals(1, $stmt->rowCount());
+        }
+    }
+
     /**
      * @param int $fetchMode
      *
@@ -247,7 +282,8 @@ class PDOStatementTest extends \PHPUnit_Framework_TestCase
             "SELECT user_id, name FROM user",
             $this->getVitessStub($fetchMode),
             new Attributes(),
-            new ParamProcessor()
+            new ParamProcessor(),
+            new QueryAnalyzer()
         );
     }
 

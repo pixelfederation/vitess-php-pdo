@@ -104,12 +104,25 @@ class PDOTest extends \PHPUnit_Framework_TestCase
 //        }
 //    }
 
-    public function testExecFunctionInsert()
+    public function testExecFunctionInsertAndStmtDeleteReused()
     {
         $pdo = new PDO($this->dsn);
-        $rows = $pdo->exec("INSERT INTO user (name) VALUES ('test_user')");
+        $insertIds = [];
 
-        self::assertEquals(1, $rows);
+        for ($i = 0; $i < 3; $i++) {
+            $rows = $pdo->exec("INSERT INTO user (name) VALUES ('test_user')");
+            $insertIds[] = $pdo->lastInsertId();
+
+            self::assertEquals(1, $rows);
+        }
+
+        $stmt = $pdo->prepare("DELETE FROM user WHERE user_id = :id");
+
+        foreach ($insertIds as $id) {
+            $result = $stmt->execute(['id' => $id]);
+            self::assertTrue($result);
+            self::assertEquals(1, $stmt->rowCount());
+        }
     }
 
     public function testTransactions()

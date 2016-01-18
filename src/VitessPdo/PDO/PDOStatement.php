@@ -49,6 +49,11 @@ class PDOStatement
     private $paramProcessor;
 
     /**
+     * @var QueryAnalyzer
+     */
+    private $queryAnalyzer;
+
+    /**
      * @var Cursor
      */
     private $cursor;
@@ -60,17 +65,20 @@ class PDOStatement
      * @param Vitess $vitess
      * @param Attributes $attributes
      * @param ParamProcessor $paramProcessor
+     * @param QueryAnalyzer $queryAnalyzer
      */
     public function __construct(
         $query,
         Vitess $vitess,
         Attributes $attributes,
-        ParamProcessor $paramProcessor
+        ParamProcessor $paramProcessor,
+        QueryAnalyzer $queryAnalyzer
     ) {
         $this->query  = $query;
         $this->vitess = $vitess;
         $this->attributes = $attributes;
         $this->paramProcessor = $paramProcessor;
+        $this->queryAnalyzer = $queryAnalyzer;
     }
 
     /**
@@ -101,18 +109,24 @@ class PDOStatement
     {
         $this->reset();
 
-        try {
-            if ($inputParameters) {
-                if (array_key_exists(0, $inputParameters)) {
-                    $inputParameters = $this->repairUnnamedParamsArray($inputParameters);
-                }
-
-                foreach ($inputParameters as $key => $value) {
-                    $this->bindValue($key, $value); // default type is string
-                }
+        if ($inputParameters) {
+            if (array_key_exists(0, $inputParameters)) {
+                $inputParameters = $this->repairUnnamedParamsArray($inputParameters);
             }
 
-            $cursorOrFalse = $this->vitess->executeRead($this->query, $this->params);
+            foreach ($inputParameters as $key => $value) {
+                $this->bindValue($key, $value); // default type is string
+            }
+        }
+
+        $vitessMethod = 'executeRead';
+
+        if ($this->queryAnalyzer->isWritableQuery($this->query)) {
+            $vitessMethod = 'executeWrite';
+        }
+
+        try {
+            $cursorOrFalse = $this->vitess->{$vitessMethod}($this->query, $this->params);
 
             if (!$cursorOrFalse) {
                 return false;
@@ -355,6 +369,28 @@ class PDOStatement
         }
 
         return true;
+    }
+
+    /**
+     * Returns the number of rows affected by the last SQL statement
+     *
+     * PDOStatement::rowCount() returns the number of rows affected by the last DELETE, INSERT, or UPDATE statement
+     * executed by the corresponding PDOStatement object.
+     *
+     * If the last SQL statement executed by the associated PDOStatement was a SELECT statement, some databases
+     * may return the number of rows returned by that statement. However, this behaviour is not guaranteed for all
+     * databases and should not be relied on for portable applications.
+     *
+     * @return int - Returns the number of rows.
+     * @throws Exception
+     */
+    public function rowCount()
+    {
+        if (!$this->cursor) {
+            throw new Exception('Statement wasn\'t executed yet.');
+        }
+
+        return $this->cursor->getAffectedRows();
     }
 
     /**

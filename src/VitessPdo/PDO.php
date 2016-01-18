@@ -299,7 +299,13 @@ class PDO
      */
     public function prepare($statement, array $driverOptions = [])
     {
-        return new PDOStatement($statement, $this->vitess, $this->attributes, $this->paramProcessor);
+        return new PDOStatement(
+            $statement,
+            $this->vitess,
+            $this->attributes,
+            $this->paramProcessor,
+            $this->queryAnalyzer
+        );
     }
 
     /**
