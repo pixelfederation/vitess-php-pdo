@@ -9,6 +9,7 @@ namespace VitessPdoTest\PDO;
 
 use VitessPdo\PDO\Attributes;
 use VitessPdo\PDO\ParamProcessor;
+use VitessPdo\PDO\QueryAnalyzer;
 use VitessPdo\PDO\Vitess;
 use VitessPdo\PDO\PDOStatement;
 use VitessPdo\PDO\Exception as VitessPDOException;
@@ -122,6 +123,27 @@ class PDOStatementTest extends \PHPUnit_Framework_TestCase
     /**
      *
      */
+    public function testExecuteFetchAllFetchKeyPairs()
+    {
+        $stmt = $this->getNewStatement(CorePDO::FETCH_BOTH);
+        $result = $stmt->execute();
+
+        self::assertTrue($result);
+
+        $users = $stmt->fetchAll(CorePDO::FETCH_KEY_PAIR);
+        self::assertInternalType('array', $users);
+        self::assertNotEmpty($users);
+        self::assertCount(2, $users);
+
+        foreach ($users as $userId => $name) {
+            self::assertTrue((int) $userId > 0);
+            self::assertInternalType('string', $name);
+        }
+    }
+
+    /**
+     *
+     */
     public function testFetch()
     {
         $stmt = $this->getNewStatement(CorePDO::FETCH_BOTH);
@@ -222,10 +244,11 @@ class PDOStatementTest extends \PHPUnit_Framework_TestCase
     private function getNewStatement($fetchMode = null)
     {
         return new PDOStatement(
-            "SELECT * FROM user",
+            "SELECT user_id, name FROM user",
             $this->getVitessStub($fetchMode),
             new Attributes(),
-            new ParamProcessor()
+            new ParamProcessor(),
+            new QueryAnalyzer()
         );
     }
 

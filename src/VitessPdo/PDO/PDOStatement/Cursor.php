@@ -91,6 +91,21 @@ class Cursor
     }
 
     /**
+     * @param string $key
+     * @param string $valueKey
+     *
+     * @return array
+     */
+    public function fetchAllKeyPairs($key, $valueKey)
+    {
+        if (!$this->isInitialized()) {
+            $this->initialize();
+        }
+
+        return $this->data->getKeyPairedRows($key, $valueKey);
+    }
+
+    /**
      * @param int $fetchStyle
      *
      * @return bool

@@ -84,6 +84,21 @@ class QueryAnalyzer
     }
 
     /**
+     * @param $sql
+     *
+     * @return array
+     */
+    public function getFieldsFromQuery($sql)
+    {
+        $sql = $this->normalizeQuery($sql);
+        preg_match('/select (.*) from/', $sql, $matches);
+
+        return array_map(function ($field) {
+            return trim($field, " `");
+        }, explode(',', $matches[1]));
+    }
+
+    /**
      * @param string $sql
      *
      * @return string

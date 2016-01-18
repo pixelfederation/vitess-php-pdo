@@ -454,6 +454,25 @@ class PDOTest extends \PHPUnit_Framework_TestCase
         self::assertEquals(2, $count);
     }
 
+    public function testPrepareWithEmptyResult()
+    {
+        $pdo = new PDO($this->dsn);
+        $stmt = $pdo->prepare("SELECT * FROM user WHERE name = :name");
+
+        self::assertInstanceOf(PDOStatement::class, $stmt);
+
+        $result = $stmt->execute(['name' => 'non_existent_user']);
+        self::assertTrue($result);
+
+        $users = $stmt->fetchAll();
+        self::assertInternalType('array', $users);
+        self::assertEmpty($users);
+
+        $users = $stmt->fetchAll(CorePDO::FETCH_ASSOC);
+        self::assertInternalType('array', $users);
+        self::assertEmpty($users);
+    }
+
     public function testSetAttributeNotImplemented()
     {
         $this->expectException(VitessPDOException::class);
