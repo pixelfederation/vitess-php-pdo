@@ -49,11 +49,6 @@ class PDOStatement
     private $paramProcessor;
 
     /**
-     * @var QueryAnalyzer
-     */
-    private $queryAnalyzer;
-
-    /**
      * @var Cursor
      */
     private $cursor;
@@ -65,20 +60,17 @@ class PDOStatement
      * @param Vitess $vitess
      * @param Attributes $attributes
      * @param ParamProcessor $paramProcessor
-     * @param QueryAnalyzer $queryAnalyzer
      */
     public function __construct(
         $query,
         Vitess $vitess,
         Attributes $attributes,
-        ParamProcessor $paramProcessor,
-        QueryAnalyzer $queryAnalyzer
+        ParamProcessor $paramProcessor
     ) {
         $this->query  = $query;
         $this->vitess = $vitess;
         $this->attributes = $attributes;
         $this->paramProcessor = $paramProcessor;
-        $this->queryAnalyzer = $queryAnalyzer;
     }
 
     /**
@@ -191,9 +183,7 @@ class PDOStatement
         }
 
         if ($fetchStyle === CorePDO::FETCH_KEY_PAIR) {
-            list($key, $valueKey) = $this->queryAnalyzer->getFieldsFromQuery($this->query);
-
-            return $this->cursor->fetchAllKeyPairs($key, $valueKey);
+            return $this->cursor->fetchAllKeyPairs();
         }
 
         return $this->cursor->fetchAll($fetchStyle, $fetchArgument);

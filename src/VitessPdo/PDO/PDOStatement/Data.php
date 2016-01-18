@@ -69,19 +69,15 @@ class Data
     }
 
     /**
-     *
-     * @param string $key
-     * @param string $valueKey
-     *
      * @return array
      */
-    public function getKeyPairedRows($key, $valueKey)
+    public function getKeyPairedRows()
     {
         $rows = $this->getRowsForFetchStyle(CorePDO::FETCH_BOTH);
         $pairedRows = [];
 
         foreach ($rows as $row) {
-            $pairedRows[$row[$key]] = $row[$valueKey];
+            $pairedRows[$row[0]] = $row[1];
         }
 
         return $pairedRows;

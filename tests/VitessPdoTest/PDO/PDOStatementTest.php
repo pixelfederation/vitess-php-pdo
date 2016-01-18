@@ -247,8 +247,7 @@ class PDOStatementTest extends \PHPUnit_Framework_TestCase
             "SELECT user_id, name FROM user",
             $this->getVitessStub($fetchMode),
             new Attributes(),
-            new ParamProcessor(),
-            new QueryAnalyzer()
+            new ParamProcessor()
         );
     }
 
