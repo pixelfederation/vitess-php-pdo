@@ -36,6 +36,7 @@ class ParamProcessor
         CorePDO::PARAM_INT => 'integer',
         CorePDO::PARAM_NULL => 'null',
         CorePDO::PARAM_STR => 'string',
+        CorePDO::PARAM_LOB => 'string',
     ];
 
     /**
