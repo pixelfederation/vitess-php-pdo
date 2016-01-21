@@ -16,7 +16,7 @@
   "require": {
     "php": ">=5.5.0",
     "vitess/php-client": "dev-master",
-    "grpc/grpc": "dev-master#8a8a8760eb243fe758452a2e2bed6e2821b992f1"
+    "grpc/grpc": "dev-release-0_12"
   },
 
   "require-dev": {

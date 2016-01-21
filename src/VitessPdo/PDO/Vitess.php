@@ -65,7 +65,8 @@ class Vitess
 
         try {
             $this->ctx        = VTContext::getDefault();
-            $this->grpcClient = new VTGrpcClient($connectionString);
+            $credentials      = \Grpc\ChannelCredentials::createInsecure();
+            $this->grpcClient = new VTGrpcClient($connectionString, ['credentials' => $credentials]);
             $this->connection = new VTGateConn($this->grpcClient);
         } catch (Exception $e) {
             throw new PDOException("Error while connecting to vitess: " . $e->getMessage(), $e->getCode(), $e);
