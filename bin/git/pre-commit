@@ -3,7 +3,7 @@ PATH="/usr/local/bin:$PATH"
 
 PROJECT=$(git rev-parse --show-toplevel)
 
-STAGED_FILES_CMD=`git diff --cached --name-only --diff-filter=ACMR HEAD | grep \\\\.php$`
+STAGED_FILES_CMD=`git diff --cached --name-only --diff-filter=ACMR HEAD | grep \.php$`
 
 # Determine if a file list is passed
 if [ "$#" -eq 1 ]

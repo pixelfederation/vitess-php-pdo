@@ -8,7 +8,7 @@
 namespace VitessPdo\PDO\PDOStatement;
 
 use VitessPdo\PDO\Exception;
-use VTCursor;
+use Vitess\Cursor as VitessCursor;
 use PDO as CorePDO;
 
 /**
@@ -21,7 +21,7 @@ class Cursor
 {
 
     /**
-     * @var VTCursor
+     * @var VitessCursor
      */
     private $vitessCursor;
 
@@ -57,9 +57,9 @@ class Cursor
     /**
      * Cursor constructor.
      *
-     * @param VTCursor $vitessCursor
+     * @param VitessCursor $vitessCursor
      */
-    public function __construct(VTCursor $vitessCursor)
+    public function __construct(VitessCursor $vitessCursor)
     {
         $this->vitessCursor = $vitessCursor;
     }

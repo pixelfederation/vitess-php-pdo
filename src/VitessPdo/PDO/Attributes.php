@@ -86,28 +86,40 @@ class Attributes
 
     /**
      * @return bool
-     * @throws Exception
      */
     public function isErrorModeSilent()
     {
-        return $this->get(CorePDO::ATTR_ERRMODE) === CorePDO::ERRMODE_SILENT;
+        try {
+            return $this->get(CorePDO::ATTR_ERRMODE) === CorePDO::ERRMODE_SILENT;
+        } catch (Exception $e) {
+        }
+
+        return false;
     }
 
     /**
      * @return bool
-     * @throws Exception
      */
     public function isErrorModeWarning()
     {
-        return $this->get(CorePDO::ATTR_ERRMODE) === CorePDO::ERRMODE_WARNING;
+        try {
+            return $this->get(CorePDO::ATTR_ERRMODE) === CorePDO::ERRMODE_WARNING;
+        } catch (Exception $e) {
+        }
+
+        return false;
     }
 
     /**
      * @return bool
-     * @throws Exception
      */
     public function isErrorModeException()
     {
-        return $this->get(CorePDO::ATTR_ERRMODE) === CorePDO::ERRMODE_EXCEPTION;
+        try {
+            return $this->get(CorePDO::ATTR_ERRMODE) === CorePDO::ERRMODE_EXCEPTION;
+        } catch (Exception $e) {
+        }
+
+        return false;
     }
 }

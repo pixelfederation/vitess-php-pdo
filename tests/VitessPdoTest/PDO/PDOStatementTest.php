@@ -13,7 +13,7 @@ use VitessPdo\PDO\QueryAnalyzer;
 use VitessPdo\PDO\Vitess;
 use VitessPdo\PDO\PDOStatement;
 use VitessPdo\PDO\Exception as VitessPDOException;
-use VTCursor;
+use Vitess\Cursor;
 use Exception;
 use PDO as CorePDO;
 
@@ -242,7 +242,7 @@ class PDOStatementTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $cursor = $this->getMockBuilder(VTCursor::class)
+        $cursor = $this->getMockBuilder(Cursor::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -302,17 +302,24 @@ class PDOStatementTest extends \PHPUnit_Framework_TestCase
         if ($fetchMode) {
             $stub->expects(self::any())->method('executeRead')
                 ->willReturn($this->getVTCursorStubFetchBoth());
+
+            $writeCursor = $this->getMockBuilder(Cursor::class)
+                ->disableOriginalConstructor()
+                ->getMock();
+
+            $stub->expects(self::any())->method('executeWrite')
+                ->willReturn($writeCursor);
         }
 
         return $stub;
     }
 
     /**
-     * @return VTCursor
+     * @return Cursor
      */
     private function getVTCursorStubFetchBoth()
     {
-        $stub = $this->getMockBuilder(VTCursor::class)
+        $stub = $this->getMockBuilder(Cursor::class)
             ->disableOriginalConstructor()
             ->getMock();
 

@@ -7,13 +7,14 @@
 
 namespace VitessPdo\PDO;
 
-use VTContext;
-use VTGateConn;
-use VTGrpcClient;
-use VTGateTx;
-use VTCursor;
-use VTException;
-use topodata\TabletType;
+use Vitess\Context;
+use Vitess\VTGateConn;
+use Vitess\Grpc\Client;
+use Vitess\VTGateTx;
+use Vitess\Cursor;
+use Vitess\Exception as VitessException;
+use Vitess\Proto\Topodata\TabletType;
+use Grpc\ChannelCredentials;
 use PDOException;
 
 /**
@@ -27,12 +28,12 @@ class Vitess
 {
 
     /**
-     * @var VTContext
+     * @var Context
      */
     private $ctx;
 
     /**
-     * @var VTGrpcClient
+     * @var Client
      */
     private $grpcClient;
 
@@ -64,9 +65,9 @@ class Vitess
         $this->attributes = $attributes;
 
         try {
-            $this->ctx        = VTContext::getDefault();
-            $credentials      = \Grpc\ChannelCredentials::createInsecure();
-            $this->grpcClient = new VTGrpcClient($connectionString, ['credentials' => $credentials]);
+            $this->ctx        = Context::getDefault();
+            $credentials      = ChannelCredentials::createInsecure();
+            $this->grpcClient = new Client($connectionString, ['credentials' => $credentials]);
             $this->connection = new VTGateConn($this->grpcClient);
         } catch (Exception $e) {
             throw new PDOException("Error while connecting to vitess: " . $e->getMessage(), $e->getCode(), $e);
@@ -106,7 +107,7 @@ class Vitess
 
         try {
             $this->transaction->commit($this->ctx);
-        } catch (VTException $e) {
+        } catch (VitessException $e) {
             $this->handleException($e);
 
             return false;
@@ -130,7 +131,7 @@ class Vitess
         try {
             $transaction = $this->getTransaction();
             $transaction->rollback($this->ctx);
-        } catch (VTException $e) {
+        } catch (VitessException $e) {
             $this->handleException($e);
 
             return false;
@@ -145,7 +146,7 @@ class Vitess
      * @param $sql
      * @param array $params
      *
-     * @return VTCursor
+     * @return Cursor
      * @throws PDOException
      */
     public function executeWrite($sql, array $params = [])
@@ -157,7 +158,7 @@ class Vitess
 
         try {
             $cursor = $transaction->execute($this->ctx, $sql, $params, TabletType::MASTER);
-        } catch (VTException $e) {
+        } catch (VitessException $e) {
             $this->handleException($e);
         }
 
@@ -171,7 +172,7 @@ class Vitess
     /**
      * @param string $sql
      * @param array $params
-     * @return VTCursor|false
+     * @return Cursor|false
      * @throws PDOException
      */
     public function executeRead($sql, array $params = [])
@@ -180,7 +181,7 @@ class Vitess
 
         try {
             $cursor = $this->connection->execute($this->ctx, $sql, $params, TabletType::REPLICA);
-        } catch (VTException $e) {
+        } catch (VitessException $e) {
             $this->handleException($e);
 
             return false;
@@ -210,11 +211,11 @@ class Vitess
     }
 
     /**
-     * @param VTException $exception
+     * @param VitessException $exception
      *
      * @throws PDOException
      */
-    private function handleException(VTException $exception)
+    private function handleException(VitessException $exception)
     {
         switch (true) {
             case $this->attributes->isErrorModeWarning():
