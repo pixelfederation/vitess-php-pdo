@@ -5,17 +5,13 @@
   "repositories": [
     {
       "type": "git",
-      "url": "https://github.com/Rastusik/vitess.git"
-    },
-    {
-      "type": "git",
       "url": "https://github.com/stanley-cheung/Protobuf-PHP.git"
     }
   ],
   "minimum-stability": "dev",
   "require": {
     "php": ">=5.5.0",
-    "vitess/php-client": "dev-php_assoc_results",
+    "vitess/php-client": "dev-master",
     "grpc/grpc": "dev-release-0_12"
   },
 

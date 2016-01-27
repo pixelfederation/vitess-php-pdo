@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "9722a42699c6966a4709a9f5d32db228",
-    "content-hash": "e8f324efaa4cef493216847927f185a1",
+    "hash": "e4e7e677847446c376d66f064875bb39",
+    "content-hash": "1906cdc10ac34ffff58291a2d6ff9305",
     "packages": [
         {
             "name": "datto/protobuf-php",
@@ -399,11 +399,17 @@
         },
         {
             "name": "vitess/php-client",
-            "version": "dev-php_assoc_results",
+            "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/Rastusik/vitess.git",
-                "reference": "a9b1e6c2fe04af141c8243e8367e9636dacdf46b"
+                "url": "https://github.com/youtube/vitess.git",
+                "reference": "460b632f05bc4c824471e0d9635e611cad788bbf"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/youtube/vitess/zipball/460b632f05bc4c824471e0d9635e611cad788bbf",
+                "reference": "460b632f05bc4c824471e0d9635e611cad788bbf",
+                "shasum": ""
             },
             "require": {
                 "datto/protobuf-php": "dev-master",
@@ -417,8 +423,9 @@
                     "Vitess\\": "php/src/Vitess/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "description": "PHP client for Vitess",
-            "time": "2016-01-26 15:48:24"
+            "time": "2016-01-26 22:08:15"
         }
     ],
     "packages-dev": [
@@ -1524,12 +1531,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/squizlabs/PHP_CodeSniffer.git",
-                "reference": "28c2bb708134b8f257f9f05071a5f3e983e01d57"
+                "reference": "aa3447eedc883eba1f80cd177db05783a1289ac4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/28c2bb708134b8f257f9f05071a5f3e983e01d57",
-                "reference": "28c2bb708134b8f257f9f05071a5f3e983e01d57",
+                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/aa3447eedc883eba1f80cd177db05783a1289ac4",
+                "reference": "aa3447eedc883eba1f80cd177db05783a1289ac4",
                 "shasum": ""
             },
             "require": {
@@ -1593,7 +1600,7 @@
                 "phpcs",
                 "standards"
             ],
-            "time": "2016-01-21 04:49:41"
+            "time": "2016-01-27 08:41:13"
         },
         {
             "name": "symfony/config",
