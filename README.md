@@ -29,7 +29,7 @@ $pdo = new \VitessPdo\PDO("vitess:dbname={$keyspace};host={$host};port={$port}")
 - $host: IP or hostname of Vtgate
 - $port: Vtgate port
 
-# Contribution
+## Contribution
 
 If you'd like to contribtue, we strongly recommend to run
 
