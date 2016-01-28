@@ -1,5 +1,5 @@
 {
-  "name": "vitess/php-pdo-driver",
+  "name": "pixelfederation/vitess-php-pdo",
   "description": "PHP PDO compliant driver for Vitess PHP client.",
   "homepage": "https://git.pixelfederation.com/shared/Vitess.Driver.PHP",
   "repositories": [
