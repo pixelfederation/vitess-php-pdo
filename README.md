@@ -40,3 +40,11 @@ If you'd like to contribtue, we strongly recommend to run
 from the project directory. This script will set up a commit hook, which checks the PSR/2 coding standards
 using [PHPCS](https://github.com/squizlabs/PHP_CodeSniffer) and also runs PHP linter and 
 PHP Mess Detector [PHPMD](http://phpmd.org/)
+
+## Known issues
+
+On OS X there is a problem with the current GRPC version (0.12) and PHP GRPC extension (0.7). The GRPC communication
+is [slow for an unknown reason](https://github.com/grpc/grpc/issues/4806). GRPC 0.11 and PHP GRPC 0.61 worked fine.
+Linux is unaffected.
+
+Also, there is no PHP 7 GRPC extension yet.
