@@ -15,7 +15,6 @@ then
     IFS=$oIFS
 fi
 SFILES=${SFILES:-$STAGED_FILES_CMD}
-SJSFILES=${SJSFILES:-$STAGED_JSFILES_CMD}
 
 if [ -n "$STATIC_ANALYSIS_IGNORE_ERRORS" ]
 then
@@ -67,22 +66,5 @@ do
 
     fi
 done
-
-#echo "Checking JavaScript..."
-
-#for FILE in $SJSFILES
-#do
-#    jshint --config=bin/static_analysis/.jshintrc $FILE
-#    if [ $? != 0 ]
-#    then
-#        if [ -n "$STATIC_ANALYSIS_IGNORE_ERRORS" ]
-#        then
-#            echo "JSHint found some errors."
-#        else
-#            echo "Fix the JSHint errors before commit."
-#            exit 1
-#        fi
-#    fi
-#done
 
 exit $?
