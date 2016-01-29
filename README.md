@@ -19,6 +19,12 @@ The [Vitess PHP client](https://github.com/youtube/vitess/tree/master/php), whic
 has a dependency on the [PHP GRPC extension](https://github.com/grpc/grpc/tree/master/src/php), which has to be 
 installed together with [GRPC](http://www.grpc.io/) and [Protobuf](https://developers.google.com/protocol-buffers/?hl=en).
 
+To install the composer package, run the following command:
+
+```bash
+composer require pixelfederation/vitess-php-pdo
+```
+
 After the installation of the dependencies, the PDO class should be instantiated this way:
 
 ```php
