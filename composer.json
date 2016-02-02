@@ -2,7 +2,7 @@
   "name": "pixelfederation/vitess-php-pdo",
   "description": "PHP PDO compliant driver for Vitess PHP client.",
   "homepage": "https://git.pixelfederation.com/shared/Vitess.Driver.PHP",
-  "license": "MIT",
+  "license": "BSD-3-Clause",
   "repositories": [
     {
       "type": "git",
