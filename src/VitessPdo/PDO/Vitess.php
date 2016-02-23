@@ -222,7 +222,11 @@ class Vitess
                 break;
 
             case $this->attributes->isErrorModeException():
-                throw new PDOException("Vitess exception - check previous exception stack.", 0, $exception);
+                throw new PDOException(
+                    "Vitess exception (check previous exception stack): " . $exception->getMessage(),
+                    0,
+                    $exception
+                );
                 break;
         }
     }
