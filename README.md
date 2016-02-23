@@ -49,8 +49,9 @@ PHP Mess Detector [PHPMD](http://phpmd.org/)
 
 ## Known issues
 
-On OS X there is a problem with the current GRPC version (0.12) and PHP GRPC extension (0.7). The GRPC communication
-is [slow for an unknown reason](https://github.com/grpc/grpc/issues/4806). GRPC 0.11 and PHP GRPC 0.61 worked fine.
+On OS X there is "sometimes" a problem with the current GRPC version (0.12) and PHP GRPC extension (0.7)
+(both of the versions are mandatory for the PDO driver and Vitess), meaning
+that the GRPC requests to Vitess are a little bit slower [for an unknown reason](https://github.com/grpc/grpc/issues/4806). 
 Linux is unaffected.
 
 Also, there is no PHP 7 GRPC extension yet.
