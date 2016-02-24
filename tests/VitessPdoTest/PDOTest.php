@@ -143,6 +143,30 @@ class PDOTest extends \PHPUnit_Framework_TestCase
         self::assertEquals(false, $pdo->inTransaction());
     }
 
+    public function testReadWhileInTransactions()
+    {
+        $pdo = new PDO($this->dsn);
+
+        self::assertEquals(false, $pdo->inTransaction());
+
+        $commitResult = $pdo->commit();
+        self::assertFalse($commitResult);
+
+        $pdo->beginTransaction();
+        self::assertEquals(true, $pdo->inTransaction());
+        $rows = $pdo->exec("INSERT INTO user (name) VALUES ('test_user')");
+        $lastId = $pdo->lastInsertId();
+        self::assertEquals(1, $rows);
+        self::assertEquals(true, $pdo->inTransaction());
+        $stmt = $pdo->prepare("SELECT * FROM user WHERE user_id = {$lastId}");
+        $stmt->execute();
+        $user = $stmt->fetch();
+        self::assertEquals((string) $lastId, $user['user_id']);
+        $commitResult = $pdo->commit();
+        self::assertTrue($commitResult);
+        self::assertEquals(false, $pdo->inTransaction());
+    }
+
     public function testTransactionRollbackException()
     {
         $pdo = new PDO($this->dsn);

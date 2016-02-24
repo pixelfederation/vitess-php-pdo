@@ -179,7 +179,15 @@ class Vitess
         $cursor = null;
 
         try {
-            $cursor = $this->connection->execute($this->ctx, $sql, $params, TabletType::REPLICA);
+            $reader = $this->connection;
+            $tabletType = TabletType::REPLICA;
+
+            if ($this->isInTransaction()) {
+                $reader = $this->getTransaction();
+                $tabletType = TabletType::MASTER;
+            }
+
+            $cursor = $reader->execute($this->ctx, $sql, $params, $tabletType);
         } catch (VitessException $e) {
             $this->handleException($e);
 
