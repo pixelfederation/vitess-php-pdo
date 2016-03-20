@@ -20,16 +20,6 @@ class ParamProcessor
     /**
      * @var array
      */
-    private static $strReplaceFrom = ['\\', "\0", "\n", "\r", "'", "\x1a"];
-
-    /**
-     * @var array
-     */
-    private static $strReplaceTo = ['\\\\', '\\0', '\\n', '\\r', "''", '\\Z'];
-
-    /**
-     * @var array
-     */
     private static $typeHandlers = [
         CorePDO::PARAM_BOOL => 'boolean',
         CorePDO::PARAM_INT => 'integer',
@@ -108,20 +98,6 @@ class ParamProcessor
      */
     private function string($value)
     {
-        return $this->escapeString((string) $value);
-    }
-
-    /**
-     * @param $value
-     *
-     * @return string
-     */
-    private function escapeString($value)
-    {
-        if (!empty($value) && is_string($value)) {
-            return str_replace(self::$strReplaceFrom, self::$strReplaceTo, $value);
-        }
-
-        return $value;
+        return (string) $value;
     }
 }
