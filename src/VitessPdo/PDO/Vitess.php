@@ -240,10 +240,17 @@ class Vitess
     }
 
     /**
+     * destructor - rollbacks the active transaction if php script ends prematurely
+     * and commit is forgotten to be called
      *
+     * also the connection is being closed here
      */
     public function __destruct()
     {
+        if ($this->isInTransaction()) {
+            $this->rollbackTransaction();
+        }
+
         $this->connection->close();
     }
 }
