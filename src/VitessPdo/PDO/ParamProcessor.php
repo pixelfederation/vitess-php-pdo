@@ -20,6 +20,16 @@ class ParamProcessor
     /**
      * @var array
      */
+    private static $strReplaceFrom = ['\\', "\0", "\n", "\r", "'", "\x1a"];
+
+    /**
+     * @var array
+     */
+    private static $strReplaceTo = ['\\\\', '\\0', '\\n', '\\r', "''", '\\Z'];
+
+    /**
+     * @var array
+     */
     private static $typeHandlers = [
         CorePDO::PARAM_BOOL => 'boolean',
         CorePDO::PARAM_INT => 'integer',
@@ -30,15 +40,34 @@ class ParamProcessor
 
     /**
      * @param mixed $value
-     * @param int $type
+     * @param int   $type
      *
      * @return mixed
+     * @throws Exception
      */
     public function process($value, $type = CorePDO::PARAM_STR)
     {
         $handler = $this->getHandler($type);
 
-        return call_user_func([$this, $handler], $value);
+        return $this->{$handler}($value);
+    }
+
+    /**
+     * @param mixed $value
+     * @param int   $type
+     *
+     * @return mixed
+     * @throws Exception
+     */
+    public function processEscaped($value, $type = CorePDO::PARAM_STR)
+    {
+        if ($type !== CorePDO::PARAM_STR) {
+            return $this->process($value, $type);
+        }
+
+        $handler = $this->getHandler($type);
+
+        return $this->{$handler}($value, true);
     }
 
     /**
@@ -92,12 +121,19 @@ class ParamProcessor
 
     /**
      * @param mixed $value
+     * @param bool  $escape
      *
      * @return string
      * @SuppressWarnings(PHPMD.UnusedPrivateMethod)
      */
-    private function string($value)
+    private function string($value, $escape)
     {
-        return (string) $value;
+        $value = (string) $value;
+
+        if ($escape) {
+            $value = str_replace(self::$strReplaceFrom, self::$strReplaceTo, $value);
+        }
+
+        return $value;
     }
 }

@@ -430,7 +430,7 @@ class PDO
      */
     public function quote($string, $parameterType = CorePDO::PARAM_STR)
     {
-        return "'" . $this->paramProcessor->process($string, $parameterType) . "'";
+        return "'" . $this->paramProcessor->processEscaped($string, $parameterType) . "'";
     }
 
     /**
