@@ -65,9 +65,7 @@ class ParamProcessor
             return $this->process($value, $type);
         }
 
-        $handler = $this->getHandler($type);
-
-        return $this->{$handler}($value, true);
+        return $this->stringEscaped($value);
     }
 
     /**
@@ -121,18 +119,26 @@ class ParamProcessor
 
     /**
      * @param mixed $value
-     * @param bool  $escape
      *
      * @return string
      * @SuppressWarnings(PHPMD.UnusedPrivateMethod)
      */
-    private function string($value, $escape)
+    private function string($value)
     {
         $value = (string) $value;
 
-        if ($escape) {
-            $value = str_replace(self::$strReplaceFrom, self::$strReplaceTo, $value);
-        }
+        return $value;
+    }
+
+    /**
+     * @param mixed $value
+     *
+     * @return string
+     */
+    private function stringEscaped($value)
+    {
+        $value = $this->string($value);
+        $value = str_replace(self::$strReplaceFrom, self::$strReplaceTo, $value);
 
         return $value;
     }
