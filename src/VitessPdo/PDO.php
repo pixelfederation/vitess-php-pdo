@@ -84,9 +84,10 @@ class PDO
     {
         $host = $this->dsn->getConfig()->getHost();
         $port = $this->dsn->getConfig()->getPort();
+        $dbName = $this->dsn->getConfig()->getDbName();
         $connectionString = "{$host}:{$port}";
         $this->attributes = new Attributes();
-        $this->vitess = new Vitess($connectionString, $this->attributes);
+        $this->vitess = new Vitess($connectionString, $dbName, $this->attributes);
         $this->queryAnalyzer = new QueryAnalyzer();
         $this->paramProcessor = new ParamProcessor();
 
