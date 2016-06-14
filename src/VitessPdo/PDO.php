@@ -13,6 +13,7 @@ use VitessPdo\PDO\PDOStatement;
 use VitessPdo\PDO\QueryAnalyzer;
 use VitessPdo\PDO\Vitess;
 use PDO as CorePDO;
+use VitessPdo\PDO\Exception as PDOException;
 use Exception;
 
 /**
@@ -157,6 +158,7 @@ class PDO
      * @param array|null $ctorArgs
      *
      * @return PDOStatement|false    - PDO::query() returns a PDOStatement object, or FALSE on failure.
+     * @throws PDOException
      */
     public function query($statement, $fetchStyle = CorePdo::FETCH_BOTH, $fetchArgument = null, array $ctorArgs = [])
     {
@@ -166,7 +168,9 @@ class PDO
             $pdoStatement->execute();
             $pdoStatement->fetchAll($fetchStyle, $fetchArgument, $ctorArgs);
         } catch (Exception $e) {
-            return false;
+            if ($e instanceof PDOException && $this->attributes->isErrorModeException()) {
+                throw $e;
+            }
         }
 
         return $pdoStatement;
