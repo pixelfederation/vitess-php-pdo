@@ -26,7 +26,7 @@ class Attributes
      * @var array
      */
     private $attributes = [
-        CorePDO::ATTR_ERRMODE => CorePDO::ERRMODE_EXCEPTION,
+        CorePDO::ATTR_ERRMODE => CorePDO::ERRMODE_SILENT,
         CorePDO::ATTR_DEFAULT_FETCH_MODE => CorePDO::FETCH_BOTH,
         CorePDO::ATTR_DRIVER_NAME => self::DRIVER_NAME,
     ];

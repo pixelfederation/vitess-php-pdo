@@ -9,6 +9,7 @@ namespace VitessPdoTest;
 use VitessPdo\PDO;
 use VitessPdo\PDO\PDOStatement;
 use VitessPdo\PDO\Exception as VitessPDOException;
+use VitessPdoTest\Helper\VTComboRunner;
 use Exception;
 use PDOException;
 use PDO as CorePDO;
@@ -26,12 +27,45 @@ class PDOTest extends \PHPUnit_Framework_TestCase
     /**
      * @var string
      */
-    private $dsn = "vitess:dbname=test_keyspace;host=localhost;port=15991";
+    private $dsn = "vitess:dbname=" . VTComboRunner::KEYSPACE
+            . ";host=" . VTComboRunner::HOST . ";port=" . VTComboRunner::PORT;
 
     /**
      * @var array
      */
     private $errors;
+
+    /**
+     * @var VTComboRunner
+     */
+    private static $comboRunner;
+
+    /**
+     * @const int
+     */
+    const TEST_USER_ID1 = 4;
+
+    /**
+     * @const int
+     */
+    const TEST_USER_ID2 = 5;
+
+    /**
+     * @throws Exception
+     */
+    public static function setUpBeforeClass()
+    {
+        self::$comboRunner = new VTComboRunner();
+        self::$comboRunner->run();
+    }
+
+    /**
+     *
+     */
+    public static function tearDownAfterClass()
+    {
+        self::$comboRunner->stop();
+    }
 
     /**
      *
@@ -170,6 +204,7 @@ class PDOTest extends \PHPUnit_Framework_TestCase
     public function testTransactionRollbackException()
     {
         $pdo = new PDO($this->dsn);
+        $pdo->setAttribute(CorePDO::ATTR_ERRMODE, CorePDO::ERRMODE_EXCEPTION);
 
         $this->expectException(PDOException::class);
         $this->expectExceptionMessage("No transaction is active.");
@@ -231,7 +266,7 @@ class PDOTest extends \PHPUnit_Framework_TestCase
 
         self::assertInstanceOf(PDOStatement::class, $stmt);
 
-        $result = $stmt->execute([151, 152]);
+        $result = $stmt->execute([self::TEST_USER_ID1, self::TEST_USER_ID2]);
         self::assertTrue($result);
 
         $users = $stmt->fetchAll();
@@ -248,7 +283,7 @@ class PDOTest extends \PHPUnit_Framework_TestCase
 
         self::assertInstanceOf(PDOStatement::class, $stmt);
 
-        $result = $stmt->execute(['id1' => 151, 'id2' => 152]);
+        $result = $stmt->execute(['id1' => self::TEST_USER_ID1, 'id2' => self::TEST_USER_ID2]);
         self::assertTrue($result);
 
         $users = $stmt->fetchAll();
@@ -276,12 +311,13 @@ class PDOTest extends \PHPUnit_Framework_TestCase
     public function testPrepareWithMixedParams()
     {
         $pdo = new PDO($this->dsn);
+        $pdo->setAttribute(CorePDO::ATTR_ERRMODE, CorePDO::ERRMODE_EXCEPTION);
         $stmt = $pdo->prepare("SELECT * FROM user WHERE user_id IN (:id1, ?)");
 
         self::assertInstanceOf(PDOStatement::class, $stmt);
 
         $this->expectException(PDOException::class);
-        $stmt->execute(['id1' => 151, 152]);
+        $stmt->execute(['id1' => self::TEST_USER_ID1, self::TEST_USER_ID2]);
     }
 
     public function testPrepareWithUnnamedParamsBoundExtra()
@@ -290,8 +326,8 @@ class PDOTest extends \PHPUnit_Framework_TestCase
         $stmt = $pdo->prepare("SELECT * FROM user WHERE user_id IN (?, ?)");
 
         self::assertInstanceOf(PDOStatement::class, $stmt);
-        $stmt->bindValue(1, 151, CorePDO::PARAM_INT);
-        $stmt->bindValue(2, 152, CorePDO::PARAM_INT);
+        $stmt->bindValue(1, self::TEST_USER_ID1, CorePDO::PARAM_INT);
+        $stmt->bindValue(2, self::TEST_USER_ID2, CorePDO::PARAM_INT);
 
         $result = $stmt->execute();
         self::assertTrue($result);
@@ -309,8 +345,8 @@ class PDOTest extends \PHPUnit_Framework_TestCase
         $stmt = $pdo->prepare("SELECT * FROM user WHERE user_id IN (:id1, :id2)");
 
         self::assertInstanceOf(PDOStatement::class, $stmt);
-        $stmt->bindValue('id1', 151, CorePDO::PARAM_INT);
-        $stmt->bindValue('id2', 152, CorePDO::PARAM_INT);
+        $stmt->bindValue('id1', self::TEST_USER_ID1, CorePDO::PARAM_INT);
+        $stmt->bindValue('id2', self::TEST_USER_ID2, CorePDO::PARAM_INT);
 
         $result = $stmt->execute();
         self::assertTrue($result);
@@ -328,8 +364,8 @@ class PDOTest extends \PHPUnit_Framework_TestCase
         $stmt = $pdo->prepare("SELECT * FROM user WHERE user_id IN (?, ?)");
 
         self::assertInstanceOf(PDOStatement::class, $stmt);
-        $id1 = 151;
-        $id2 = 152;
+        $id1 = self::TEST_USER_ID1;
+        $id2 = self::TEST_USER_ID2;
         $stmt->bindParam(1, $id1, CorePDO::PARAM_INT);
         $stmt->bindParam(2, $id2, CorePDO::PARAM_INT);
 
@@ -349,8 +385,8 @@ class PDOTest extends \PHPUnit_Framework_TestCase
         $stmt = $pdo->prepare("SELECT * FROM user WHERE user_id IN (:id1, :id2)");
 
         self::assertInstanceOf(PDOStatement::class, $stmt);
-        $id1 = 151;
-        $id2 = 152;
+        $id1 = self::TEST_USER_ID1;
+        $id2 = self::TEST_USER_ID2;
         $stmt->bindParam('id1', $id1, CorePDO::PARAM_INT);
         $stmt->bindParam('id2', $id2, CorePDO::PARAM_INT);
 
@@ -379,8 +415,8 @@ class PDOTest extends \PHPUnit_Framework_TestCase
         $stmt = $pdo->prepare("SELECT * FROM user WHERE user_id IN (:id1, :id2)");
 
         self::assertInstanceOf(PDOStatement::class, $stmt);
-        $id1 = 151;
-        $id2 = 152;
+        $id1 = self::TEST_USER_ID1;
+        $id2 = self::TEST_USER_ID2;
         $stmt->bindParam('id1', $id1, CorePDO::PARAM_INT);
         $stmt->bindParam('id2', $id2, CorePDO::PARAM_INT);
 
@@ -411,8 +447,8 @@ class PDOTest extends \PHPUnit_Framework_TestCase
         $stmt = $pdo->prepare("SELECT * FROM user WHERE user_id IN (:id1, :id2)");
 
         self::assertInstanceOf(PDOStatement::class, $stmt);
-        $id1 = 151;
-        $id2 = 152;
+        $id1 = self::TEST_USER_ID1;
+        $id2 = self::TEST_USER_ID2;
         $stmt->bindParam('id1', $id1, CorePDO::PARAM_INT);
         $stmt->bindParam('id2', $id2, CorePDO::PARAM_INT);
 
@@ -443,8 +479,8 @@ class PDOTest extends \PHPUnit_Framework_TestCase
         $stmt = $pdo->prepare("SELECT * FROM user WHERE user_id IN (:id1, :id2)");
 
         self::assertInstanceOf(PDOStatement::class, $stmt);
-        $id1 = 151;
-        $id2 = 152;
+        $id1 = self::TEST_USER_ID1;
+        $id2 = self::TEST_USER_ID2;
         $stmt->bindParam('id1', $id1, CorePDO::PARAM_INT);
         $stmt->bindParam('id2', $id2, CorePDO::PARAM_INT);
 
@@ -469,8 +505,8 @@ class PDOTest extends \PHPUnit_Framework_TestCase
         $stmt = $pdo->prepare("SELECT * FROM user WHERE user_id IN (:id1, :id2)");
 
         self::assertInstanceOf(PDOStatement::class, $stmt);
-        $id1 = 151;
-        $id2 = 152;
+        $id1 = self::TEST_USER_ID1;
+        $id2 = self::TEST_USER_ID2;
         $stmt->bindParam('id1', $id1, CorePDO::PARAM_INT);
         $stmt->bindParam('id2', $id2, CorePDO::PARAM_INT);
 
@@ -565,7 +601,7 @@ class PDOTest extends \PHPUnit_Framework_TestCase
         $pdo = new PDO($this->dsn);
 
         $result = $pdo->getAttribute(CorePDO::ATTR_ERRMODE);
-        self::assertEquals(CorePDO::ERRMODE_EXCEPTION, $result);
+        self::assertEquals(CorePDO::ERRMODE_SILENT, $result);
 
         $result = $pdo->getAttribute(CorePDO::ATTR_ORACLE_NULLS);
         self::assertNull($result);
@@ -603,7 +639,31 @@ class PDOTest extends \PHPUnit_Framework_TestCase
         $users = $stmt->fetchAll();
         self::assertInternalType('array', $users);
         self::assertNotEmpty($users);
+    }
 
+    public function testQueryErrorSilent()
+    {
+        $pdo = new PDO($this->dsn);
+        $stmt = $pdo->query("SELECT * FROM non_existent_table");
+
+        self::assertFalse($stmt);
+    }
+
+    public function testQueryErrorWarning()
+    {
+        $pdo = new PDO($this->dsn);
+        $pdo->setAttribute(CorePDO::ATTR_ERRMODE, CorePDO::ERRMODE_WARNING);
+        $stmt = $pdo->query("SELECT * FROM non_existent_table");
+        $this->assertError(E_WARNING);
+
+        self::assertFalse($stmt);
+    }
+
+    public function testQueryErrorException()
+    {
+        $pdo = new PDO($this->dsn);
+        $pdo->setAttribute(CorePDO::ATTR_ERRMODE, CorePDO::ERRMODE_EXCEPTION);
+        $this->expectException(PDOException::class);
         $stmt = $pdo->query("SELECT * FROM non_existent_table");
 
         self::assertFalse($stmt);
