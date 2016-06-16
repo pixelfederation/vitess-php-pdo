@@ -54,14 +54,9 @@ class PDO
     private $attributes;
 
     /**
-     * @var string
+     * @var Vitess\Result
      */
-    private $lastInsertId = self::DEFAULT_LAST_INSERT_ID;
-
-    /**
-     * @const string
-     */
-    const DEFAULT_LAST_INSERT_ID = '0';
+    private $lastResult;
 
     /**
      * PDO constructor.
@@ -118,11 +113,13 @@ class PDO
      */
     public function exec($statement)
     {
-        $cursor = $this->vitess->executeWrite($statement);
+        $this->lastResult = $this->vitess->executeWrite($statement);
 
-        if ($this->queryAnalyzer->isInsertQuery($statement)) {
-            $this->lastInsertId = $cursor->getInsertId();
+        if (!$this->lastResult->isSuccess()) {
+            return false;
         }
+
+        $cursor = $this->lastResult->getCursor();
 
         return $cursor->getRowsAffected();
     }
@@ -220,9 +217,9 @@ class PDO
      */
     public function commit()
     {
-        $this->resetLastInsertId();
+        $this->lastResult = $this->vitess->commitTransaction();
 
-        return $this->vitess->commitTransaction();
+        return $this->lastResult->isSuccess();
     }
 
     /**
@@ -242,9 +239,9 @@ class PDO
      */
     public function rollback()
     {
-        $this->resetLastInsertId();
+        $this->lastResult = $this->vitess->rollbackTransaction();
 
-        return $this->vitess->rollbackTransaction();
+        return $this->lastResult->isSuccess();
     }
 
     /**
@@ -268,7 +265,11 @@ class PDO
      */
     public function lastInsertId($name = null)
     {
-        return $this->lastInsertId;
+        if (!$this->lastResult) {
+            return Vitess\Result::DEFAULT_LAST_INSERT_ID;
+        }
+
+        return $this->lastResult->getLastInsertId();
     }
 
     /**
@@ -442,18 +443,46 @@ class PDO
     }
 
     /**
-     * @return void
+     * PDO::errorInfo — Fetch extended error information associated with the last operation on the database handle
+     *
+     * PDO::errorInfo() only retrieves error information for operations performed directly on the database handle.
+     * If you create a PDOStatement object through PDO::prepare() or PDO::query() and invoke an error on the statement
+     * handle, PDO::errorInfo() will not reflect the error from the statement handle.
+     * You must call PDOStatement::errorInfo() to return the error information for an operation performed
+     * on a particular statement handle.
+     *
+     * @return array - returns an array of error information about the last operation performed by this database handle.
+     *                 The array consists of the following fields:
+     *
+     *                 Element      Information
+     *                 0            SQLSTATE error code (a five characters alphanumeric identifier defined
+     *                              in the ANSI SQL standard).
+     *                 1            Driver-specific error code.
+     *                 2            Driver-specific error message.
+     * Note:
+     * If the SQLSTATE error code is not set or there is no driver-specific error,
+     * the elements following element 0 will be set to NULL.
      */
-    public function __destruct()
+    public function errorInfo()
     {
-        unset($this->vitess);
+        if (!$this->lastResult) {
+            return false;
+        }
+
+        $error = $this->lastResult->getError();
+
+        if (!$error) {
+            return false;
+        }
+
+        return $error->getInfoAsArray();
     }
 
     /**
      * @return void
      */
-    private function resetLastInsertId()
+    public function __destruct()
     {
-        $this->lastInsertId = self::DEFAULT_LAST_INSERT_ID;
+        unset($this->vitess);
     }
 }

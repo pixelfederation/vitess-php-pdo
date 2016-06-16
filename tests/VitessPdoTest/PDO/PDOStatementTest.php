@@ -248,8 +248,12 @@ class PDOStatementTest extends \PHPUnit_Framework_TestCase
         $cursor->expects(self::exactly(3))->method('getRowsAffected')
             ->willReturn(1);
 
-        $vitess->expects(self::exactly(3))->method('executeWrite')
+        $result = $this->getResultStub();
+        $result->expects(self::any())->method('getCursor')
             ->willReturn($cursor);
+
+        $vitess->expects(self::exactly(3))->method('executeWrite')
+            ->willReturn($result);
 
         $stmt = new PDOStatement(
             "INSERT INTO user (`name`) VALUES (:name)",
@@ -300,29 +304,33 @@ class PDOStatementTest extends \PHPUnit_Framework_TestCase
 
         if ($fetchMode) {
             $stub->expects(self::any())->method('executeRead')
-                ->willReturn($this->getVTCursorStubFetchBoth());
+                ->willReturn($this->getResultStubFetchBoth());
 
             $writeCursor = $this->getMockBuilder(Cursor::class)
                 ->disableOriginalConstructor()
                 ->getMock();
 
-            $stub->expects(self::any())->method('executeWrite')
+            $result = $this->getResultStub();
+            $result->expects(self::any())->method('getCursor')
                 ->willReturn($writeCursor);
+
+            $stub->expects(self::any())->method('executeWrite')
+                ->willReturn($result);
         }
 
         return $stub;
     }
 
     /**
-     * @return Cursor
+     * @return \PHPUnit_Framework_MockObject_MockObject
      */
-    private function getVTCursorStubFetchBoth()
+    private function getResultStubFetchBoth()
     {
-        $stub = $this->getMockBuilder(Cursor::class)
+        $stubCursor = $this->getMockBuilder(Cursor::class)
             ->disableOriginalConstructor()
             ->getMock();
 
-        $stub->expects(self::exactly(3))->method('next')
+        $stubCursor->expects(self::exactly(3))->method('next')
             ->will(self::onConsecutiveCalls(
                 [
                     0         => '1',
@@ -338,6 +346,25 @@ class PDOStatementTest extends \PHPUnit_Framework_TestCase
                 ],
                 false
             ));
+
+        $stub = $this->getResultStub();
+        $stub->expects(self::any())->method('getCursor')
+            ->willReturn($stubCursor);
+
+        return $stub;
+    }
+
+    /**
+     * @return \PHPUnit_Framework_MockObject_MockObject
+     */
+    private function getResultStub()
+    {
+        $stub = $this->getMockBuilder(Vitess\Result::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $stub->expects(self::any())->method('isSuccess')
+            ->willReturn(true);
 
         return $stub;
     }

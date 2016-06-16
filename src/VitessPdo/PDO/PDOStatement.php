@@ -125,13 +125,14 @@ class PDOStatement
         }
 
         try {
-            $cursorOrFalse = $this->vitess->{$vitessMethod}($this->query, $this->params);
+            /* @var $result PDO\Vitess\Result */
+            $result = $this->vitess->{$vitessMethod}($this->query, $this->params);
 
-            if (!$cursorOrFalse) {
+            if (!$result->isSuccess()) {
                 return false;
             }
 
-            $this->cursor = new Cursor($cursorOrFalse);
+            $this->cursor = new Cursor($result->getCursor());
         } catch (CoreException $e) {
             if ($e instanceof PDOException && $this->attributes->isErrorModeException()) {
                 throw $e;

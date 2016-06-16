@@ -668,4 +668,19 @@ class PDOTest extends \PHPUnit_Framework_TestCase
 
         self::assertFalse($stmt);
     }
+
+    public function testErrorInfo()
+    {
+        $pdo = new PDO($this->dsn);
+        $pdo->setAttribute(CorePDO::ATTR_ERRMODE, CorePDO::ERRMODE_WARNING);
+        $pdo->exec("INSERT INTO non_existent_table VALUES (1, 2)");
+        $this->assertError(E_WARNING);
+        $error = $pdo->errorInfo();
+
+        self::assertInternalType('array', $error);
+        self::assertNotEmpty($error);
+        self::assertArrayHasKey(0, $error);
+        self::assertArrayHasKey(1, $error);
+        self::assertArrayHasKey(2, $error);
+    }
 }

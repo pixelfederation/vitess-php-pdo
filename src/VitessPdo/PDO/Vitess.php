@@ -6,11 +6,11 @@
 
 namespace VitessPdo\PDO;
 
+use VitessPdo\PDO\Vitess\Result;
 use Vitess\Context;
 use Vitess\VTGateConn;
 use Vitess\Grpc\Client;
 use Vitess\VTGateTx;
-use Vitess\Cursor;
 use Vitess\Exception as VitessException;
 use Vitess\Proto\Topodata\TabletType;
 use Grpc\ChannelCredentials;
@@ -97,12 +97,12 @@ class Vitess
     }
 
     /**
-     * @return bool
+     * @return Result
      */
     public function commitTransaction()
     {
         if (!$this->isInTransaction()) {
-            return false;
+            return new Result(null, new Exception("Cannot commit. Not in transaction."));
         }
 
         try {
@@ -110,16 +110,16 @@ class Vitess
         } catch (VitessException $e) {
             $this->handleException($e);
 
-            return false;
+            return new Result(null, $e);
         } finally {
             $this->resetTransaction();
         }
 
-        return true;
+        return new Result();
     }
 
     /**
-     * @return bool
+     * @return Result
      * @throws PDOException
      */
     public function rollbackTransaction()
@@ -134,19 +134,19 @@ class Vitess
         } catch (VitessException $e) {
             $this->handleException($e);
 
-            return false;
+            return new Result(null, $e);
         } finally {
             $this->resetTransaction();
         }
 
-        return true;
+        return new Result();
     }
 
     /**
      * @param $sql
      * @param array $params
      *
-     * @return Cursor
+     * @return Result
      * @throws PDOException
      */
     public function executeWrite($sql, array $params = [])
@@ -160,19 +160,25 @@ class Vitess
             $cursor = $transaction->execute($this->ctx, $sql, $params, TabletType::MASTER);
         } catch (VitessException $e) {
             $this->handleException($e);
+
+            return new Result(null, $e);
         }
 
         if (!$isInTransaction) {
-            $this->commitTransaction();
+            $commitResult = $this->commitTransaction();
+
+            if (!$commitResult->isSuccess()) {
+                return $commitResult;
+            }
         }
 
-        return $cursor;
+        return new Result($cursor);
     }
 
     /**
      * @param string $sql
      * @param array $params
-     * @return Cursor|false
+     * @return Result
      * @throws PDOException
      */
     public function executeRead($sql, array $params = [])
@@ -192,10 +198,10 @@ class Vitess
         } catch (VitessException $e) {
             $this->handleException($e);
 
-            return false;
+            return new Result(null, $e);
         }
 
-        return $cursor;
+        return new Result($cursor);
     }
 
     /**
@@ -226,6 +232,9 @@ class Vitess
     private function handleException(VitessException $exception)
     {
         switch (true) {
+            case $this->attributes->isErrorModeSilent():
+                break;
+
             case $this->attributes->isErrorModeWarning():
                 trigger_error($exception->getMessage(), E_WARNING);
                 break;
