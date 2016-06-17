@@ -1,8 +1,7 @@
 <?php
 /**
  * @author     mfris
- * @copyright  Pixel federation
- * @license    Internal use only
+ * @copyright  PIXELFEDERATION s.r.o.
  */
 
 namespace VitessPdo\PDO\Vitess;

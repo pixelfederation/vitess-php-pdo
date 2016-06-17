@@ -6,6 +6,9 @@
 
 namespace VitessPdo\PDO;
 
+use PHPSQLParser\PHPSQLParser;
+use VitessPdo\PDO\QueryAnalyzer\Result;
+
 /**
  * Description of class QueryAnalyzer
  *
@@ -16,14 +19,25 @@ class QueryAnalyzer
 {
 
     /**
+     * @var PHPSQLParser
+     */
+    private $parser;
+
+    /**
+     * QueryAnalyzer constructor.
+     */
+    public function __construct()
+    {
+        $this->parser = new PHPSQLParser();
+    }
+
+    /**
      * @param string $sql
      * @return boolean
      */
     public function isInsertQuery($sql)
     {
-        $sqlLc = $this->normalizeQuery($sql);
-
-        return $this->isInsertQueryNormalized($sqlLc);
+        return $this->parseQuery($sql)->isInsert();
     }
 
     /**
@@ -32,9 +46,7 @@ class QueryAnalyzer
      */
     public function isUpdateQuery($sql)
     {
-        $sqlLc = $this->normalizeQuery($sql);
-
-        return $this->isUpdateQueryNormalized($sqlLc);
+        return $this->parseQuery($sql)->isUpdate();
     }
 
     /**
@@ -43,9 +55,7 @@ class QueryAnalyzer
      */
     public function isDeleteQuery($sql)
     {
-        $sqlLc = $this->normalizeQuery($sql);
-
-        return $this->isDeleteQueryNormalized($sqlLc);
+        return $this->parseQuery($sql)->isDelete();
     }
 
     /**
@@ -55,65 +65,22 @@ class QueryAnalyzer
      */
     public function isWritableQuery($sql)
     {
-        $sqlLc = $this->normalizeQuery($sql);
+        $result = $this->parseQuery($sql);
 
-        return $this->isInsertQueryNormalized($sqlLc)
-               || $this->isUpdateQueryNormalized($sqlLc)
-               || $this->isDeleteQueryNormalized($sqlLc);
-    }
-
-    /**
-     * @param string $sqlNormalized
-     *
-     * @return boolean
-     */
-    public function isUpdateQueryNormalized($sqlNormalized)
-    {
-        return substr($sqlNormalized, 0, 6) === "update";
-    }
-
-    /**
-     * @param string $sqlNormalized
-     *
-     * @return boolean
-     */
-    public function isDeleteQueryNormalized($sqlNormalized)
-    {
-        return substr($sqlNormalized, 0, 6) === "delete";
-    }
-
-    /**
-     * @param $sql
-     *
-     * @return array
-     */
-    public function getFieldsFromQuery($sql)
-    {
-        $sql = $this->normalizeQuery($sql);
-        preg_match('/select (.*) from/', $sql, $matches);
-
-        return array_map(function ($field) {
-            return trim($field, " `");
-        }, explode(',', $matches[1]));
+        return $result->isInsert()
+               || $result->isUpdate()
+               || $result->isDelete();
     }
 
     /**
      * @param string $sql
      *
-     * @return string
+     * @return Result
      */
-    private function normalizeQuery($sql)
+    private function parseQuery($sql)
     {
-        return strtolower(trim($sql));
-    }
+        $parsedData = $this->parser->parse($sql);
 
-    /**
-     * @param string $sqlNormalized
-     *
-     * @return bool
-     */
-    private function isInsertQueryNormalized($sqlNormalized)
-    {
-        return substr($sqlNormalized, 0, 6) === "insert";
+        return new Result($parsedData);
     }
 }
