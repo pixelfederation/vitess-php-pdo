@@ -4,9 +4,12 @@
  * @copyright  PIXELFEDERATION s.r.o.
  */
 
-namespace VitessPdo\PDO;
+namespace VitessPdo\PDO\Vitess;
 
-use VitessPdo\PDO\Vitess\Result;
+use VitessPdo\PDO\Attributes;
+use VitessPdo\PDO\QueryExecutor\ExecutorInterface;
+use VitessPdo\PDO\Exception;
+use VitessPdo\PDO\QueryAnalyzer\Query as Query;
 use Vitess\Context;
 use Vitess\VTGateConn;
 use Vitess\Grpc\Client;
@@ -23,7 +26,7 @@ use PDOException;
  * @package VitessPdo\PDO
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
-class Vitess
+class Vitess implements ExecutorInterface
 {
 
     /**
@@ -143,13 +146,13 @@ class Vitess
     }
 
     /**
-     * @param $sql
+     * @param Query $query
      * @param array $params
      *
      * @return Result
      * @throws PDOException
      */
-    public function executeWrite($sql, array $params = [])
+    public function executeWrite(Query $query, array $params = [])
     {
         $isInTransaction = $this->isInTransaction();
         $transaction = $this->getTransaction();
@@ -157,7 +160,7 @@ class Vitess
         $cursor = null;
 
         try {
-            $cursor = $transaction->execute($this->ctx, $sql, $params, TabletType::MASTER);
+            $cursor = $transaction->execute($this->ctx, $query->getSql(), $params, TabletType::MASTER);
         } catch (VitessException $e) {
             $this->handleException($e);
 
@@ -172,16 +175,17 @@ class Vitess
             }
         }
 
-        return new Result($cursor);
+        return new Result(new Cursor($cursor));
     }
 
     /**
-     * @param string $sql
-     * @param array $params
+     * @param Query $query
+     * @param array  $params
+     *
      * @return Result
      * @throws PDOException
      */
-    public function executeRead($sql, array $params = [])
+    public function executeRead(Query $query, array $params = [])
     {
         $cursor = null;
 
@@ -194,14 +198,14 @@ class Vitess
                 $tabletType = TabletType::MASTER;
             }
 
-            $cursor = $reader->execute($this->ctx, $sql, $params, $tabletType);
+            $cursor = $reader->execute($this->ctx, $query->getSql(), $params, $tabletType);
         } catch (VitessException $e) {
             $this->handleException($e);
 
             return new Result(null, $e);
         }
 
-        return new Result($cursor);
+        return new Result(new Cursor($cursor));
     }
 
     /**

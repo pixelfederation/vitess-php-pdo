@@ -4,10 +4,9 @@
  * @copyright  PIXELFEDERATION s.r.o.
  */
 
-namespace VitessPdo\PDO;
+namespace VitessPdo\PDO\Dsn;
 
-use VitessPdo\PDO\Dsn\Config;
-use VitessPdo\PDO\Dsn\Driver;
+use VitessPdo\PDO\Exception;
 
 /**
  * Description of class Dsn

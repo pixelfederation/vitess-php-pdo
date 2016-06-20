@@ -6,7 +6,7 @@
 
 namespace VitessPdoTest\PDO;
 
-use VitessPdo\PDO\Dsn;
+use VitessPdo\PDO\Dsn\Dsn;
 use VitessPdo\PDO\Exception as DriverException;
 use Exception;
 
@@ -47,5 +47,27 @@ class DsnTest extends \PHPUnit_Framework_TestCase
         $this->expectException(DriverException::class);
         $this->expectExceptionMessage("Invalid dsn string - exactly one colon has to be present.");
         new Dsn($dsnString);
+    }
+
+    /**
+     *
+     */
+    public function testVtctld()
+    {
+        $dsnString = "vitess:dbname=testdb;host=localhost;port=15991;vtctld_host=localhost;vtctld_port=12345";
+        $dsn = null;
+
+        try {
+            $dsn = new Dsn($dsnString);
+        } catch (Exception $e) {
+            self::fail("Error while constructing Dsn object: " . $e->getMessage());
+        }
+
+        self::assertNotNull($dsn);
+        self::assertNotNull($dsn->getConfig());
+        self::assertNotNull($dsn->getConfig()->getVtCtlHost());
+        self::assertEquals('localhost', $dsn->getConfig()->getVtCtlHost());
+        self::assertNotNull($dsn->getConfig()->getVtCtlPort());
+        self::assertEquals(12345, $dsn->getConfig()->getVtCtlPort());
     }
 }

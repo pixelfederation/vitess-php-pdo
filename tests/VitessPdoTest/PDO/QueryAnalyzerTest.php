@@ -6,7 +6,7 @@
 
 namespace VitessPdoTest\PDO;
 
-use VitessPdo\PDO\QueryAnalyzer;
+use VitessPdo\PDO\QueryAnalyzer\Analyzer;
 
 /**
  * Class QueryAnalyzerTest
@@ -17,7 +17,7 @@ class QueryAnalyzerTest extends \PHPUnit_Framework_TestCase
 {
 
     /**"SELECT * FROM user"
-     * @var QueryAnalyzer
+     * @var Analyzer
      */
     private $queryAnalyzer;
 
@@ -26,7 +26,7 @@ class QueryAnalyzerTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->queryAnalyzer = new QueryAnalyzer();
+        $this->queryAnalyzer = new Analyzer();
     }
 
     /**

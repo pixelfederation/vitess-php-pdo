@@ -4,9 +4,9 @@
  * @copyright  PIXELFEDERATION s.r.o.
  */
 
-namespace VitessPdo\PDO\Vitess;
+namespace VitessPdo\PDO\QueryExecutor;
 
-use Vitess\Exception as VitessException;
+use Exception;
 
 /**
  * Description of class Error
@@ -18,16 +18,16 @@ final class Error
 {
 
     /**
-     * @var VitessException
+     * @var Exception
      */
     private $exception;
 
     /**
      * Error constructor.
      *
-     * @param VitessException $exception
+     * @param Exception $exception
      */
-    public function __construct(VitessException $exception)
+    public function __construct(Exception $exception)
     {
         $this->exception = $exception;
     }

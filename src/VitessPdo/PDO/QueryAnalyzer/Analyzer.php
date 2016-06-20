@@ -4,18 +4,17 @@
  * @copyright  PIXELFEDERATION s.r.o.
  */
 
-namespace VitessPdo\PDO;
+namespace VitessPdo\PDO\QueryAnalyzer;
 
 use PHPSQLParser\PHPSQLParser;
-use VitessPdo\PDO\QueryAnalyzer\Result;
 
 /**
- * Description of class QueryAnalyzer
+ * Description of class Analyzer
  *
  * @author  mfris
  * @package VitessPdo\PDO
  */
-class QueryAnalyzer
+class Analyzer
 {
 
     /**
@@ -24,7 +23,7 @@ class QueryAnalyzer
     private $parser;
 
     /**
-     * QueryAnalyzer constructor.
+     * Analyzer constructor.
      */
     public function __construct()
     {
@@ -67,20 +66,18 @@ class QueryAnalyzer
     {
         $result = $this->parseQuery($sql);
 
-        return $result->isInsert()
-               || $result->isUpdate()
-               || $result->isDelete();
+        return $result->isWritable();
     }
 
     /**
      * @param string $sql
      *
-     * @return Result
+     * @return Query
      */
-    private function parseQuery($sql)
+    public function parseQuery($sql)
     {
         $parsedData = $this->parser->parse($sql);
 
-        return new Result($parsedData);
+        return new Query($sql, $parsedData);
     }
 }

@@ -8,8 +8,10 @@ namespace VitessPdo\PDO;
 
 use VitessPdo\PDO;
 use VitessPdo\PDO\PDOStatement\Cursor;
+use VitessPdo\PDO\QueryAnalyzer\Analyzer;
+use VitessPdo\PDO\QueryExecutor\ExecutorInterface;
 use PDO as CorePDO;
-use \Exception as CoreException;
+use Exception as CoreException;
 use PDOException;
 
 /**
@@ -38,9 +40,9 @@ class PDOStatement
     private $params = [];
 
     /**
-     * @var Vitess
+     * @var ExecutorInterface
      */
-    private $vitess;
+    private $executor;
 
     /**
      * @var ParamProcessor
@@ -48,7 +50,7 @@ class PDOStatement
     private $paramProcessor;
 
     /**
-     * @var QueryAnalyzer
+     * @var Analyzer
      */
     private $queryAnalyzer;
 
@@ -60,24 +62,24 @@ class PDOStatement
     /**
      * PDOStatement constructor.
      *
-     * @param string $query
-     * @param Vitess $vitess
-     * @param Attributes $attributes
-     * @param ParamProcessor $paramProcessor
-     * @param QueryAnalyzer $queryAnalyzer
+     * @param string            $query
+     * @param ExecutorInterface $executor
+     * @param Attributes        $attributes
+     * @param ParamProcessor    $paramProcessor
+     * @param Analyzer          $queryAnalyzer
      */
     public function __construct(
         $query,
-        Vitess $vitess,
+        ExecutorInterface $executor,
         Attributes $attributes,
         ParamProcessor $paramProcessor,
-        QueryAnalyzer $queryAnalyzer
+        Analyzer $queryAnalyzer
     ) {
-        $this->query  = $query;
-        $this->vitess = $vitess;
-        $this->attributes = $attributes;
+        $this->query          = $query;
+        $this->executor       = $executor;
+        $this->attributes     = $attributes;
         $this->paramProcessor = $paramProcessor;
-        $this->queryAnalyzer = $queryAnalyzer;
+        $this->queryAnalyzer  = $queryAnalyzer;
     }
 
     /**
@@ -119,14 +121,15 @@ class PDOStatement
         }
 
         $vitessMethod = 'executeRead';
+        $query = $this->queryAnalyzer->parseQuery($this->query);
 
-        if ($this->queryAnalyzer->isWritableQuery($this->query)) {
+        if ($query->isWritable()) {
             $vitessMethod = 'executeWrite';
         }
 
         try {
-            /* @var $result PDO\Vitess\Result */
-            $result = $this->vitess->{$vitessMethod}($this->query, $this->params);
+            /* @var $result PDO\QueryExecutor\ResultInterface */
+            $result = $this->executor->{$vitessMethod}($query, $this->params);
 
             if (!$result->isSuccess()) {
                 return false;

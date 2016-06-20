@@ -7,11 +7,15 @@
 namespace VitessPdo;
 
 use VitessPdo\PDO\Attributes;
-use VitessPdo\PDO\Dsn;
+use VitessPdo\PDO\Dsn\Dsn;
+use VitessPdo\PDO\MySql\Emulator;
 use VitessPdo\PDO\ParamProcessor;
 use VitessPdo\PDO\PDOStatement;
-use VitessPdo\PDO\QueryAnalyzer;
-use VitessPdo\PDO\Vitess;
+use VitessPdo\PDO\QueryAnalyzer\Analyzer;
+use VitessPdo\PDO\QueryExecutor\Executor;
+use VitessPdo\PDO\QueryExecutor\ExecutorInterface;
+use VitessPdo\PDO\Vitess\Vitess;
+use VitessPdo\PDO\Vitess\Result;
 use PDO as CorePDO;
 use VitessPdo\PDO\Exception as PDOException;
 use Exception;
@@ -39,7 +43,12 @@ class PDO
     private $vitess;
 
     /**
-     * @var QueryAnalyzer
+     * @var ExecutorInterface
+     */
+    private $executor;
+
+    /**
+     * @var Analyzer
      */
     private $queryAnalyzer;
 
@@ -54,7 +63,7 @@ class PDO
     private $attributes;
 
     /**
-     * @var Vitess\Result
+     * @var Result
      */
     private $lastResult;
 
@@ -78,13 +87,21 @@ class PDO
      */
     private function connect(array $options)
     {
-        $host = $this->dsn->getConfig()->getHost();
-        $port = $this->dsn->getConfig()->getPort();
-        $dbName = $this->dsn->getConfig()->getDbName();
-        $connectionString = "{$host}:{$port}";
-        $this->attributes = new Attributes();
-        $this->vitess = new Vitess($connectionString, $dbName, $this->attributes);
-        $this->queryAnalyzer = new QueryAnalyzer();
+        $config               = $this->dsn->getConfig();
+        $host                 = $config->getHost();
+        $port                 = $config->getPort();
+        $dbName               = $config->getDbName();
+        $connectionString     = "{$host}:{$port}";
+        $this->attributes     = new Attributes();
+        $this->vitess         = new Vitess($connectionString, $dbName, $this->attributes);
+        $this->executor       = $this->vitess;
+
+        if ($config->hasVtCtldData()) {
+            $emulator = new Emulator();
+            $this->executor = new Executor($this->vitess, $emulator);
+        }
+
+        $this->queryAnalyzer  = new Analyzer();
         $this->paramProcessor = new ParamProcessor();
 
         if (array_key_exists(CorePDO::MYSQL_ATTR_INIT_COMMAND, $options)) {
@@ -113,7 +130,8 @@ class PDO
      */
     public function exec($statement)
     {
-        $this->lastResult = $this->vitess->executeWrite($statement);
+        $query = $this->queryAnalyzer->parseQuery($statement);
+        $this->lastResult = $this->executor->executeWrite($query);
 
         if (!$this->lastResult->isSuccess()) {
             return false;
@@ -266,7 +284,7 @@ class PDO
     public function lastInsertId($name = null)
     {
         if (!$this->lastResult) {
-            return Vitess\Result::DEFAULT_LAST_INSERT_ID;
+            return Result::DEFAULT_LAST_INSERT_ID;
         }
 
         return $this->lastResult->getLastInsertId();
@@ -309,7 +327,7 @@ class PDO
     {
         return new PDOStatement(
             $statement,
-            $this->vitess,
+            $this->executor,
             $this->attributes,
             $this->paramProcessor,
             $this->queryAnalyzer

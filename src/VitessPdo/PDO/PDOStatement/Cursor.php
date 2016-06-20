@@ -6,8 +6,8 @@
 
 namespace VitessPdo\PDO\PDOStatement;
 
+use VitessPdo\PDO\QueryExecutor\CursorInterface;
 use VitessPdo\PDO\Exception;
-use Vitess\Cursor as VitessCursor;
 use PDO as CorePDO;
 
 /**
@@ -20,9 +20,9 @@ class Cursor
 {
 
     /**
-     * @var VitessCursor
+     * @var CursorInterface
      */
-    private $vitessCursor;
+    private $executorCursor;
 
     /**
      * @var int
@@ -56,11 +56,11 @@ class Cursor
     /**
      * Cursor constructor.
      *
-     * @param VitessCursor $vitessCursor
+     * @param CursorInterface $executorCursor
      */
-    public function __construct(VitessCursor $vitessCursor)
+    public function __construct(CursorInterface $executorCursor)
     {
-        $this->vitessCursor = $vitessCursor;
+        $this->executorCursor = $executorCursor;
     }
 
     /**
@@ -127,7 +127,7 @@ class Cursor
      */
     public function getAffectedRows()
     {
-        return $this->vitessCursor->getRowsAffected();
+        return $this->executorCursor->getRowsAffected();
     }
 
     /**
@@ -145,7 +145,7 @@ class Cursor
     {
         $rows = [];
 
-        while (($row = $this->vitessCursor->next()) !== false) {
+        while (($row = $this->executorCursor->next()) !== false) {
             $rows[] = $row;
         }
 

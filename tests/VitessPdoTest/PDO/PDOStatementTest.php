@@ -8,11 +8,12 @@ namespace VitessPdoTest\PDO;
 
 use VitessPdo\PDO\Attributes;
 use VitessPdo\PDO\ParamProcessor;
-use VitessPdo\PDO\QueryAnalyzer;
-use VitessPdo\PDO\Vitess;
+use VitessPdo\PDO\QueryAnalyzer\Analyzer;
+use VitessPdo\PDO\Vitess\Result;
+use VitessPdo\PDO\Vitess\Cursor;
+use VitessPdo\PDO\Vitess\Vitess;
 use VitessPdo\PDO\PDOStatement;
 use VitessPdo\PDO\Exception as VitessPDOException;
-use Vitess\Cursor;
 use Exception;
 use PDO as CorePDO;
 
@@ -260,7 +261,7 @@ class PDOStatementTest extends \PHPUnit_Framework_TestCase
             $vitess,
             new Attributes(),
             new ParamProcessor(),
-            new QueryAnalyzer()
+            new Analyzer()
         );
 
         for ($i = 0; $i < 3; $i++) {
@@ -286,7 +287,7 @@ class PDOStatementTest extends \PHPUnit_Framework_TestCase
             $this->getVitessStub($fetchMode),
             new Attributes(),
             new ParamProcessor(),
-            new QueryAnalyzer()
+            new Analyzer()
         );
     }
 
@@ -359,7 +360,7 @@ class PDOStatementTest extends \PHPUnit_Framework_TestCase
      */
     private function getResultStub()
     {
-        $stub = $this->getMockBuilder(Vitess\Result::class)
+        $stub = $this->getMockBuilder(Result::class)
             ->disableOriginalConstructor()
             ->getMock();
 
