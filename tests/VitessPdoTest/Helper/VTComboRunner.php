@@ -49,6 +49,11 @@ final class VTComboRunner
             throw new RuntimeException('VTROOT env var not set; make sure to source dev.env');
         }
 
+        $vtMysqlRoot = getenv('VT_MYSQL_ROOT');
+        if (!$vtMysqlRoot) {
+            throw new RuntimeException('VT_MYSQL_ROOT env var not set; make sure to set the path to Mysql/MariaDb');
+        }
+
         $tmpDir = dirname(__DIR__ . '/../../vitess/.');
         $cmd = $tmpDir . '/run.py > /dev/null 2> /dev/null';
 
