@@ -397,6 +397,31 @@ class PDOStatement
     }
 
     /**
+     * PDOStatement::columnCount — Returns the number of columns in the result set
+     *
+     * Use PDOStatement::columnCount() to return the number of columns in the result set represented
+     * by the PDOStatement object.
+     *
+     * If the PDOStatement object was returned from PDO::query(), the column count is immediately available.
+     * If the PDOStatement object was returned from PDO::prepare(), an accurate column count will not be available
+     * until you invoke PDOStatement::execute().
+     *
+     * @return int - Returns the number of columns in the result set represented by the PDOStatement object.
+     *               If there is no result set, PDOStatement::columnCount() returns 0.
+     * @throws Exception
+     */
+    public function columnCount()
+    {
+        if (!$this->cursor) {
+            throw new Exception('Statement wasn\'t executed yet.');
+        }
+
+        $fields = $this->cursor->getFields();
+
+        return count($fields);
+    }
+
+    /**
      * Closes the cursor, enabling the statement to be executed again.
      *
      * PDOStatement::closeCursor() frees up the connection to the server so that other SQL statements may be issued,

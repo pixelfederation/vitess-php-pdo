@@ -131,6 +131,14 @@ class Cursor
     }
 
     /**
+     * @return array
+     */
+    public function getFields()
+    {
+        return $this->executorCursor->getFields();
+    }
+
+    /**
      * @return bool
      */
     private function isInitialized()

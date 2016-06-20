@@ -236,6 +236,16 @@ class PDOStatementTest extends \PHPUnit_Framework_TestCase
         self::assertEquals('1', $userId);
     }
 
+    public function testColumnCountAfterFetchAll()
+    {
+        $stmt = $this->getNewStatement(CorePDO::FETCH_BOTH);
+        $stmt->execute();
+        $stmt->fetchAll();
+        $columnCount = $stmt->columnCount();
+
+        self::assertEquals(2, $columnCount);
+    }
+
     public function testExecuteInsert()
     {
         $vitess = $this->getMockBuilder(Vitess::class)
@@ -347,6 +357,9 @@ class PDOStatementTest extends \PHPUnit_Framework_TestCase
                 ],
                 false
             ));
+
+        $stubCursor->expects(self::any())->method('getFields')
+            ->willReturn(['user_id', 'name']);
 
         $stub = $this->getResultStub();
         $stub->expects(self::any())->method('getCursor')
