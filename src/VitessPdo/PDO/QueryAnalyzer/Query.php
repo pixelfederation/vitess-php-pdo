@@ -6,6 +6,8 @@
 
 namespace VitessPdo\PDO\QueryAnalyzer;
 
+use VitessPdo\PDO\Exception;
+
 /**
  * Description of class Query
  *
@@ -30,6 +32,11 @@ class Query
      */
     private $type;
 
+    /**
+     * @var string
+     */
+    private $baseExpresseion;
+
     const SQL_COMMAND_INSERT = 'INSERT';
     const SQL_COMMAND_UPDATE = 'UPDATE';
     const SQL_COMMAND_DELETE = 'DELETE';
@@ -39,7 +46,11 @@ class Query
     const TYPE_UPDATE = 'UPDATE';
     const TYPE_DELETE = 'DELETE';
     const TYPE_USE    = 'USE';
+    const TYPE_SHOW   = 'SHOW';
     const TYPE_UNKNOWN = 'unknown';
+
+    const KEY_BASE_EXPRESSION = 'base_expr';
+    const SHOW_EXPRESSION_TABLES = 'TABLES';
 
     /**
      * @var array
@@ -50,6 +61,7 @@ class Query
         self::TYPE_UPDATE => self::TYPE_UPDATE,
         self::TYPE_DELETE => self::TYPE_DELETE,
         self::TYPE_USE    => self::TYPE_USE,
+        self::TYPE_SHOW   => self::TYPE_SHOW,
     ];
 
     /**
@@ -112,19 +124,35 @@ class Query
     public function getType()
     {
         if ($this->type === null) {
+            $this->type = self::TYPE_UNKNOWN;
+
             foreach (self::$types as $type) {
                 if ($this->isTypeParsed($type)) {
                     $this->type = $type;
                     break;
                 }
             }
-
-            if (!$this->type === null) {
-                $this->type = self::TYPE_UNKNOWN;
-            }
         }
 
         return $this->type;
+    }
+
+    /**
+     * @return string
+     * @throws Exception
+     */
+    public function getShowExpression()
+    {
+        if ($this->baseExpresseion === null) {
+            if ($this->getType() !== self::TYPE_SHOW) {
+                throw new Exception('Not a SHOW query.');
+            }
+
+            $firstField = $this->parsedSql[self::TYPE_SHOW][0];
+            $this->baseExpresseion = $firstField[self::KEY_BASE_EXPRESSION];
+        }
+
+        return $this->baseExpresseion;
     }
 
     /**

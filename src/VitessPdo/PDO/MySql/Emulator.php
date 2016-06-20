@@ -6,10 +6,14 @@
 
 namespace VitessPdo\PDO\MySql;
 
+use VitessPdo\PDO\Dsn\Dsn;
 use VitessPdo\PDO\MySql\Handler\HandlerInterface;
 use VitessPdo\PDO\MySql\Handler\QueryUse;
+use VitessPdo\PDO\MySql\Handler\ShowTables;
+use VitessPdo\PDO\MySql\Result\Result;
 use VitessPdo\PDO\PDOStatement;
-use VitessPdo\PDO\QueryAnalyzer\Query as Query;
+use VitessPdo\PDO\QueryAnalyzer\Query;
+use VitessPdo\PDO\VtCtld\Client;
 use ArrayObject;
 
 /**
@@ -22,22 +26,30 @@ class Emulator
 {
 
     /**
+     * @var Dsn
+     */
+    private $dsn;
+
+    /**
      * @var ArrayObject
      */
     private $handlers;
 
     /**
-     * @var string[]
+     * @var array
      */
-    private static $handlersSteps = [
-        'getType',
+    private static $handlerTypes = [
+        Query::TYPE_SHOW => 'getShowExpression',
     ];
 
     /**
      * QueryChain constructor.
+     *
+     * @param Dsn $dsn
      */
-    public function __construct()
+    public function __construct(Dsn $dsn)
     {
+        $this->dsn = $dsn;
         $this->handlers = $this->initializeHandlers();
     }
 
@@ -50,22 +62,16 @@ class Emulator
     {
         /* @var $handler HandlerInterface */
         $handler = null;
-        $handlers = $this->handlers;
 
-        foreach (self::$handlersSteps as $step) {
-            $stepValue = $query->{$step}();
-            if (!$handlers->offsetExists($stepValue)) {
-                break;
-            }
+        $type = $query->getType();
+        if (!$this->handlers->offsetExists($type)) {
+            return null;
+        }
 
-            $handlers = $handlers->offsetGet($stepValue);
+        $handler = $this->handlers->offsetGet($type);
 
-            if ($handlers instanceof HandlerInterface) {
-                $handler = $handlers;
-                break;
-            } elseif (!$handlers) {
-                break;
-            }
+        if ($handler && !$handler instanceof HandlerInterface) {
+            $handler = $this->getHandlerByType($query, $type);
         }
 
         if ($handler) {
@@ -76,12 +82,41 @@ class Emulator
     }
 
     /**
+     * @param Query $query
+     * @param       $type
+     *
+     * @return HandlerInterface|null
+     */
+    private function getHandlerByType(Query $query, $type)
+    {
+        if (!isset(self::$handlerTypes[$type])) {
+            return null;
+        }
+
+        /* @var $handlers ArrayObject */
+        $handlers = $this->handlers->offsetGet($type);
+        $handlerFn = self::$handlerTypes[$type];
+        $handlerKey = $query->{$handlerFn}();
+
+        if (!$handlers->offsetExists($handlerKey)) {
+            return null;
+        }
+
+        return $handlers->offsetGet($handlerKey);
+    }
+
+    /**
      * @return ArrayObject
      */
     private function initializeHandlers()
     {
+        $vtCtldClient = new Client($this->dsn);
+
         $members = new ArrayObject();
-        $members->offsetSet(Query::TYPE_USE, new QueryUse());
+        $members->offsetSet(Query::TYPE_USE, new QueryUse($this->dsn));
+        $membersShow = new ArrayObject();
+        $members->offsetSet(Query::TYPE_SHOW, $membersShow);
+        $membersShow->offsetSet(Query::SHOW_EXPRESSION_TABLES, new ShowTables($vtCtldClient));
 
         return $members;
     }

@@ -7,7 +7,7 @@
 namespace VitessPdo\PDO\MySql\Handler;
 
 use VitessPdo\PDO\MySql\Result;
-use VitessPdo\PDO\QueryAnalyzer\Query as Query;
+use VitessPdo\PDO\QueryAnalyzer\Query;
 
 /**
  * Description of interface HandlerInterface

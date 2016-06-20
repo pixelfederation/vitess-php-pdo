@@ -14,6 +14,6 @@ use VitessPdo\PDO\QueryExecutor\Result as ExecutorResult;
  * @author  mfris
  * @package VitessPdo\PDO\MySql
  */
-abstract class Result extends ExecutorResult
+class Result extends ExecutorResult
 {
 }

@@ -701,6 +701,21 @@ class PDOTest extends \PHPUnit_Framework_TestCase
         self::assertEquals(0, $stmt->rowCount());
     }
 
+    public function testShowTables()
+    {
+        $pdo = $this->getPdoWithVctldSupport();
+        $stmt = $pdo->query("SHOW TABLES");
+
+        self::assertInstanceOf(PDOStatement::class, $stmt);
+        $rows = $stmt->fetchAll(CorePDO::FETCH_BOTH);
+        self::assertCount(6, $rows);
+
+        foreach ($rows as $row) {
+            self::assertArrayHasKey('Tables_in_user', $row);
+            self::assertArrayHasKey(0, $row);
+        }
+    }
+
     /**
      * @return PDO
      */

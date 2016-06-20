@@ -6,8 +6,8 @@
 
 namespace VitessPdo\PDO\MySql\Handler;
 
-use VitessPdo\PDO\MySql\Result;
-use VitessPdo\PDO\QueryAnalyzer\Query as Query;
+use VitessPdo\PDO\MySql\Result\Result;
+use VitessPdo\PDO\QueryAnalyzer\Query;
 
 /**
  * Description of class Base

@@ -6,26 +6,30 @@
 
 namespace VitessPdo\PDO\MySql\Handler;
 
-use VitessPdo\PDO\MySql\Result\EmptyResult;
+use VitessPdo\PDO\MySql\Cursor\Cursor;
+use VitessPdo\PDO\MySql\Result\Result;
 use VitessPdo\PDO\QueryAnalyzer\Query;
 
 /**
- * Description of class QueryUse
+ * Description of class ShowTables
  *
  * @author  mfris
  * @package VitessPdo\PDO\MySql\Handler
  */
-class QueryUse extends Base
+class ShowTables extends VtCtldBase
 {
 
     /**
      * @param Query $query
      *
-     * @return EmptyResult
+     * @return Result
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getResult(Query $query)
     {
-        return new EmptyResult();
+        $vtCtldResult = $this->client->getVSchema();
+        $cursor = new Cursor($vtCtldResult->getData(), $vtCtldResult->getFields());
+
+        return new Result($cursor);
     }
 }

@@ -97,7 +97,7 @@ class PDO
         $this->executor       = $this->vitess;
 
         if ($config->hasVtCtldData()) {
-            $emulator = new Emulator();
+            $emulator = new Emulator($this->dsn);
             $this->executor = new Executor($this->vitess, $emulator);
         }
 
