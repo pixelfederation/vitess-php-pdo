@@ -51,6 +51,7 @@ class Query
 
     const KEY_BASE_EXPRESSION = 'base_expr';
     const SHOW_EXPRESSION_TABLES = 'TABLES';
+    const SHOW_EXPRESSION_COLLATION = 'COLLATION';
 
     /**
      * @var array

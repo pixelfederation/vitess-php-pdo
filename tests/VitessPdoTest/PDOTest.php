@@ -717,6 +717,48 @@ class PDOTest extends \PHPUnit_Framework_TestCase
         }
     }
 
+    public function testShowCollation()
+    {
+        $pdo = $this->getPdoWithVctldSupport();
+        $stmt = $pdo->query("SHOW COLLATION");
+
+        self::assertInstanceOf(PDOStatement::class, $stmt);
+        $rows = $stmt->fetchAll(CorePDO::FETCH_BOTH);
+        self::assertCount(1, $rows);
+
+        foreach ($rows as $row) {
+            self::assertArrayHasKey('Collation', $row);
+            self::assertArrayHasKey(0, $row);
+            self::assertEquals('utf8_bin', $row['Collation']);
+            self::assertEquals('utf8_bin', $row[0]);
+
+            self::assertArrayHasKey('Charset', $row);
+            self::assertArrayHasKey(1, $row);
+            self::assertEquals('utf8', $row['Charset']);
+            self::assertEquals('utf8', $row[1]);
+
+            self::assertArrayHasKey('Id', $row);
+            self::assertArrayHasKey(2, $row);
+            self::assertEquals('83', $row['Id']);
+            self::assertEquals('83', $row[2]);
+
+            self::assertArrayHasKey('Default', $row);
+            self::assertArrayHasKey(3, $row);
+            self::assertEquals('', $row['Default']);
+            self::assertEquals('', $row[3]);
+
+            self::assertArrayHasKey('Compiled', $row);
+            self::assertArrayHasKey(4, $row);
+            self::assertEquals('Yes', $row['Compiled']);
+            self::assertEquals('Yes', $row[4]);
+
+            self::assertArrayHasKey('Sortlen', $row);
+            self::assertArrayHasKey(5, $row);
+            self::assertEquals('1', $row['Sortlen']);
+            self::assertEquals('1', $row[5]);
+        }
+    }
+
     public function testStmtClass()
     {
         $pdo = $this->getPdo();

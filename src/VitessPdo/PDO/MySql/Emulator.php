@@ -9,6 +9,7 @@ namespace VitessPdo\PDO\MySql;
 use VitessPdo\PDO\Dsn\Dsn;
 use VitessPdo\PDO\MySql\Handler\HandlerInterface;
 use VitessPdo\PDO\MySql\Handler\QueryUse;
+use VitessPdo\PDO\MySql\Handler\ShowCollation;
 use VitessPdo\PDO\MySql\Handler\ShowTables;
 use VitessPdo\PDO\MySql\Result\Result;
 use VitessPdo\PDO\PDOStatement;
@@ -117,6 +118,7 @@ class Emulator
         $membersShow = new ArrayObject();
         $members->offsetSet(Query::TYPE_SHOW, $membersShow);
         $membersShow->offsetSet(Query::SHOW_EXPRESSION_TABLES, new ShowTables($vtCtldClient));
+        $membersShow->offsetSet(Query::SHOW_EXPRESSION_COLLATION, new ShowCollation());
 
         return $members;
     }
