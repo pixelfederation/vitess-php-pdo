@@ -33,9 +33,14 @@ class Query
     private $type;
 
     /**
+     * @var array
+     */
+    private $showExpression = [];
+
+    /**
      * @var string
      */
-    private $baseExpresseion;
+    private $databaseExpression;
 
     const SQL_COMMAND_INSERT = 'INSERT';
     const SQL_COMMAND_UPDATE = 'UPDATE';
@@ -50,8 +55,13 @@ class Query
     const TYPE_UNKNOWN = 'unknown';
 
     const KEY_BASE_EXPRESSION = 'base_expr';
+    const KEY_NO_QUOTES = 'no_quotes';
+    const KEY_PARTS = 'parts';
+
     const SHOW_EXPRESSION_TABLES = 'TABLES';
     const SHOW_EXPRESSION_COLLATION = 'COLLATION';
+    const SHOW_EXPRESSION_CREATE = 'CREATE';
+    const SHOW_EXPRESSION_CREATE_DATABASE = 'DATABASE';
 
     /**
      * @var array
@@ -139,21 +149,42 @@ class Query
     }
 
     /**
+     *
+     * @param int $index
      * @return string
      * @throws Exception
      */
-    public function getShowExpression()
+    public function getShowExpression($index = 0)
     {
-        if ($this->baseExpresseion === null) {
+        if (!isset($this->showExpression[$index])) {
             if ($this->getType() !== self::TYPE_SHOW) {
                 throw new Exception('Not a SHOW query.');
             }
 
-            $firstField = $this->parsedSql[self::TYPE_SHOW][0];
-            $this->baseExpresseion = $firstField[self::KEY_BASE_EXPRESSION];
+            $field = $this->parsedSql[self::TYPE_SHOW][$index];
+            $this->showExpression[$index] = $field[self::KEY_BASE_EXPRESSION];
         }
 
-        return $this->baseExpresseion;
+        return $this->showExpression[$index];
+    }
+
+    /**
+     * @return string
+     * @throws Exception
+     */
+    public function getDatabaseExpression()
+    {
+        if ($this->databaseExpression === null) {
+            /** @todo switch statement for other expression types as SHOW */
+            if ($this->getType() !== self::TYPE_SHOW) {
+                throw new Exception('Not a SHOW query.');
+            }
+
+            $databaseExpression = $this->parsedSql[self::TYPE_SHOW][2];
+            $this->databaseExpression = $databaseExpression[self::KEY_NO_QUOTES][self::KEY_PARTS][0];
+        }
+
+        return $this->databaseExpression;
     }
 
     /**

@@ -759,6 +759,31 @@ class PDOTest extends \PHPUnit_Framework_TestCase
         }
     }
 
+    public function testShowCreateDatabase()
+    {
+        $pdo = $this->getPdoWithVctldSupport();
+        $stmt = $pdo->query("SHOW CREATE DATABASE `user`");
+
+        self::assertInstanceOf(PDOStatement::class, $stmt);
+        $rows = $stmt->fetchAll(CorePDO::FETCH_BOTH);
+        self::assertCount(1, $rows);
+
+        foreach ($rows as $row) {
+            self::assertArrayHasKey('Database', $row);
+            self::assertArrayHasKey(0, $row);
+            self::assertEquals('user', $row['Database']);
+            self::assertEquals('user', $row[0]);
+
+            self::assertArrayHasKey('Create Database', $row);
+            self::assertArrayHasKey(1, $row);
+            self::assertEquals(
+                'CREATE DATABASE `user` /*!40100 DEFAULT CHARACTER SET utf8 */',
+                $row['Create Database']
+            );
+            self::assertEquals('CREATE DATABASE `user` /*!40100 DEFAULT CHARACTER SET utf8 */', $row[1]);
+        }
+    }
+
     public function testStmtClass()
     {
         $pdo = $this->getPdo();

@@ -10,6 +10,7 @@ use VitessPdo\PDO\Dsn\Dsn;
 use VitessPdo\PDO\MySql\Handler\HandlerInterface;
 use VitessPdo\PDO\MySql\Handler\QueryUse;
 use VitessPdo\PDO\MySql\Handler\ShowCollation;
+use VitessPdo\PDO\MySql\Handler\ShowCreateDatabase;
 use VitessPdo\PDO\MySql\Handler\ShowTables;
 use VitessPdo\PDO\MySql\Result\Result;
 use VitessPdo\PDO\PDOStatement;
@@ -22,6 +23,7 @@ use ArrayObject;
  *
  * @author  mfris
  * @package Adminer\Vitess
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class Emulator
 {
@@ -40,7 +42,10 @@ class Emulator
      * @var array
      */
     private static $handlerTypes = [
-        Query::TYPE_SHOW => 'getShowExpression',
+        Query::TYPE_SHOW => [
+            ['getShowExpression', [0]],
+            ['getShowExpression', [1]],
+        ],
     ];
 
     /**
@@ -96,14 +101,26 @@ class Emulator
 
         /* @var $handlers ArrayObject */
         $handlers = $this->handlers->offsetGet($type);
-        $handlerFn = self::$handlerTypes[$type];
-        $handlerKey = $query->{$handlerFn}();
+        $index = 0;
 
-        if (!$handlers->offsetExists($handlerKey)) {
-            return null;
-        }
+        do {
+            $handlerFn = isset(self::$handlerTypes[$type][$index]) ? self::$handlerTypes[$type][$index] : null;
+            $index++;
 
-        return $handlers->offsetGet($handlerKey);
+            if (!$handlerFn) {
+                return null;
+            }
+
+            $handlerKey = call_user_func_array([$query, $handlerFn[0]], $handlerFn[1]);
+
+            if (!$handlers->offsetExists($handlerKey)) {
+                return null;
+            }
+
+            $handlers = $handlers->offsetGet($handlerKey);
+        } while ($handlers instanceof ArrayObject);
+
+        return $handlers;
     }
 
     /**
@@ -114,11 +131,14 @@ class Emulator
         $vtCtldClient = new Client($this->dsn);
 
         $members = new ArrayObject();
-        $members->offsetSet(Query::TYPE_USE, new QueryUse($this->dsn));
+        $members->offsetSet(Query::TYPE_USE, new QueryUse());
         $membersShow = new ArrayObject();
         $members->offsetSet(Query::TYPE_SHOW, $membersShow);
         $membersShow->offsetSet(Query::SHOW_EXPRESSION_TABLES, new ShowTables($vtCtldClient));
         $membersShow->offsetSet(Query::SHOW_EXPRESSION_COLLATION, new ShowCollation());
+        $membersShowCreate = new ArrayObject();
+        $membersShow->offsetSet(Query::SHOW_EXPRESSION_CREATE, $membersShowCreate);
+        $membersShowCreate->offsetSet(Query::SHOW_EXPRESSION_CREATE_DATABASE, new ShowCreateDatabase($this->dsn));
 
         return $members;
     }
