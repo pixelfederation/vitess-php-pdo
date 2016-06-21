@@ -720,7 +720,7 @@ class PDOTest extends \PHPUnit_Framework_TestCase
     public function testStmtClass()
     {
         $pdo = $this->getPdo();
-        $pdo->setAttribute(CorePDO::ATTR_STATEMENT_CLASS, CustomPDOStatement::class);
+        $pdo->setAttribute(CorePDO::ATTR_STATEMENT_CLASS, [CustomPDOStatement::class]);
         $stmt = $pdo->prepare("SELECT * FROM user");
 
         self::assertInstanceOf(CustomPDOStatement::class, $stmt);

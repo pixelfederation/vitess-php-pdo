@@ -51,7 +51,7 @@ class Attributes
      * @var array
      */
     private static $validators = [
-        CorePDO::ATTR_STATEMENT_CLASS => 'class_exists',
+        CorePDO::ATTR_STATEMENT_CLASS => 'validateStatementClass',
     ];
 
     /**
@@ -79,13 +79,7 @@ class Attributes
 
         if ($this->hasValidator($attribute)) {
             $validator = $this->getValidator($attribute);
-
-            if (!$validator($value)) {
-                throw new Exception(
-                    "General error: PDO::ATTR_STATEMENT_CLASS requires format array(classname, array(ctor_args)); "
-                    . "the classname must be a string specifying an existing class"
-                );
-            }
+            $value = $this->{$validator}($value);
         }
 
         $this->attributes[$attribute] = $value;
@@ -165,5 +159,28 @@ class Attributes
     private function getValidator($attribute)
     {
         return self::$validators[$attribute];
+    }
+
+    /**
+     * @param array $input
+     *
+     * @return string
+     * @throws Exception
+     * @SuppressWarnings(PHPMD.UnusedPrivateMethod)
+     * @SuppressWarnings(PHPMD.StaticAccess)
+     */
+    private function validateStatementClass(array $input)
+    {
+        if (!isset($input[0])) {
+            Exception::newStatementClassException();
+        }
+
+        $statementClass = $input[0];
+
+        if (!class_exists($statementClass)) {
+            Exception::newStatementClassException();
+        }
+
+        return $statementClass;
     }
 }
