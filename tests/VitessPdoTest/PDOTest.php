@@ -744,8 +744,8 @@ class PDOTest extends \PHPUnit_Framework_TestCase
 
             self::assertArrayHasKey('Default', $row);
             self::assertArrayHasKey(3, $row);
-            self::assertEquals('', $row['Default']);
-            self::assertEquals('', $row[3]);
+            self::assertEquals('Yes', $row['Default']);
+            self::assertEquals('Yes', $row[3]);
 
             self::assertArrayHasKey('Compiled', $row);
             self::assertArrayHasKey(4, $row);
