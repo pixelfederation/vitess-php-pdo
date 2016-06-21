@@ -9,6 +9,7 @@ namespace VitessPdoTest;
 use VitessPdo\PDO;
 use VitessPdo\PDO\PDOStatement;
 use VitessPdo\PDO\Exception as VitessPDOException;
+use VitessPdoTest\Helper\CustomPDOStatement;
 use VitessPdoTest\Helper\VTComboRunner;
 use Exception;
 use PDOException;
@@ -714,6 +715,22 @@ class PDOTest extends \PHPUnit_Framework_TestCase
             self::assertArrayHasKey('Tables_in_user', $row);
             self::assertArrayHasKey(0, $row);
         }
+    }
+
+    public function testStmtClass()
+    {
+        $pdo = $this->getPdo();
+        $pdo->setAttribute(CorePDO::ATTR_STATEMENT_CLASS, CustomPDOStatement::class);
+        $stmt = $pdo->prepare("SELECT * FROM user");
+
+        self::assertInstanceOf(CustomPDOStatement::class, $stmt);
+
+        $result = $stmt->execute();
+        self::assertTrue($result);
+
+        $users = $stmt->fetchAll();
+        self::assertInternalType('array', $users);
+        self::assertNotEmpty($users);
     }
 
     /**

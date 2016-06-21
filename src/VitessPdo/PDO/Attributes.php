@@ -23,12 +23,18 @@ class Attributes
     const DRIVER_NAME = 'vitess';
 
     /**
+     * @const string
+     */
+    const STATEMENT_CLASS = PDOStatement::class;
+
+    /**
      * @var array
      */
     private $attributes = [
         CorePDO::ATTR_ERRMODE => CorePDO::ERRMODE_SILENT,
         CorePDO::ATTR_DEFAULT_FETCH_MODE => CorePDO::FETCH_BOTH,
         CorePDO::ATTR_DRIVER_NAME => self::DRIVER_NAME,
+        CorePDO::ATTR_STATEMENT_CLASS => self::STATEMENT_CLASS,
     ];
 
     /**
@@ -38,6 +44,14 @@ class Attributes
         CorePDO::ATTR_ERRMODE => CorePDO::ATTR_ERRMODE,
         CorePDO::ATTR_DEFAULT_FETCH_MODE => CorePDO::ATTR_DEFAULT_FETCH_MODE,
         CorePDO::ATTR_DRIVER_NAME => CorePDO::ATTR_DRIVER_NAME,
+        CorePDO::ATTR_STATEMENT_CLASS => CorePDO::ATTR_STATEMENT_CLASS,
+    ];
+
+    /**
+     * @var array
+     */
+    private static $validators = [
+        CorePDO::ATTR_STATEMENT_CLASS => 'class_exists',
     ];
 
     /**
@@ -61,6 +75,17 @@ class Attributes
     {
         if (!$this->isImplemented($attribute)) {
             throw new Exception("PDO parameter not implemented - {$attribute}");
+        }
+
+        if ($this->hasValidator($attribute)) {
+            $validator = $this->getValidator($attribute);
+
+            if (!$validator($value)) {
+                throw new Exception(
+                    "General error: PDO::ATTR_STATEMENT_CLASS requires format array(classname, array(ctor_args)); "
+                    . "the classname must be a string specifying an existing class"
+                );
+            }
         }
 
         $this->attributes[$attribute] = $value;
@@ -120,5 +145,25 @@ class Attributes
         }
 
         return false;
+    }
+
+    /**
+     * @param int $attribute
+     *
+     * @return bool
+     */
+    private function hasValidator($attribute)
+    {
+        return isset(self::$validators[$attribute]);
+    }
+
+    /**
+     * @param int $attribute
+     *
+     * @return string
+     */
+    private function getValidator($attribute)
+    {
+        return self::$validators[$attribute];
     }
 }

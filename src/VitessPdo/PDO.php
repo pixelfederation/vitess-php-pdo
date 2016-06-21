@@ -325,7 +325,9 @@ class PDO
      */
     public function prepare($statement, array $driverOptions = [])
     {
-        return new PDOStatement(
+        $statementClass = $this->attributes->get(CorePDO::ATTR_STATEMENT_CLASS);
+
+        return new $statementClass(
             $statement,
             $this->executor,
             $this->attributes,
