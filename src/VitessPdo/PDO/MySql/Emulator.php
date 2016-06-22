@@ -13,6 +13,7 @@ use VitessPdo\PDO\MySql\Handler\ShowCollation;
 use VitessPdo\PDO\MySql\Handler\ShowCreateDatabase;
 use VitessPdo\PDO\MySql\Handler\ShowTables;
 use VitessPdo\PDO\MySql\Handler\ShowTableStatus;
+use VitessPdo\PDO\MySql\Handler\ShowTableStatusLike;
 use VitessPdo\PDO\MySql\Result\Result;
 use VitessPdo\PDO\PDOStatement;
 use VitessPdo\PDO\QueryAnalyzer\Query;
@@ -46,6 +47,7 @@ class Emulator
         Query::TYPE_SHOW => [
             ['getShowExpression', [0]],
             ['getShowExpression', [1]],
+            ['getShowExpression', [2]],
         ],
     ];
 
@@ -133,16 +135,20 @@ class Emulator
 
         $members = new ArrayObject();
         $members->offsetSet(Query::TYPE_USE, new QueryUse());
-        $membersShow = new ArrayObject();
-        $members->offsetSet(Query::TYPE_SHOW, $membersShow);
-        $membersShow->offsetSet(Query::SHOW_EXPRESSION_TABLES, new ShowTables($vtCtldClient));
-        $membersShow->offsetSet(Query::SHOW_EXPRESSION_COLLATION, new ShowCollation());
-        $membersShowCreate = new ArrayObject();
-        $membersShow->offsetSet(Query::SHOW_EXPRESSION_CREATE, $membersShowCreate);
-        $membersShowCreate->offsetSet(Query::SHOW_EXPRESSION_CREATE_DATABASE, new ShowCreateDatabase($this->dsn));
-        $membersShowTable = new ArrayObject();
-        $membersShow->offsetSet(Query::SHOW_EXPRESSION_TABLE, $membersShowTable);
-        $membersShowTable->offsetSet(Query::SHOW_EXPRESSION_TABLE_STATUS, new ShowTableStatus($vtCtldClient));
+        $show = new ArrayObject();
+        $members->offsetSet(Query::TYPE_SHOW, $show);
+        $show->offsetSet(Query::SHOW_EXPRESSION_TABLES, new ShowTables($vtCtldClient));
+        $show->offsetSet(Query::SHOW_EXPRESSION_COLLATION, new ShowCollation());
+        $showCreate = new ArrayObject();
+        $show->offsetSet(Query::SHOW_EXPRESSION_CREATE, $showCreate);
+        $showCreate->offsetSet(Query::SHOW_EXPRESSION_CREATE_DATABASE, new ShowCreateDatabase($this->dsn));
+        $showTable = new ArrayObject();
+        $show->offsetSet(Query::SHOW_EXPRESSION_TABLE, $showTable);
+        $showTableStatus = new ArrayObject();
+        $showTable->offsetSet(Query::SHOW_EXPRESSION_TABLE_STATUS, $showTableStatus);
+        $showTSHandler = new ShowTableStatus($vtCtldClient);
+        $showTableStatus->offsetSet(0, $showTSHandler);
+        $showTableStatus->offsetSet(Query::SHOW_EXPRESSION_TABLE_STATUS_LIKE, new ShowTableStatusLike($vtCtldClient));
 
         return $members;
     }

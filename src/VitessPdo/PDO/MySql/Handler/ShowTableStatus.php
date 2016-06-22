@@ -95,18 +95,29 @@ class ShowTableStatus extends VtCtldBase
      */
     public function getResult(Query $query)
     {
+        $data = $this->prepareData($query);
+        $cursor = new Cursor($data, self::$fields);
+
+        return new Result($cursor);
+    }
+
+    /**
+     * @param Query $query
+     *
+     * @return array
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    protected function prepareData(Query $query)
+    {
         $vtCtldResult = $this->client->getVSchema();
 
         $tplData = self::$tplData;
-        $data = array_map(function ($row) use ($tplData) {
+
+        return array_map(function ($row) use ($tplData) {
             $tmp = $tplData;
             $tmp['Name'] = $tmp[0] = $row[0];
 
             return $tmp;
         }, $vtCtldResult->getData());
-
-        $cursor = new Cursor($data, self::$fields);
-
-        return new Result($cursor);
     }
 }

@@ -61,9 +61,12 @@ class Query
     const SHOW_EXPRESSION_TABLES = 'TABLES';
     const SHOW_EXPRESSION_TABLE = 'TABLE';
     const SHOW_EXPRESSION_TABLE_STATUS = 'STATUS';
+    const SHOW_EXPRESSION_TABLE_STATUS_LIKE = 'LIKE';
     const SHOW_EXPRESSION_COLLATION = 'COLLATION';
     const SHOW_EXPRESSION_CREATE = 'CREATE';
     const SHOW_EXPRESSION_CREATE_DATABASE = 'DATABASE';
+
+    const EXPR_LIKE = 'LIKE';
 
     /**
      * @var array
@@ -153,7 +156,7 @@ class Query
     /**
      *
      * @param int $index
-     * @return string
+     * @return string|int
      * @throws Exception
      */
     public function getShowExpression($index = 0)
@@ -161,6 +164,10 @@ class Query
         if (!isset($this->showExpression[$index])) {
             if ($this->getType() !== self::TYPE_SHOW) {
                 throw new Exception('Not a SHOW query.');
+            }
+
+            if (!isset($this->parsedSql[self::TYPE_SHOW][$index])) {
+                return 0;
             }
 
             $field = $this->parsedSql[self::TYPE_SHOW][$index];
@@ -187,6 +194,31 @@ class Query
         }
 
         return $this->databaseExpression;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getLikeExpression()
+    {
+        $keys = array_keys($this->parsedSql);
+        $primaryIndex = $keys[0];
+        $likeIndex = null;
+
+        foreach ($this->parsedSql[$primaryIndex] as $index => $expr) {
+            if ($expr[self::KEY_BASE_EXPRESSION] === self::EXPR_LIKE) {
+                $likeIndex = $index;
+                break;
+            }
+        }
+
+        if (!$likeIndex) {
+            return null;
+        }
+
+        $field = $this->parsedSql[$primaryIndex][$likeIndex + 1];
+        
+        return $field[self::KEY_BASE_EXPRESSION];
     }
 
     /**

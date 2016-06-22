@@ -23,6 +23,8 @@ use PDO as CorePDO;
  * @SuppressWarnings(PHPMD.TooManyMethods)
  * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings(PHPMD.ExcessiveClassLength)
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
  */
 class PDOTest extends \PHPUnit_Framework_TestCase
 {
@@ -804,6 +806,113 @@ class PDOTest extends \PHPUnit_Framework_TestCase
             self::assertArrayHasKey(0, $row);
             self::assertNotEmpty($row['Name']);
             self::assertNotEmpty($row[0]);
+
+            self::assertArrayHasKey('Engine', $row);
+            self::assertArrayHasKey(1, $row);
+            self::assertEquals('InnoDB', $row['Engine']);
+            self::assertEquals('InnoDB', $row[1]);
+
+            self::assertArrayHasKey('Version', $row);
+            self::assertArrayHasKey(2, $row);
+            self::assertNotEmpty($row['Version']);
+            self::assertNotEmpty($row[2]);
+
+            self::assertArrayHasKey('Row_format', $row);
+            self::assertArrayHasKey(3, $row);
+            self::assertEquals('Compact', $row['Row_format']);
+            self::assertEquals('Compact', $row[3]);
+
+            self::assertArrayHasKey('Rows', $row);
+            self::assertArrayHasKey(4, $row);
+            self::assertEquals('0', $row['Rows']);
+            self::assertEquals('0', $row[4]);
+
+            self::assertArrayHasKey('Avg_row_length', $row);
+            self::assertArrayHasKey(5, $row);
+            self::assertEquals('0', $row['Avg_row_length']);
+            self::assertEquals('0', $row[5]);
+
+            self::assertArrayHasKey('Data_length', $row);
+            self::assertArrayHasKey(6, $row);
+            self::assertEquals('0', $row['Data_length']);
+            self::assertEquals('0', $row[6]);
+
+            self::assertArrayHasKey('Max_data_length', $row);
+            self::assertArrayHasKey(7, $row);
+            self::assertEquals('0', $row['Max_data_length']);
+            self::assertEquals('0', $row[7]);
+
+            self::assertArrayHasKey('Index_length', $row);
+            self::assertArrayHasKey(8, $row);
+            self::assertEquals('0', $row['Index_length']);
+            self::assertEquals('0', $row[8]);
+
+            self::assertArrayHasKey('Data_free', $row);
+            self::assertArrayHasKey(9, $row);
+            self::assertEquals('0', $row['Data_free']);
+            self::assertEquals('0', $row[9]);
+
+            self::assertArrayHasKey('Auto_increment', $row);
+            self::assertArrayHasKey(10, $row);
+            self::assertNull($row['Auto_increment']);
+            self::assertNull($row[10]);
+
+            self::assertArrayHasKey('Create_time', $row);
+            self::assertArrayHasKey(11, $row);
+            self::assertEquals('2016-06-15 13:12:59', $row['Create_time']);
+            self::assertEquals('2016-06-15 13:12:59', $row[11]);
+
+            self::assertArrayHasKey('Update_time', $row);
+            self::assertArrayHasKey(12, $row);
+            self::assertNull($row['Update_time']);
+            self::assertNull($row[12]);
+
+            self::assertArrayHasKey('Check_time', $row);
+            self::assertArrayHasKey(13, $row);
+            self::assertNull($row['Check_time']);
+            self::assertNull($row[13]);
+
+            self::assertArrayHasKey('Collation', $row);
+            self::assertArrayHasKey(14, $row);
+            self::assertEquals('utf8_bin', $row['Collation']);
+            self::assertEquals('utf8_bin', $row[14]);
+
+            self::assertArrayHasKey('Checksum', $row);
+            self::assertArrayHasKey(15, $row);
+            self::assertNull($row['Checksum']);
+            self::assertNull($row[15]);
+
+            self::assertArrayHasKey('Create_options', $row);
+            self::assertArrayHasKey(16, $row);
+            self::assertEquals('', $row['Create_options']);
+            self::assertEquals('', $row[16]);
+
+            self::assertArrayHasKey('Comment', $row);
+            self::assertArrayHasKey(17, $row);
+            self::assertEquals('', $row['Comment']);
+            self::assertEquals('', $row[17]);
+        }
+    }
+
+    /**
+     * @throws Exception
+     * @throws VitessPDOException
+     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+     */
+    public function testShowTableStatusLike()
+    {
+        $pdo = $this->getPdoWithVctldSupport();
+        $stmt = $pdo->query("SHOW TABLE STATUS LIKE 'user'");
+
+        self::assertInstanceOf(PDOStatement::class, $stmt);
+        $rows = $stmt->fetchAll(CorePDO::FETCH_BOTH);
+        self::assertCount(1, $rows);
+
+        foreach ($rows as $row) {
+            self::assertArrayHasKey('Name', $row);
+            self::assertArrayHasKey(0, $row);
+            self::assertEquals('user', $row['Name']);
+            self::assertEquals('user', $row[0]);
 
             self::assertArrayHasKey('Engine', $row);
             self::assertArrayHasKey(1, $row);
