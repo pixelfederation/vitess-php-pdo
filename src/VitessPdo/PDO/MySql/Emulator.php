@@ -12,6 +12,7 @@ use VitessPdo\PDO\MySql\Handler\QueryUse;
 use VitessPdo\PDO\MySql\Handler\ShowCollation;
 use VitessPdo\PDO\MySql\Handler\ShowCreateDatabase;
 use VitessPdo\PDO\MySql\Handler\ShowTables;
+use VitessPdo\PDO\MySql\Handler\ShowTableStatus;
 use VitessPdo\PDO\MySql\Result\Result;
 use VitessPdo\PDO\PDOStatement;
 use VitessPdo\PDO\QueryAnalyzer\Query;
@@ -139,6 +140,9 @@ class Emulator
         $membersShowCreate = new ArrayObject();
         $membersShow->offsetSet(Query::SHOW_EXPRESSION_CREATE, $membersShowCreate);
         $membersShowCreate->offsetSet(Query::SHOW_EXPRESSION_CREATE_DATABASE, new ShowCreateDatabase($this->dsn));
+        $membersShowTable = new ArrayObject();
+        $membersShow->offsetSet(Query::SHOW_EXPRESSION_TABLE, $membersShowTable);
+        $membersShowTable->offsetSet(Query::SHOW_EXPRESSION_TABLE_STATUS, new ShowTableStatus($vtCtldClient));
 
         return $members;
     }
