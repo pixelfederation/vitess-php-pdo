@@ -36,7 +36,17 @@ final class VTComboRunner
     /**
      * @const string
      */
-    const KEYSPACE = 'user';
+    const KEYSPACE1 = 'user';
+
+    /**
+     * @const string
+     */
+    const KEYSPACE2 = 'lookup';
+
+    /**
+     * @const string
+     */
+    const CELL = 'test';
 
     /**
      * @throws RuntimeException

@@ -58,15 +58,15 @@ class Query
     const KEY_NO_QUOTES = 'no_quotes';
     const KEY_PARTS = 'parts';
 
-    const SHOW_EXPRESSION_TABLES = 'TABLES';
-    const SHOW_EXPRESSION_TABLE = 'TABLE';
-    const SHOW_EXPRESSION_TABLE_STATUS = 'STATUS';
-    const SHOW_EXPRESSION_TABLE_STATUS_LIKE = 'LIKE';
-    const SHOW_EXPRESSION_COLLATION = 'COLLATION';
-    const SHOW_EXPRESSION_CREATE = 'CREATE';
-    const SHOW_EXPRESSION_CREATE_DATABASE = 'DATABASE';
-
-    const EXPR_LIKE = 'LIKE';
+    const EXPRESSION_TABLES = 'TABLES';
+    const EXPRESSION_TABLE = 'TABLE';
+    const EXPRESSION_STATUS = 'STATUS';
+    const EXPRESSION_LIKE = 'LIKE';
+    const EXPRESSION_COLLATION = 'COLLATION';
+    const EXPRESSION_CREATE = 'CREATE';
+    const EXPRESSION_DATABASE = 'DATABASE';
+    const EXPRESSION_INDEX = 'INDEX';
+    const EXPRESSION_FROM = 'FROM';
 
     /**
      * @var array
@@ -155,22 +155,41 @@ class Query
 
     /**
      *
+     * @return string
+     * @throws Exception
+     */
+    public function getDbNameForUse()
+    {
+        if ($this->getType() !== self::TYPE_USE) {
+            throw new Exception("Not a USE query.");
+        }
+
+        if (!isset($this->parsedSql[self::TYPE_USE][1])) {
+            throw new Exception("Database name missing.");
+        }
+
+        return $this->parsedSql[self::TYPE_USE][1];
+    }
+
+    /**
+     *
+     * @param string $type
      * @param int $index
      * @return string|int
      * @throws Exception
      */
-    public function getShowExpression($index = 0)
+    public function getExpressionForType($type, $index = 0)
     {
         if (!isset($this->showExpression[$index])) {
-            if ($this->getType() !== self::TYPE_SHOW) {
-                throw new Exception('Not a SHOW query.');
+            if ($this->getType() !== $type) {
+                throw new Exception("Not a $type query.");
             }
 
-            if (!isset($this->parsedSql[self::TYPE_SHOW][$index])) {
+            if (!isset($this->parsedSql[$type][$index])) {
                 return 0;
             }
 
-            $field = $this->parsedSql[self::TYPE_SHOW][$index];
+            $field = $this->parsedSql[$type][$index];
             $this->showExpression[$index] = $field[self::KEY_BASE_EXPRESSION];
         }
 
@@ -206,7 +225,7 @@ class Query
         $likeIndex = null;
 
         foreach ($this->parsedSql[$primaryIndex] as $index => $expr) {
-            if ($expr[self::KEY_BASE_EXPRESSION] === self::EXPR_LIKE) {
+            if ($expr[self::KEY_BASE_EXPRESSION] === self::EXPRESSION_LIKE) {
                 $likeIndex = $index;
                 break;
             }
@@ -217,7 +236,7 @@ class Query
         }
 
         $field = $this->parsedSql[$primaryIndex][$likeIndex + 1];
-        
+
         return $field[self::KEY_BASE_EXPRESSION];
     }
 

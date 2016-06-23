@@ -6,6 +6,7 @@
 
 namespace VitessPdo\PDO\MySql\Handler;
 
+use VitessPdo\PDO\Dsn\Dsn;
 use VitessPdo\PDO\MySql\Result\EmptyResult;
 use VitessPdo\PDO\QueryAnalyzer\Query;
 
@@ -19,6 +20,21 @@ class QueryUse extends Base
 {
 
     /**
+     * @var Dsn
+     */
+    private $dsn;
+
+    /**
+     * QueryUse constructor.
+     *
+     * @param Dsn $dsn
+     */
+    public function __construct(Dsn $dsn)
+    {
+        $this->dsn = $dsn;
+    }
+
+    /**
      * @param Query $query
      *
      * @return EmptyResult
@@ -26,6 +42,9 @@ class QueryUse extends Base
      */
     public function getResult(Query $query)
     {
+        $keyspace = $query->getDbNameForUse();
+        $this->dsn->getConfig()->setKeyspace($keyspace);
+
         return new EmptyResult();
     }
 }

@@ -23,7 +23,7 @@ class DsnTest extends \PHPUnit_Framework_TestCase
      */
     public function testConstruct()
     {
-        $dsnString = "vitess:dbname=testdb;host=localhost;port=15991";
+        $dsnString = "vitess:keyspace=testdb;host=localhost;port=15991;cell=testcell";
         $dsn = null;
 
         try {
@@ -40,9 +40,9 @@ class DsnTest extends \PHPUnit_Framework_TestCase
     /**
      *
      */
-    public function testWrongDsn()
+    public function testWrongDsn1()
     {
-        $dsnString = "vitess-dbname=testdb;host=localhost;port=15991";
+        $dsnString = "vitess-keyspace=testdb;host=localhost;port=15991";
 
         $this->expectException(DriverException::class);
         $this->expectExceptionMessage("Invalid dsn string - exactly one colon has to be present.");
@@ -54,7 +54,8 @@ class DsnTest extends \PHPUnit_Framework_TestCase
      */
     public function testVtctld()
     {
-        $dsnString = "vitess:dbname=testdb;host=localhost;port=15991;vtctld_host=localhost;vtctld_port=12345";
+        $dsnString = "vitess:keyspace=testdb;host=localhost;port=15991;cell=testcell;"
+                   . "vtctld_host=localhost;vtctld_port=12345";
         $dsn = null;
 
         try {

@@ -55,7 +55,12 @@ final class Client
      */
     public function getVSchema()
     {
-        $keyspace = $this->dsn->getConfig()->getDbName();
+        $keyspace = $this->dsn->getConfig()->getKeyspace();
+
+        if (!$keyspace) {
+            throw new Exception("SQLSTATE[3D000]: Invalid catalog name: 1046 No database selected");
+        }
+
         $output = $this->executeCommand(self::COMMAND_GET_VSCHEMA, [$keyspace]);
 
         return new GetVSchema($keyspace, $output);

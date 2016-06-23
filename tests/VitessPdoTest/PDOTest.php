@@ -32,15 +32,19 @@ class PDOTest extends \PHPUnit_Framework_TestCase
     /**
      * @var string
      */
-    private $dsn = "vitess:dbname=" . VTComboRunner::KEYSPACE
-            . ";host=" . VTComboRunner::HOST . ";port=" . VTComboRunner::PORT;
+    private $dsn = "vitess:keyspace={KEYSPACE};host=" . VTComboRunner::HOST
+                 . ";port=" . VTComboRunner::PORT
+                 . ";cell=" . VTComboRunner::CELL ;
 
     /**
      * @var string
      */
-    private $dsnWithVtctld = "vitess:dbname=" . VTComboRunner::KEYSPACE
-            . ";host=" . VTComboRunner::HOST . ";port=" . VTComboRunner::PORT
-            . ";vtctld_host=" . VTComboRunner::HOST . ";vtctld_port=" . VTComboRunner::PORT;
+    private $dsnWithVtctld = "vitess:keyspace={KEYSPACE};"
+                           . "host=" . VTComboRunner::HOST
+                           . ";port=" . VTComboRunner::PORT
+                           . ";cell=" . VTComboRunner::CELL
+                           . ";vtctld_host=" . VTComboRunner::HOST
+                           . ";vtctld_port=" . VTComboRunner::PORT;
 
     /**
      * @var array
@@ -699,7 +703,7 @@ class PDOTest extends \PHPUnit_Framework_TestCase
     public function testUseDb()
     {
         $pdo = $this->getPdoWithVctldSupport();
-        $stmt = $pdo->query("USE tsm");
+        $stmt = $pdo->query("USE user");
 
         self::assertInstanceOf(PDOStatement::class, $stmt);
         self::assertEquals(0, $stmt->rowCount());
@@ -1020,16 +1024,20 @@ class PDOTest extends \PHPUnit_Framework_TestCase
     /**
      * @return PDO
      */
-    private function getPdo()
+    private function getPdo($keyspace = VTComboRunner::KEYSPACE1)
     {
-        return new PDO($this->dsn);
+        $dsn = str_replace("{KEYSPACE}", $keyspace, $this->dsn);
+
+        return new PDO($dsn);
     }
 
     /**
      * @return PDO
      */
-    private function getPdoWithVctldSupport()
+    private function getPdoWithVctldSupport($keyspace = VTComboRunner::KEYSPACE1)
     {
-        return new PDO($this->dsnWithVtctld);
+        $dsn = str_replace("{KEYSPACE}", $keyspace, $this->dsnWithVtctld);
+
+        return new PDO($dsn);
     }
 }

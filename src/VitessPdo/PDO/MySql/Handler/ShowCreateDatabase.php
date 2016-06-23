@@ -83,7 +83,7 @@ class ShowCreateDatabase extends Base
     private function getDatabase(Query $query)
     {
         $queryDb = $query->getDatabaseExpression();
-        $dsnDb = $this->dsn->getConfig()->getDbName();
+        $dsnDb = $this->dsn->getConfig()->getKeyspace();
 
         if ($queryDb !== $dsnDb) {
             throw new Exception('Invalid database in query - ' . $query->getSql());

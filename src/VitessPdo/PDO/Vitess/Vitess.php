@@ -58,12 +58,11 @@ class Vitess implements ExecutorInterface
      * Vitess constructor.
      *
      * @param string $connectionString
-     * @param string $dbName
      * @param Attributes $attributes
      * @throws PDOException
      * @SuppressWarnings(PHPMD.StaticAccess)
      */
-    public function __construct($connectionString, $dbName, Attributes $attributes)
+    public function __construct($connectionString, Attributes $attributes)
     {
         $this->attributes = $attributes;
 
@@ -71,7 +70,7 @@ class Vitess implements ExecutorInterface
             $this->ctx        = Context::getDefault();
             $credentials      = ChannelCredentials::createInsecure();
             $this->grpcClient = new Client($connectionString, ['credentials' => $credentials]);
-            $this->connection = new VTGateConn($this->grpcClient, $dbName);
+            $this->connection = new VTGateConn($this->grpcClient);
         } catch (Exception $e) {
             throw new PDOException("Error while connecting to vitess: " . $e->getMessage(), $e->getCode(), $e);
         }

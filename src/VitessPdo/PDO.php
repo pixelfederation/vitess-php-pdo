@@ -90,10 +90,9 @@ class PDO
         $config               = $this->dsn->getConfig();
         $host                 = $config->getHost();
         $port                 = $config->getPort();
-        $dbName               = $config->getDbName();
         $connectionString     = "{$host}:{$port}";
         $this->attributes     = new Attributes();
-        $this->vitess         = new Vitess($connectionString, $dbName, $this->attributes);
+        $this->vitess         = new Vitess($connectionString, $this->attributes);
         $this->executor       = $this->vitess;
 
         if ($config->hasVtCtldData()) {

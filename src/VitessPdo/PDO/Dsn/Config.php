@@ -25,6 +25,11 @@ class Config
     /**
      * @var string
      */
+    private $cell;
+
+    /**
+     * @var string
+     */
     private $host;
 
     /**
@@ -35,7 +40,7 @@ class Config
     /**
      * @var string
      */
-    private $dbName;
+    private $keyspace = '';
 
     /**
      * @var string
@@ -50,7 +55,12 @@ class Config
     /**
      * @const string
      */
-    const CONFIG_DBNAME = 'dbname';
+    const CONFIG_CELL = 'cell';
+
+    /**
+     * @const string
+     */
+    const CONFIG_KEYSPACE = 'keyspace';
 
     /**
      * @const string
@@ -94,6 +104,14 @@ class Config
     /**
      * @return string
      */
+    public function getCell()
+    {
+        return $this->cell;
+    }
+
+    /**
+     * @return string
+     */
     public function getHost()
     {
         return $this->host;
@@ -110,9 +128,21 @@ class Config
     /**
      * @return string
      */
-    public function getDbName()
+    public function getKeyspace()
     {
-        return $this->dbName;
+        return $this->keyspace;
+    }
+
+    /**
+     * @param string $keyspace
+     *
+     * @return Config
+     */
+    public function setKeyspace($keyspace)
+    {
+        $this->keyspace = $keyspace;
+
+        return $this;
     }
 
     /**
@@ -145,11 +175,26 @@ class Config
     private function validate()
     {
         $config = $this->parse();
+        $this->setCell($config);
         $this->setHost($config);
         $this->setPort($config);
-        $this->setDbName($config);
+        $this->setConfigKeyspace($config);
         $this->setVtCtlHost($config);
         $this->setVtCtlPort($config);
+    }
+
+    /**
+     * @param array $config
+     *
+     * @throws Exception
+     */
+    private function setCell(array $config)
+    {
+        if (!isset($config[self::CONFIG_CELL]) || trim($config[self::CONFIG_CELL]) === "") {
+            throw new Exception("Invalid config - cell missing.");
+        }
+
+        $this->cell = trim($config[self::CONFIG_CELL]);
     }
 
     /**
@@ -190,13 +235,13 @@ class Config
      *
      * @throws Exception
      */
-    private function setDbName(array $config)
+    private function setConfigKeyspace(array $config)
     {
-        if (!isset($config[self::CONFIG_DBNAME]) || trim($config[self::CONFIG_DBNAME]) === "") {
-            throw new Exception("Invalid config - db name missing.");
+        if (!isset($config[self::CONFIG_KEYSPACE]) || trim($config[self::CONFIG_KEYSPACE]) === "") {
+            return;
         }
 
-        $this->dbName = trim($config[self::CONFIG_DBNAME]);
+        $this->keyspace = trim($config[self::CONFIG_KEYSPACE]);
     }
 
     /**

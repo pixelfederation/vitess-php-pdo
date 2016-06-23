@@ -45,9 +45,9 @@ class Emulator
      */
     private static $handlerTypes = [
         Query::TYPE_SHOW => [
-            ['getShowExpression', [0]],
-            ['getShowExpression', [1]],
-            ['getShowExpression', [2]],
+            ['getExpressionForType', [Query::TYPE_SHOW, 0]],
+            ['getExpressionForType', [Query::TYPE_SHOW, 1]],
+            ['getExpressionForType', [Query::TYPE_SHOW, 2]],
         ],
     ];
 
@@ -134,21 +134,21 @@ class Emulator
         $vtCtldClient = new Client($this->dsn);
 
         $members = new ArrayObject();
-        $members->offsetSet(Query::TYPE_USE, new QueryUse());
+        $members->offsetSet(Query::TYPE_USE, new QueryUse($this->dsn));
         $show = new ArrayObject();
         $members->offsetSet(Query::TYPE_SHOW, $show);
-        $show->offsetSet(Query::SHOW_EXPRESSION_TABLES, new ShowTables($vtCtldClient));
-        $show->offsetSet(Query::SHOW_EXPRESSION_COLLATION, new ShowCollation());
+        $show->offsetSet(Query::EXPRESSION_TABLES, new ShowTables($vtCtldClient));
+        $show->offsetSet(Query::EXPRESSION_COLLATION, new ShowCollation());
         $showCreate = new ArrayObject();
-        $show->offsetSet(Query::SHOW_EXPRESSION_CREATE, $showCreate);
-        $showCreate->offsetSet(Query::SHOW_EXPRESSION_CREATE_DATABASE, new ShowCreateDatabase($this->dsn));
+        $show->offsetSet(Query::EXPRESSION_CREATE, $showCreate);
+        $showCreate->offsetSet(Query::EXPRESSION_DATABASE, new ShowCreateDatabase($this->dsn));
         $showTable = new ArrayObject();
-        $show->offsetSet(Query::SHOW_EXPRESSION_TABLE, $showTable);
+        $show->offsetSet(Query::EXPRESSION_TABLE, $showTable);
         $showTableStatus = new ArrayObject();
-        $showTable->offsetSet(Query::SHOW_EXPRESSION_TABLE_STATUS, $showTableStatus);
+        $showTable->offsetSet(Query::EXPRESSION_STATUS, $showTableStatus);
         $showTSHandler = new ShowTableStatus($vtCtldClient);
         $showTableStatus->offsetSet(0, $showTSHandler);
-        $showTableStatus->offsetSet(Query::SHOW_EXPRESSION_TABLE_STATUS_LIKE, new ShowTableStatusLike($vtCtldClient));
+        $showTableStatus->offsetSet(Query::EXPRESSION_LIKE, new ShowTableStatusLike($vtCtldClient));
 
         return $members;
     }
