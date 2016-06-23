@@ -38,8 +38,7 @@ def start_vitess():
           '--proto_topo', text_format.MessageToString(topology,
                                                       as_one_line=True),
           '--web_dir', os.path.join(vttop, 'web/vtctld'),
-          '--schema_dir', 'schema',
-          '--vschema', 'schema/vschema.json']
+          '--schema_dir', 'schema']
     sp = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
 
     # This load will make us wait for vitess to come up.
