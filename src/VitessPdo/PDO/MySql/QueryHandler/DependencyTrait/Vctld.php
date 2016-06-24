@@ -4,17 +4,17 @@
  * @copyright  PIXELFEDERATION s.r.o
  */
 
-namespace VitessPdo\PDO\MySql\Handler;
+namespace VitessPdo\PDO\MySql\QueryHandler\DependencyTrait;
 
 use VitessPdo\PDO\VtCtld\Client;
 
 /**
- * Description of class VtCtldBase
+ * Description of trait Vctld
  *
  * @author  mfris
- * @package VitessPdo\PDO\MySql\Handler
+ * @package VitessPdo\PDO\MySql\QueryHandler\DependencyTrait
  */
-abstract class VtCtldBase extends Base
+trait Vctld
 {
 
     /**
@@ -23,11 +23,11 @@ abstract class VtCtldBase extends Base
     protected $client;
 
     /**
-     * Base constructor.
+     * VctldMember constructor.
      *
      * @param Client $client
      */
-    public function __construct(Client $client)
+    private function setClient(Client $client)
     {
         $this->client = $client;
     }

@@ -14,7 +14,7 @@ use VitessPdo\PDO\Exception;
  * @author  mfris
  * @package VitessPdo\PDO\Analyzer
  */
-class Query
+class Query implements QueryInterface
 {
 
     /**
@@ -25,38 +25,11 @@ class Query
     /**
      * @var array
      */
-    private $parsedSql;
-
-    /**
-     * @var string
-     */
-    private $type;
-
-    /**
-     * @var array
-     */
-    private $showExpression = [];
-
-    /**
-     * @var string
-     */
-    private $databaseExpression;
+    protected $parsedSql;
 
     const SQL_COMMAND_INSERT = 'INSERT';
     const SQL_COMMAND_UPDATE = 'UPDATE';
     const SQL_COMMAND_DELETE = 'DELETE';
-
-    const TYPE_SELECT = 'SELECT';
-    const TYPE_INSERT = 'INSERT';
-    const TYPE_UPDATE = 'UPDATE';
-    const TYPE_DELETE = 'DELETE';
-    const TYPE_USE    = 'USE';
-    const TYPE_SHOW   = 'SHOW';
-    const TYPE_UNKNOWN = 'unknown';
-
-    const KEY_BASE_EXPRESSION = 'base_expr';
-    const KEY_NO_QUOTES = 'no_quotes';
-    const KEY_PARTS = 'parts';
 
     const EXPRESSION_TABLES = 'TABLES';
     const EXPRESSION_TABLE = 'TABLE';
@@ -101,6 +74,14 @@ class Query
     }
 
     /**
+     * @return array
+     */
+    public function getParsedSql()
+    {
+        return $this->parsedSql;
+    }
+
+    /**
      * @return bool
      */
     public function isInsert()
@@ -135,118 +116,27 @@ class Query
     }
 
     /**
-     * @return string
-     */
-    public function getType()
-    {
-        if ($this->type === null) {
-            $this->type = self::TYPE_UNKNOWN;
-
-            foreach (self::$types as $type) {
-                if ($this->isTypeParsed($type)) {
-                    $this->type = $type;
-                    break;
-                }
-            }
-        }
-
-        return $this->type;
-    }
-
-    /**
-     *
-     * @return string
-     * @throws Exception
-     */
-    public function getDbNameForUse()
-    {
-        if ($this->getType() !== self::TYPE_USE) {
-            throw new Exception("Not a USE query.");
-        }
-
-        if (!isset($this->parsedSql[self::TYPE_USE][1])) {
-            throw new Exception("Database name missing.");
-        }
-
-        return $this->parsedSql[self::TYPE_USE][1];
-    }
-
-    /**
-     *
-     * @param string $type
-     * @param int $index
-     * @return string|int
-     * @throws Exception
-     */
-    public function getExpressionForType($type, $index = 0)
-    {
-        if (!isset($this->showExpression[$index])) {
-            if ($this->getType() !== $type) {
-                throw new Exception("Not a $type query.");
-            }
-
-            if (!isset($this->parsedSql[$type][$index])) {
-                return 0;
-            }
-
-            $field = $this->parsedSql[$type][$index];
-            $this->showExpression[$index] = $field[self::KEY_BASE_EXPRESSION];
-        }
-
-        return $this->showExpression[$index];
-    }
-
-    /**
-     * @return string
-     * @throws Exception
-     */
-    public function getDatabaseExpression()
-    {
-        if ($this->databaseExpression === null) {
-            /** @todo switch statement for other expression types as SHOW */
-            if ($this->getType() !== self::TYPE_SHOW) {
-                throw new Exception('Not a SHOW query.');
-            }
-
-            $databaseExpression = $this->parsedSql[self::TYPE_SHOW][2];
-            $this->databaseExpression = $databaseExpression[self::KEY_NO_QUOTES][self::KEY_PARTS][0];
-        }
-
-        return $this->databaseExpression;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getLikeExpression()
-    {
-        $keys = array_keys($this->parsedSql);
-        $primaryIndex = $keys[0];
-        $likeIndex = null;
-
-        foreach ($this->parsedSql[$primaryIndex] as $index => $expr) {
-            if ($expr[self::KEY_BASE_EXPRESSION] === self::EXPRESSION_LIKE) {
-                $likeIndex = $index;
-                break;
-            }
-        }
-
-        if (!$likeIndex) {
-            return null;
-        }
-
-        $field = $this->parsedSql[$primaryIndex][$likeIndex + 1];
-
-        return $field[self::KEY_BASE_EXPRESSION];
-    }
-
-    /**
      * @param string $type
      *
      * @return bool
+     * @throws Exception
      */
-    private function isTypeParsed($type)
+    public function isType($type)
     {
+        if (!$this->isTypeSupported($type)) {
+            throw new Exception('Unsupported query type');
+        }
+
         return isset($this->parsedSql[$type]);
+    }
+
+    /**
+     * @param $type
+     *
+     * @return bool
+     */
+    private function isTypeSupported($type)
+    {
+        return isset(self::$types[$type]);
     }
 }

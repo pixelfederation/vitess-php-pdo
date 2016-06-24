@@ -7,6 +7,7 @@
 namespace VitessPdo\PDO\QueryExecutor;
 
 use VitessPdo\PDO\MySql\Emulator as MySqlEmulator;
+use VitessPdo\PDO\QueryAnalyzer\QueryInterface;
 use VitessPdo\PDO\Vitess\Vitess;
 use VitessPdo\PDO\QueryAnalyzer\Query as Query;
 
@@ -42,12 +43,12 @@ final class Executor implements ExecutorInterface
     }
 
     /**
-     * @param Query $query
-     * @param array $params
+     * @param QueryInterface $query
+     * @param array          $params
      *
      * @return ResultInterface
      */
-    public function executeWrite(Query $query, array $params = [])
+    public function executeWrite(QueryInterface $query, array $params = [])
     {
         $result = $this->mysqlEmulator->getResult($query);
 
@@ -59,12 +60,12 @@ final class Executor implements ExecutorInterface
     }
 
     /**
-     * @param Query $query
-     * @param array $params
+     * @param QueryInterface $query
+     * @param array          $params
      *
      * @return ResultInterface
      */
-    public function executeRead(Query $query, array $params = [])
+    public function executeRead(QueryInterface $query, array $params = [])
     {
         $result = $this->mysqlEmulator->getResult($query);
 

@@ -9,23 +9,24 @@ namespace VitessPdo\PDO\MySql\Handler;
 use VitessPdo\PDO\MySql\Cursor\Cursor;
 use VitessPdo\PDO\MySql\Result\Result;
 use VitessPdo\PDO\QueryAnalyzer\Query;
+use VitessPdo\PDO\QueryAnalyzer\QueryInterface;
 
 /**
- * Description of class ShowTables
+ * Description of class ShowIndexFrom
  *
  * @author  mfris
  * @package VitessPdo\PDO\MySql\Handler
  */
-class ShowTables extends VtCtldBase
+class ShowIndexFrom extends VtCtldBase
 {
 
     /**
-     * @param Query $query
+     * @param QueryInterface $query
      *
      * @return Result
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getResult(Query $query)
+    public function getResult(QueryInterface $query)
     {
         $vtCtldResult = $this->client->getVSchema();
         $cursor = new Cursor($vtCtldResult->getData(), $vtCtldResult->getFields());

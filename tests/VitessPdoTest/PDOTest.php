@@ -614,7 +614,7 @@ class PDOTest extends \PHPUnit_Framework_TestCase
 
     public function testGetAttribute()
     {
-        $pdo = $this->getPdo();
+        $pdo = $this->getPdo(VTComboRunner::KEYSPACE1, true);
 
         $result = $pdo->getAttribute(CorePDO::ATTR_ERRMODE);
         self::assertEquals(CorePDO::ERRMODE_SILENT, $result);
@@ -659,7 +659,7 @@ class PDOTest extends \PHPUnit_Framework_TestCase
 
     public function testQueryErrorSilent()
     {
-        $pdo = $this->getPdo();
+        $pdo = $this->getPdo(VTComboRunner::KEYSPACE1, true);
         $stmt = $pdo->query("SELECT * FROM non_existent_table");
 
         self::assertFalse($stmt);
@@ -700,6 +700,11 @@ class PDOTest extends \PHPUnit_Framework_TestCase
         self::assertArrayHasKey(2, $error);
     }
 
+    /**
+     * @group mysql_emulator
+     * @throws Exception
+     * @throws VitessPDOException
+     */
     public function testUseDb()
     {
         $pdo = $this->getPdoWithVctldSupport();
@@ -724,6 +729,11 @@ class PDOTest extends \PHPUnit_Framework_TestCase
         }
     }
 
+    /**
+     * @group mysql_emulator
+     * @throws Exception
+     * @throws VitessPDOException
+     */
     public function testShowCollation()
     {
         $pdo = $this->getPdoWithVctldSupport();
@@ -766,6 +776,11 @@ class PDOTest extends \PHPUnit_Framework_TestCase
         }
     }
 
+    /**
+     * @group mysql_emulator
+     * @throws Exception
+     * @throws VitessPDOException
+     */
     public function testShowCreateDatabase()
     {
         $pdo = $this->getPdoWithVctldSupport();
@@ -792,6 +807,7 @@ class PDOTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @group mysql_emulator
      * @throws Exception
      * @throws VitessPDOException
      * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
@@ -899,6 +915,7 @@ class PDOTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @group mysql_emulator
      * @throws Exception
      * @throws VitessPDOException
      * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
@@ -1005,6 +1022,28 @@ class PDOTest extends \PHPUnit_Framework_TestCase
         }
     }
 
+    /**
+     * @group mysql_emulator
+     * @throws Exception
+     * @throws VitessPDOException
+     */
+    public function testSelectUser()
+    {
+        $pdo = $this->getPdoWithVctldSupport();
+        $stmt = $pdo->query("SELECT USER()");
+
+        self::assertInstanceOf(PDOStatement::class, $stmt);
+        $rows = $stmt->fetchAll(CorePDO::FETCH_BOTH);
+        self::assertCount(1, $rows);
+
+        foreach ($rows as $row) {
+            self::assertArrayHasKey('USER()', $row);
+            self::assertArrayHasKey(0, $row);
+            self::assertEquals('vitess@vitess', $row['USER()']);
+            self::assertEquals('vitess@vitess', $row[0]);
+        }
+    }
+
     public function testStmtClass()
     {
         $pdo = $this->getPdo();
@@ -1023,12 +1062,19 @@ class PDOTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @return PDO
+     * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
      */
-    private function getPdo($keyspace = VTComboRunner::KEYSPACE1)
+    private function getPdo($keyspace = VTComboRunner::KEYSPACE1, $silent = false)
     {
         $dsn = str_replace("{KEYSPACE}", $keyspace, $this->dsn);
 
-        return new PDO($dsn);
+        $pdo = new PDO($dsn);
+
+        if (!$silent) {
+            $pdo->setAttribute(CorePDO::ATTR_ERRMODE, CorePDO::ERRMODE_EXCEPTION);
+        }
+
+        return $pdo;
     }
 
     /**
@@ -1038,6 +1084,9 @@ class PDOTest extends \PHPUnit_Framework_TestCase
     {
         $dsn = str_replace("{KEYSPACE}", $keyspace, $this->dsnWithVtctld);
 
-        return new PDO($dsn);
+        $pdo = new PDO($dsn);
+        $pdo->setAttribute(CorePDO::ATTR_ERRMODE, CorePDO::ERRMODE_EXCEPTION);
+
+        return $pdo;
     }
 }

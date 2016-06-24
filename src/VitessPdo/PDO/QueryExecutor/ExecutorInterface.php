@@ -7,6 +7,7 @@
 namespace VitessPdo\PDO\QueryExecutor;
 
 use VitessPdo\PDO\QueryAnalyzer\Query as Query;
+use VitessPdo\PDO\QueryAnalyzer\QueryInterface;
 
 /**
  * Description of interface ExecutorInterface
@@ -18,18 +19,18 @@ interface ExecutorInterface
 {
 
     /**
-     * @param Query $query
-     * @param array $params
+     * @param QueryInterface $query
+     * @param array          $params
      *
      * @return ResultInterface
      */
-    public function executeWrite(Query $query, array $params = []);
+    public function executeWrite(QueryInterface $query, array $params = []);
 
     /**
-     * @param Query $query
-     * @param array $params
+     * @param QueryInterface $query
+     * @param array          $params
      *
      * @return ResultInterface
      */
-    public function executeRead(Query $query, array $params = []);
+    public function executeRead(QueryInterface $query, array $params = []);
 }

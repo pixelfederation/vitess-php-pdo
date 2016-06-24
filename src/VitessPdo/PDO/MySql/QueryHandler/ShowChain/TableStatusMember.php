@@ -4,21 +4,21 @@
  * @copyright  PIXELFEDERATION s.r.o
  */
 
-namespace VitessPdo\PDO\MySql\Handler;
+namespace VitessPdo\PDO\MySql\QueryHandler\ShowChain;
 
-use VitessPdo\PDO\MySql\Cursor\Cursor;
+use VitessPdo\PDO\Exception;
+use VitessPdo\PDO\MySql\QueryHandler\VctldMember;
 use VitessPdo\PDO\MySql\Result\Result;
-use VitessPdo\PDO\QueryAnalyzer\Query;
+use VitessPdo\PDO\QueryAnalyzer\QueryInterface;
+use VitessPdo\PDO\QueryAnalyzer\ShowQuery;
 
 /**
- * Description of class ShowTableStatus
- *
- * @todo try to get some data from vttablet schemaz api
+ * Description of class TableStatusMember
  *
  * @author  mfris
- * @package VitessPdo\PDO\MySql\Handler
+ * @package VitessPdo\PDO\MySql\Handler\Chain
  */
-class ShowTableStatus extends VtCtldBase
+class TableStatusMember extends VctldMember
 {
 
     /**
@@ -88,26 +88,32 @@ class ShowTableStatus extends VtCtldBase
     ];
 
     /**
-     * @param Query $query
+     * @param QueryInterface $query
      *
-     * @return Result
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @return Result|null
+     * @throws Exception
      */
-    public function getResult(Query $query)
+    public function process(QueryInterface $query)
     {
-        $data = $this->prepareData($query);
-        $cursor = new Cursor($data, self::$fields);
+        if (!$query instanceof ShowQuery || $query->getObject() !== ShowQuery::EXPRESSION_TABLE_STATUS) {
+            return null;
+        }
 
-        return new Result($cursor);
+        $data = $this->prepareData();
+        $likeExpr = $query->getLikeExpression();
+
+        if ($likeExpr) {
+            $data = $this->filterData($data, $likeExpr);
+        }
+
+        return $this->getResultFromData($data, self::$fields);
     }
 
     /**
-     * @param Query $query
-     *
      * @return array
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @throws Exception
      */
-    protected function prepareData(Query $query)
+    protected function prepareData()
     {
         $vtCtldResult = $this->client->getVSchema();
 
@@ -119,5 +125,25 @@ class ShowTableStatus extends VtCtldBase
 
             return $tmp;
         }, $vtCtldResult->getData());
+    }
+
+    /**
+     * @param array $data
+     * @param string $likeExpr
+     *
+     * @return array
+     */
+    protected function filterData(array $data, $likeExpr)
+    {
+        $pattern = '/^' . str_replace('%', '.*', trim($likeExpr, "'")) . '$/';
+        $newData = [];
+
+        foreach ($data as $row) {
+            if (preg_match($pattern, $row['Name'])) {
+                $newData[] = $row;
+            }
+        }
+
+        return $newData;
     }
 }

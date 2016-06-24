@@ -7,6 +7,7 @@
 namespace VitessPdo\PDO\Vitess;
 
 use VitessPdo\PDO\Attributes;
+use VitessPdo\PDO\QueryAnalyzer\QueryInterface;
 use VitessPdo\PDO\QueryExecutor\ExecutorInterface;
 use VitessPdo\PDO\Exception;
 use VitessPdo\PDO\QueryAnalyzer\Query as Query;
@@ -145,13 +146,13 @@ class Vitess implements ExecutorInterface
     }
 
     /**
-     * @param Query $query
-     * @param array $params
+     * @param QueryInterface $query
+     * @param array          $params
      *
      * @return Result
      * @throws PDOException
      */
-    public function executeWrite(Query $query, array $params = [])
+    public function executeWrite(QueryInterface $query, array $params = [])
     {
         $isInTransaction = $this->isInTransaction();
         $transaction = $this->getTransaction();
@@ -178,13 +179,13 @@ class Vitess implements ExecutorInterface
     }
 
     /**
-     * @param Query $query
-     * @param array  $params
+     * @param QueryInterface $query
+     * @param array          $params
      *
      * @return Result
      * @throws PDOException
      */
-    public function executeRead(Query $query, array $params = [])
+    public function executeRead(QueryInterface $query, array $params = [])
     {
         $cursor = null;
 

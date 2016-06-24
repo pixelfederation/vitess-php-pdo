@@ -4,19 +4,21 @@
  * @copyright  PIXELFEDERATION s.r.o
  */
 
-namespace VitessPdo\PDO\MySql\Handler;
+namespace VitessPdo\PDO\MySql\QueryHandler\ShowChain;
 
-use VitessPdo\PDO\MySql\Cursor\Cursor;
+use VitessPdo\PDO\Exception;
+use VitessPdo\PDO\MySql\QueryHandler\VctldMember;
 use VitessPdo\PDO\MySql\Result\Result;
-use VitessPdo\PDO\QueryAnalyzer\Query;
+use VitessPdo\PDO\QueryAnalyzer\QueryInterface;
+use VitessPdo\PDO\QueryAnalyzer\ShowQuery;
 
 /**
- * Description of class ShowCollation
+ * Description of class CollationMember
  *
  * @author  mfris
- * @package VitessPdo\PDO\MySql\Handler
+ * @package VitessPdo\PDO\MySql\Handler\Chain
  */
-class ShowCollation extends Base
+class CollationMember extends VctldMember
 {
 
     /**
@@ -52,15 +54,17 @@ class ShowCollation extends Base
     ];
 
     /**
-     * @param Query $query
+     * @param QueryInterface $query
      *
-     * @return Result
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @return Result|null
+     * @throws Exception
      */
-    public function getResult(Query $query)
+    public function process(QueryInterface $query)
     {
-        $cursor = new Cursor(self::$data, self::$fields);
+        if (!$query instanceof ShowQuery || $query->getObject() !== ShowQuery::EXPRESSION_COLLATION) {
+            return null;
+        }
 
-        return new Result($cursor);
+        return $this->getResultFromData(self::$data, self::$fields);
     }
 }

@@ -72,7 +72,7 @@ class Analyzer
     /**
      * @param string $sql
      *
-     * @return Query
+     * @return QueryInterface
      */
     public function parseQuery($sql)
     {
