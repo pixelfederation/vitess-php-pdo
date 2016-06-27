@@ -41,7 +41,7 @@ class UseQuery extends QueryDecorator
                 throw new Exception("Database name missing.");
             }
 
-            $this->dbName = $parsedSql[1];
+            $this->dbName = trim($parsedSql[1], '`');
         }
 
         return $this->dbName;

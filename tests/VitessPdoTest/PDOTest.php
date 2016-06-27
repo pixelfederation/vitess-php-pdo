@@ -714,6 +714,20 @@ class PDOTest extends \PHPUnit_Framework_TestCase
         self::assertEquals(0, $stmt->rowCount());
     }
 
+    /**
+     * @group mysql_emulator
+     * @throws Exception
+     * @throws VitessPDOException
+     */
+    public function testUseDbQuotes()
+    {
+        $pdo = $this->getPdoWithVctldSupport();
+        $stmt = $pdo->query("USE `user`");
+
+        self::assertInstanceOf(PDOStatement::class, $stmt);
+        self::assertEquals(0, $stmt->rowCount());
+    }
+
     public function testShowTables()
     {
         $pdo = $this->getPdoWithVctldSupport();
