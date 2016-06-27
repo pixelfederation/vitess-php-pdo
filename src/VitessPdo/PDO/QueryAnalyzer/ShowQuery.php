@@ -31,6 +31,11 @@ class ShowQuery extends QueryDecorator
     /**
      * @const string
      */
+    const EXPRESSION_DATABASES = 'DATABASES';
+
+    /**
+     * @const string
+     */
     const EXPRESSION_TABLE_STATUS = 'TABLE STATUS';
 
     /**
@@ -42,11 +47,6 @@ class ShowQuery extends QueryDecorator
      * @const string
      */
     const EXPRESSION_CREATE_DATABASE = 'CREATE DATABASE';
-
-    /**
-     * @const string
-     */
-    const EXPRESSION_LIKE = 'LIKE';
 
     /**
      * @var string

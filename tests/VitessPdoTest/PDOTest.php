@@ -1066,6 +1066,31 @@ class PDOTest extends \PHPUnit_Framework_TestCase
         }
     }
 
+    /**
+     * @group mysql_emulator
+     * @throws Exception
+     * @throws VitessPDOException
+     */
+    public function testShowDatabases()
+    {
+        $pdo = $this->getPdoWithVctldSupport();
+        $stmt = $pdo->query("SHOW DATABASES");
+
+        self::assertInstanceOf(PDOStatement::class, $stmt);
+        $rows = $stmt->fetchAll(CorePDO::FETCH_BOTH);
+        self::assertCount(2, $rows);
+
+        foreach ($rows as $key => $row) {
+            self::assertArrayHasKey('Database', $row);
+            self::assertArrayHasKey(0, $row);
+
+            $value = $key === 0 ? 'lookup' : 'user';
+
+            self::assertEquals($value, $row['Database']);
+            self::assertEquals($value, $row[0]);
+        }
+    }
+
     public function testStmtClass()
     {
         $pdo = $this->getPdo();

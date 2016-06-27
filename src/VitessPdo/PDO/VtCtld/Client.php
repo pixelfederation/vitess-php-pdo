@@ -8,6 +8,7 @@ namespace VitessPdo\PDO\VtCtld;
 
 use VitessPdo\PDO\Dsn\Dsn;
 use VitessPdo\PDO\Exception;
+use VitessPdo\PDO\VtCtld\Result\GetKeyspaces;
 use VitessPdo\PDO\VtCtld\Result\GetVSchema;
 
 /**
@@ -40,6 +41,11 @@ final class Client
     const COMMAND_GET_VSCHEMA = 'GetVSchema';
 
     /**
+     * @const string
+     */
+    const COMMAND_GET_KEYSPACES = 'GetKeyspaces';
+
+    /**
      * Client constructor.
      *
      * @param Dsn $dsn
@@ -64,6 +70,17 @@ final class Client
         $output = $this->executeCommand(self::COMMAND_GET_VSCHEMA, [$keyspace]);
 
         return new GetVSchema($keyspace, $output);
+    }
+
+    /**
+     * @return GetKeyspaces
+     * @throws Exception
+     */
+    public function getKeyspaces()
+    {
+        $output = $this->executeCommand(self::COMMAND_GET_KEYSPACES);
+
+        return new GetKeyspaces($output);
     }
 
     /**

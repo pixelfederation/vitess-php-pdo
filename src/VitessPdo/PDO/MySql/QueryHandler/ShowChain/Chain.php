@@ -41,7 +41,8 @@ class Chain extends VctldChain
     {
         $this->first = new TablesMember($this->client);
         $this->first->setSuccessor($tableStatus = new TableStatusMember($this->client));
-        $tableStatus->setSuccessor($collation = new CollationMember($this->client));
+        $tableStatus->setSuccessor($databases = new DatabasesMember($this->client));
+        $databases->setSuccessor($collation = new CollationMember($this->client));
         $collation->setSuccessor(new CreateDatabaseMember());
     }
 }
