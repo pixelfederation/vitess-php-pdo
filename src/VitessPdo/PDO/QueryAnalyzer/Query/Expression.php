@@ -68,6 +68,11 @@ class Expression
     /**
      * @const string
      */
+    const EXPR_CONNECTION_ID = 'CONNECTION_ID';
+
+    /**
+     * @const string
+     */
     const EXPR_LIKE = 'LIKE';
 
     /**

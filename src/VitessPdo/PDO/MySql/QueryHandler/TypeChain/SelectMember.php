@@ -7,11 +7,10 @@
 namespace VitessPdo\PDO\MySql\QueryHandler\TypeChain;
 
 use VitessPdo\PDO\Exception;
+use VitessPdo\PDO\MySql\QueryHandler\SelectChain\Chain as SelectChain;
 use VitessPdo\PDO\MySql\QueryHandler\Member;
 use VitessPdo\PDO\MySql\Result\Result;
-use VitessPdo\PDO\QueryAnalyzer\Query\Expression;
 use VitessPdo\PDO\QueryAnalyzer\QueryInterface;
-use VitessPdo\PDO\QueryAnalyzer\SelectQuery;
 
 /**
  * Description of class SelectMember
@@ -23,21 +22,9 @@ class SelectMember extends Member
 {
 
     /**
-     * @var array
+     * @var SelectChain
      */
-    private static $data = [
-        [
-            'USER()' => 'vitess@vitess',
-            0 => 'vitess@vitess',
-        ],
-    ];
-
-    /**
-     * @var array
-     */
-    private static $fields = [
-        'USER()',
-    ];
+    private $selectChain;
 
     /**
      * @param QueryInterface $query
@@ -51,14 +38,18 @@ class SelectMember extends Member
             return null;
         }
 
-        $query = new SelectQuery($query);
-        $field = $query->getFirstField();
+        return $this->getSelectChain()->getResult($query);
+    }
 
-        if ($field->getType() !== Expression::TYPE_FUNCTION
-            || $field->getExpression() !== Expression::EXPR_USER) {
-            return null;
+    /**
+     * @return SelectChain
+     */
+    private function getSelectChain()
+    {
+        if ($this->selectChain === null) {
+            $this->selectChain = new SelectChain();
         }
 
-        return $this->getResultFromData(self::$data, self::$fields);
+        return $this->selectChain;
     }
 }

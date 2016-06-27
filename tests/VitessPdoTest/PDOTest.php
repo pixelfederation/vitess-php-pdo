@@ -1044,6 +1044,28 @@ class PDOTest extends \PHPUnit_Framework_TestCase
         }
     }
 
+    /**
+     * @group mysql_emulator
+     * @throws Exception
+     * @throws VitessPDOException
+     */
+    public function testSelectConnectionId()
+    {
+        $pdo = $this->getPdoWithVctldSupport();
+        $stmt = $pdo->query("SELECT CONNECTION_ID()");
+
+        self::assertInstanceOf(PDOStatement::class, $stmt);
+        $rows = $stmt->fetchAll(CorePDO::FETCH_BOTH);
+        self::assertCount(1, $rows);
+
+        foreach ($rows as $row) {
+            self::assertArrayHasKey('CONNECTION_ID()', $row);
+            self::assertArrayHasKey(0, $row);
+            self::assertEquals('1', $row['CONNECTION_ID()']);
+            self::assertEquals('1', $row[0]);
+        }
+    }
+
     public function testStmtClass()
     {
         $pdo = $this->getPdo();

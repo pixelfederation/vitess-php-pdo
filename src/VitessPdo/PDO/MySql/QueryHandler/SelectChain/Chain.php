@@ -4,13 +4,13 @@
  * @copyright  PIXELFEDERATION s.r.o
  */
 
-namespace VitessPdo\PDO\MySql\QueryHandler\ShowChain;
+namespace VitessPdo\PDO\MySql\QueryHandler\SelectChain;
 
 use VitessPdo\PDO\Exception;
-use VitessPdo\PDO\MySql\QueryHandler\VctldChain;
+use VitessPdo\PDO\MySql\QueryHandler\Chain as AbstractChain;
 use VitessPdo\PDO\MySql\Result\Result;
 use VitessPdo\PDO\QueryAnalyzer\QueryInterface;
-use VitessPdo\PDO\QueryAnalyzer\ShowQuery;
+use VitessPdo\PDO\QueryAnalyzer\SelectQuery;
 
 /**
  * Description of class Chain
@@ -18,7 +18,7 @@ use VitessPdo\PDO\QueryAnalyzer\ShowQuery;
  * @author  mfris
  * @package VitessPdo\PDO\MySql\Handler
  */
-class Chain extends VctldChain
+class Chain extends AbstractChain
 {
 
     /**
@@ -29,7 +29,7 @@ class Chain extends VctldChain
      */
     public function getResult(QueryInterface $query)
     {
-        $query = new ShowQuery($query);
+        $query = new SelectQuery($query);
 
         return parent::getResult($query);
     }
@@ -39,9 +39,7 @@ class Chain extends VctldChain
      */
     protected function initialize()
     {
-        $this->first = new TablesMember($this->client);
-        $this->first->setSuccessor($tableStatus = new TableStatusMember($this->client));
-        $tableStatus->setSuccessor($collation = new CollationMember($this->client));
-        $collation->setSuccessor(new CreateDatabaseMember());
+        $this->first = new UserMember();
+        $this->first->setSuccessor(new ConnectionIdMember());
     }
 }

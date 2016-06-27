@@ -9,8 +9,6 @@ namespace VitessPdo\PDO\MySql\QueryHandler\TypeChain;
 use VitessPdo\PDO\MySql\QueryHandler\DependencyTrait;
 use VitessPdo\PDO\Dsn\Dsn;
 use VitessPdo\PDO\MySql\QueryHandler\Chain as AbstractChain;
-use VitessPdo\PDO\MySql\Result\Result;
-use VitessPdo\PDO\QueryAnalyzer\QueryInterface;
 use VitessPdo\PDO\VtCtld\Client;
 
 /**
@@ -35,16 +33,6 @@ class Chain extends AbstractChain
         $this->setDsn($dsn);
         $this->setClient($client);
         parent::__construct();
-    }
-
-    /**
-     * @param QueryInterface $query
-     *
-     * @return Result|null
-     */
-    public function getResult(QueryInterface $query)
-    {
-        return $this->first->handle($query);
     }
 
     /**
