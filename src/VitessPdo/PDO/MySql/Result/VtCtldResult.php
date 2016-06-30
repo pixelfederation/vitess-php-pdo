@@ -46,7 +46,7 @@ abstract class VtCtldResult extends Result
      */
     protected function getFields()
     {
-        return is_array(self::$fields) ? self::$fields : $this->specializedFIelds;
+        return is_array(static::$fields) ? static::$fields : $this->specializedFIelds;
     }
 
     /**
