@@ -8,8 +8,9 @@ namespace VitessPdo\PDO\VtCtld;
 
 use VitessPdo\PDO\Dsn\Dsn;
 use VitessPdo\PDO\Exception;
-use VitessPdo\PDO\VtCtld\Result\GetKeyspaces;
-use VitessPdo\PDO\VtCtld\Result\GetVSchema;
+use VitessPdo\PDO\VtCtld\Command\Command;
+use VitessPdo\PDO\VtCtld\Command\DsnDependent;
+use VitessPdo\PDO\VtCtld\Result\Result;
 
 /**
  * Description of class Client
@@ -36,16 +37,6 @@ final class Client
     const VTCTLD_EXECUTABLE = 'vtctlclient';
 
     /**
-     * @const string
-     */
-    const COMMAND_GET_VSCHEMA = 'GetVSchema';
-
-    /**
-     * @const string
-     */
-    const COMMAND_GET_KEYSPACES = 'GetKeyspaces';
-
-    /**
      * Client constructor.
      *
      * @param Dsn $dsn
@@ -56,55 +47,29 @@ final class Client
     }
 
     /**
-     * @return GetVSchema
+     * @param Command $command
+     *
+     * @return Result
      * @throws Exception
      */
-    public function getVSchema()
+    public function executeCommand(Command $command)
     {
-        $keyspace = $this->dsn->getConfig()->getKeyspace();
-
-        if (!$keyspace) {
-            throw new Exception("SQLSTATE[3D000]: Invalid catalog name: 1046 No database selected");
+        if ($command instanceof DsnDependent) {
+            $command->setDsn($this->dsn);
         }
 
-        $output = $this->executeCommand(self::COMMAND_GET_VSCHEMA, [$keyspace]);
+        $shellCmd = self::VTCTLD_EXECUTABLE . ' ' . $this->getServerString() . ' '
+             . $command->getName() . ' ' . implode(" ", $command->getParams());
 
-        return new GetVSchema($keyspace, $output);
-    }
-
-    /**
-     * @return GetKeyspaces
-     * @throws Exception
-     */
-    public function getKeyspaces()
-    {
-        $output = $this->executeCommand(self::COMMAND_GET_KEYSPACES);
-
-        return new GetKeyspaces($output);
-    }
-
-    /**
-     * @param string $command
-     * @param array $params
-     *
-     * @return string
-     * @throws Exception
-     */
-    private function executeCommand($command, array $params = [])
-    {
-        $params = array_map(function ($param) {
-            return escapeshellcmd($param);
-        }, $params);
-
-        $cmd = self::VTCTLD_EXECUTABLE . ' ' . $this->getServerString() . ' ' . $command . ' ' . implode(" ", $params);
-
-        $output = shell_exec($cmd);
+        $output = shell_exec($shellCmd);
 
         if ($output === null) {
-            throw new Exception("Invalid vtctld command - " . $cmd);
+            throw new Exception("Invalid vtctld command - " . $shellCmd);
         }
 
-        return $output;
+        $resultClass = $command->getResultClass();
+
+        return new $resultClass($this->dsn, $output);
     }
 
     /**

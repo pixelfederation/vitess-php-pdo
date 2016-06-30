@@ -18,39 +18,18 @@ final class GetVSchema extends Result
 {
 
     /**
-     * GetVSchema constructor.
-     *
-     * @param $keyspace
-     * @param $responseString
+     * @return string
      */
-    public function __construct($keyspace, $responseString)
+    public function getKeyspace()
     {
-        $this->parse($keyspace, $responseString);
+        return $this->dsn->getConfig()->getKeyspace();
     }
 
     /**
-     * @param string $keyspace
-     * @param string $responseString
-     *
      * @throws Exception
-     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
      */
-    private function parse($keyspace, $responseString)
+    protected function parse()
     {
-        $field = "Tables_in_{$keyspace}";
-        $data = json_decode(trim($responseString), true);
-
-        if (!isset($data['tables'])) {
-            throw new Exception('Missing vschema data key - tables.');
-        }
-
-        foreach ($data['tables'] as $table => $config) {
-            $this->data[] = [
-                $field => $table,
-                0 => $table,
-            ];
-        }
-
-        $this->fields = [$field];
+        $this->data = json_decode(trim($this->responseString), true);
     }
 }

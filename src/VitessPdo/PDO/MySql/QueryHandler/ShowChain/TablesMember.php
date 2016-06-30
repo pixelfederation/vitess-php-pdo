@@ -7,10 +7,14 @@
 namespace VitessPdo\PDO\MySql\QueryHandler\ShowChain;
 
 use VitessPdo\PDO\Exception;
+use VitessPdo\PDO\MySql\QueryHandler\DependencyTrait;
 use VitessPdo\PDO\MySql\QueryHandler\VctldMember;
 use VitessPdo\PDO\MySql\Result\Result;
+use VitessPdo\PDO\MySql\Result\Show\Tables;
 use VitessPdo\PDO\QueryAnalyzer\QueryInterface;
 use VitessPdo\PDO\QueryAnalyzer\ShowQuery;
+use VitessPdo\PDO\VtCtld\Command\GetVSchema;
+use VitessPdo\PDO\VtCtld\Result\GetVSchema as GetVSchemaResult;
 
 /**
  * Description of class TablesMember
@@ -33,8 +37,10 @@ class TablesMember extends VctldMember
             return null;
         }
 
-        $vtCtldResult = $this->client->getVSchema();
+        $command = new GetVSchema();
+        /* @var $vtCtldResult GetVSchemaResult */
+        $vtCtldResult = $this->client->executeCommand($command);
 
-        return $this->getResultFromData($vtCtldResult->getData(), $vtCtldResult->getFields());
+        return new Tables($vtCtldResult);
     }
 }

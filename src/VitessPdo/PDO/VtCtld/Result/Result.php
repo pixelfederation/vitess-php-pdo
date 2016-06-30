@@ -6,6 +6,8 @@
 
 namespace VitessPdo\PDO\VtCtld\Result;
 
+use VitessPdo\PDO\Dsn\Dsn;
+
 /**
  * Description of class Result
  *
@@ -16,28 +18,45 @@ abstract class Result
 {
 
     /**
-     * @var array
+     * @var mixed
      */
-    protected $data = [];
+    protected $data;
 
     /**
-     * @var array
+     * @var Dsn
      */
-    protected $fields = [];
+    protected $dsn;
 
     /**
-     * @return array
+     * @var string
+     */
+    protected $responseString;
+
+    /**
+     * Result constructor.
+     *
+     * @param Dsn    $dsn
+     * @param string $responseString
+     */
+    public function __construct(Dsn $dsn, $responseString)
+    {
+        $this->dsn            = $dsn;
+        $this->responseString = $responseString;
+    }
+
+    /**
+     * @return mixed
      */
     public function getData()
     {
+        if ($this->data === null) {
+            $this->parse();
+        }
+
         return $this->data;
     }
 
     /**
-     * @return array
      */
-    public function getFields()
-    {
-        return $this->fields;
-    }
+    abstract protected function parse();
 }

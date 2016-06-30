@@ -1105,6 +1105,133 @@ class PDOTest extends \PHPUnit_Framework_TestCase
         }
     }
 
+    /**
+     * @group mysql_emulator
+     * @throws Exception
+     * @throws VitessPDOException
+     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+     */
+    public function testShowIndexFrom()
+    {
+        $pdo = $this->getPdoWithVctldSupport();
+        $pdo->query("USE `lookup`");
+        $stmt = $pdo->query("SHOW INDEX FROM `index_test`");
+
+        self::assertInstanceOf(PDOStatement::class, $stmt);
+        $rows = $stmt->fetchAll(CorePDO::FETCH_BOTH);
+        self::assertCount(3, $rows);
+
+        foreach ($rows as $row) {
+            self::assertArrayHasKey('Table', $row);
+            self::assertArrayHasKey(0, $row);
+            self::assertArrayHasKey('Non_unique', $row);
+            self::assertArrayHasKey(1, $row);
+            self::assertArrayHasKey('Key_name', $row);
+            self::assertArrayHasKey(2, $row);
+            self::assertArrayHasKey('Seq_in_index', $row);
+            self::assertArrayHasKey(3, $row);
+            self::assertArrayHasKey('Column_name', $row);
+            self::assertArrayHasKey(4, $row);
+            self::assertArrayHasKey('Collation', $row);
+            self::assertArrayHasKey(5, $row);
+            self::assertArrayHasKey('Cardinality', $row);
+            self::assertArrayHasKey(6, $row);
+            self::assertArrayHasKey('Sub_part', $row);
+            self::assertArrayHasKey(7, $row);
+            self::assertArrayHasKey('Packed', $row);
+            self::assertArrayHasKey(8, $row);
+            self::assertArrayHasKey('Null', $row);
+            self::assertArrayHasKey(9, $row);
+            self::assertArrayHasKey('Index_type', $row);
+            self::assertArrayHasKey(10, $row);
+            self::assertArrayHasKey('Comment', $row);
+            self::assertArrayHasKey(11, $row);
+            self::assertArrayHasKey('Index_comment', $row);
+            self::assertArrayHasKey(12, $row);
+        }
+
+        self::assertEquals('index_test', $rows[0]['Table']);
+        self::assertEquals('index_test', $rows[0][0]);
+        self::assertEquals('0', $rows[0]['Non_unique']);
+        self::assertEquals('0', $rows[0][1]);
+        self::assertEquals('PRIMARY', $rows[0]['Key_name']);
+        self::assertEquals('PRIMARY', $rows[0][2]);
+        self::assertEquals('1', $rows[0]['Seq_in_index']);
+        self::assertEquals('1', $rows[0][3]);
+        self::assertEquals('id', $rows[0]['Column_name']);
+        self::assertEquals('id', $rows[0][4]);
+        self::assertEquals('A', $rows[0]['Collation']);
+        self::assertEquals('A', $rows[0][5]);
+        self::assertEquals('0', $rows[0]['Cardinality']);
+        self::assertEquals('0', $rows[0][6]);
+        self::assertNull($rows[0]['Sub_part']);
+        self::assertNull($rows[0][7]);
+        self::assertNull($rows[0]['Packed']);
+        self::assertNull($rows[0][8]);
+        self::assertEquals('', $rows[0]['Null']);
+        self::assertEquals('', $rows[0][9]);
+        self::assertEquals('BTREE', $rows[0]['Index_type']);
+        self::assertEquals('BTREE', $rows[0][10]);
+        self::assertEquals('', $rows[0]['Comment']);
+        self::assertEquals('', $rows[0][11]);
+        self::assertEquals('', $rows[0]['Index_comment']);
+        self::assertEquals('', $rows[0][12]);
+
+        self::assertEquals('index_test', $rows[1]['Table']);
+        self::assertEquals('index_test', $rows[1][0]);
+        self::assertEquals('1', $rows[1]['Non_unique']);
+        self::assertEquals('1', $rows[1][1]);
+        self::assertEquals('test_key', $rows[1]['Key_name']);
+        self::assertEquals('test_key', $rows[1][2]);
+        self::assertEquals('1', $rows[1]['Seq_in_index']);
+        self::assertEquals('1', $rows[1][3]);
+        self::assertEquals('name', $rows[1]['Column_name']);
+        self::assertEquals('name', $rows[1][4]);
+        self::assertEquals('A', $rows[1]['Collation']);
+        self::assertEquals('A', $rows[1][5]);
+        self::assertEquals('0', $rows[1]['Cardinality']);
+        self::assertEquals('0', $rows[1][6]);
+        self::assertNull($rows[1]['Sub_part']);
+        self::assertNull($rows[1][7]);
+        self::assertNull($rows[1]['Packed']);
+        self::assertNull($rows[1][8]);
+        self::assertEquals('YES', $rows[1]['Null']);
+        self::assertEquals('YES', $rows[1][9]);
+        self::assertEquals('BTREE', $rows[1]['Index_type']);
+        self::assertEquals('BTREE', $rows[1][10]);
+        self::assertEquals('', $rows[1]['Comment']);
+        self::assertEquals('', $rows[1][11]);
+        self::assertEquals('', $rows[1]['Index_comment']);
+        self::assertEquals('', $rows[1][12]);
+
+        self::assertEquals('index_test', $rows[2]['Table']);
+        self::assertEquals('index_test', $rows[2][0]);
+        self::assertEquals('1', $rows[2]['Non_unique']);
+        self::assertEquals('1', $rows[2][1]);
+        self::assertEquals('test_key', $rows[2]['Key_name']);
+        self::assertEquals('test_key', $rows[2][2]);
+        self::assertEquals('2', $rows[2]['Seq_in_index']);
+        self::assertEquals('2', $rows[2][3]);
+        self::assertEquals('id', $rows[2]['Column_name']);
+        self::assertEquals('id', $rows[2][4]);
+        self::assertEquals('A', $rows[2]['Collation']);
+        self::assertEquals('A', $rows[2][5]);
+        self::assertEquals('0', $rows[2]['Cardinality']);
+        self::assertEquals('0', $rows[2][6]);
+        self::assertNull($rows[2]['Sub_part']);
+        self::assertNull($rows[2][7]);
+        self::assertNull($rows[2]['Packed']);
+        self::assertNull($rows[2][8]);
+        self::assertEquals('', $rows[2]['Null']);
+        self::assertEquals('', $rows[2][9]);
+        self::assertEquals('BTREE', $rows[2]['Index_type']);
+        self::assertEquals('BTREE', $rows[2][10]);
+        self::assertEquals('', $rows[2]['Comment']);
+        self::assertEquals('', $rows[2][11]);
+        self::assertEquals('', $rows[2]['Index_comment']);
+        self::assertEquals('', $rows[2][12]);
+    }
+
     public function testStmtClass()
     {
         $pdo = $this->getPdo();

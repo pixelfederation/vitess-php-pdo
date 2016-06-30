@@ -49,6 +49,11 @@ class ShowQuery extends QueryDecorator
     const EXPRESSION_CREATE_DATABASE = 'CREATE DATABASE';
 
     /**
+     * @const string
+     */
+    const EXPRESSION_INDEX = 'INDEX';
+
+    /**
      * @var string
      */
     private $object;
@@ -59,9 +64,9 @@ class ShowQuery extends QueryDecorator
     private $afterObjectIndex;
 
     /**
-     * @var string
+     * @var string[]
      */
-    private $likeExpression;
+    private $expressionValues = [];
 
     /**
      * @var string
@@ -83,10 +88,11 @@ class ShowQuery extends QueryDecorator
                 throw new Exception("Object missing.");
             }
 
+            $stopExprs = [Expression::EXPR_LIKE, Expression::EXPR_FROM];
             $objectParts = [];
             /* @var $expr Expression */
             foreach ($expressions as $index => $expr) {
-                if ($expr->getExpression() === Expression::EXPR_LIKE || $expr->getNoQuotes()) {
+                if (in_array($expr->getExpression(), $stopExprs) || $expr->getNoQuotes()) {
                     $this->afterObjectIndex = $index;
                     break;
                 }
@@ -105,28 +111,15 @@ class ShowQuery extends QueryDecorator
      */
     public function getLikeExpression()
     {
-        if ($this->likeExpression === null) {
-            $expressions = $this->getExpressions();
-            $likeIndex = null;
+        return $this->getExressionValue(Expression::EXPR_LIKE);
+    }
 
-            /* @var $expr Expression */
-            foreach ($expressions as $index => $expr) {
-                if ($expr->getExpression() === Expression::EXPR_LIKE) {
-                    $likeIndex = $index;
-                    break;
-                }
-            }
-
-            if (!$likeIndex) {
-                return null;
-            }
-
-            /* @var $field Expression */
-            $field = $expressions[$likeIndex + 1];
-            $this->likeExpression = $field->getExpression();
-        }
-
-        return $this->likeExpression;
+    /**
+     * @return null|string
+     */
+    public function getFromExpression()
+    {
+        return $this->getExressionValue(Expression::EXPR_FROM);
     }
 
     /**
@@ -152,5 +145,41 @@ class ShowQuery extends QueryDecorator
         }
 
         return $this->databaseExpression;
+    }
+
+    /**
+     * @param string $expressionType
+     *
+     * @return null|string
+     */
+    private function getExressionValue($expressionType)
+    {
+        if (!array_key_exists($expressionType, $this->expressionValues)) {
+            $expressions = $this->getExpressions();
+            $likeIndex = null;
+
+            /* @var $expr Expression */
+            foreach ($expressions as $index => $expr) {
+                if ($expr->getExpression() === $expressionType) {
+                    $likeIndex = $index;
+                    break;
+                }
+            }
+
+            if (!$likeIndex) {
+                return null;
+            }
+
+            /* @var $field Expression */
+            $field = $expressions[$likeIndex + 1];
+            $this->expressionValues[$expressionType] = $field->getExpression();
+            $noQuotes = $field->getNoQuotes();
+
+            if ($noQuotes) {
+                $this->expressionValues[$expressionType] = $noQuotes->getPartsAsString();
+            }
+        }
+
+        return $this->expressionValues[$expressionType];
     }
 }

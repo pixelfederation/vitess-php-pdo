@@ -42,4 +42,12 @@ class NoQuotes
     {
         return $this->data[self::KEY_PARTS];
     }
+
+    /**
+     * @return string
+     */
+    public function getPartsAsString()
+    {
+        return implode(' ', $this->getParts());
+    }
 }

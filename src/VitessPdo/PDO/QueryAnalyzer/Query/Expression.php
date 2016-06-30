@@ -12,7 +12,7 @@ namespace VitessPdo\PDO\QueryAnalyzer\Query;
  * @author  mfris
  * @package VitessPdo\PDO\QueryAnalyzer\Query
  */
-class Expression
+class Expression implements ExpressionInterface
 {
 
     /**
@@ -26,54 +26,14 @@ class Expression
     private $noQuotes;
 
     /**
-     * @const string
+     * @var Expression[]|false
      */
-    const KEY_EXPR_TYPE = 'expr_type';
+    private $subTree;
 
     /**
-     * @const string
+     * @var Expression|false
      */
-    const KEY_ALIAS = 'alias';
-
-    /**
-     * @const string
-     */
-    const KEY_BASE_EXPR = 'base_expr';
-
-    /**
-     * @const string
-     */
-    const KEY_SUB_TREE = 'sub_tree';
-
-    /**
-     * @const string
-     */
-    const KEY_DELIM = 'delim';
-
-    /**
-     * @const string
-     */
-    const KEY_NO_QUOTES = 'no_quotes';
-
-    /**
-     * @const string
-     */
-    const TYPE_FUNCTION = 'function';
-
-    /**
-     * @const string
-     */
-    const EXPR_USER = 'USER';
-
-    /**
-     * @const string
-     */
-    const EXPR_CONNECTION_ID = 'CONNECTION_ID';
-
-    /**
-     * @const string
-     */
-    const EXPR_LIKE = 'LIKE';
+    private $createDef;
 
     /**
      * Field constructor.
@@ -114,15 +74,41 @@ class Expression
     }
 
     /**
-     * @return string|false
+     * @return Expression[]|false
      */
     public function getSubTree()
     {
-        if (!isset($this->data[self::KEY_SUB_TREE])) {
-            return false;
+        if ($this->subTree === null) {
+            if (!isset($this->data[self::KEY_SUB_TREE])) {
+                $this->subTree = false;
+
+                return $this->subTree;
+            }
+
+            $this->subTree = array_map(function (array $member) {
+                return new Expression($member);
+            }, $this->data[self::KEY_SUB_TREE]);
         }
 
-        return new Expression($this->data[self::KEY_SUB_TREE]);
+        return $this->subTree;
+    }
+
+    /**
+     * @return CreateExpression|false
+     */
+    public function getCreateDef()
+    {
+        if ($this->createDef === null) {
+            if (!isset($this->data[self::KEY_CREATE_DEF])) {
+                $this->createDef = false;
+
+                return $this->createDef;
+            }
+
+            $this->createDef = new Expression($this->data[self::KEY_CREATE_DEF]);
+        }
+
+        return $this->createDef;
     }
 
     /**
@@ -153,5 +139,21 @@ class Expression
         }
 
         return $this->noQuotes;
+    }
+
+    /**
+     * @param string $type
+     *
+     * @return null|ExpressionInterface
+     */
+    public function findFirstInSubTree($type)
+    {
+        foreach ($this->getSubTree() as $expression) {
+            if ($expression->getType() === $type) {
+                return $expression;
+            }
+        }
+
+        return null;
     }
 }
