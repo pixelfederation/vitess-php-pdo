@@ -51,7 +51,7 @@ class CreateDatabaseMember extends Member
             return null;
         }
 
-        $database = $query->getDatabaseExpression();
+        $database = $query->getCreateObjectExpression(ShowQuery::EXPRESSION_CREATE_DATABASE);
 
         $newData = [];
         $newData[] = array_map(function ($row) use ($database) {

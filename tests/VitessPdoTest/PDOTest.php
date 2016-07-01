@@ -1308,6 +1308,43 @@ class PDOTest extends \PHPUnit_Framework_TestCase
         self::assertEquals('', $rows[1][8]);
     }
 
+    /**
+     * @group mysql_emulator
+     * @throws Exception
+     * @throws VitessPDOException
+     */
+    public function testShowCreateTable()
+    {
+        $pdo = $this->getPdoWithVctldSupport();
+        $pdo->query("USE `lookup`");
+        $stmt = $pdo->query("SHOW CREATE TABLE `index_test`");
+
+        self::assertInstanceOf(PDOStatement::class, $stmt);
+        $rows = $stmt->fetchAll(CorePDO::FETCH_BOTH);
+        self::assertCount(1, $rows);
+
+        foreach ($rows as $row) {
+            self::assertArrayHasKey('Table', $row);
+            self::assertArrayHasKey(0, $row);
+            self::assertArrayHasKey('Create Table', $row);
+            self::assertArrayHasKey(1, $row);
+        }
+
+        $query = <<<EOF
+CREATE TABLE `index_test` (
+  `name` varchar(128) DEFAULT NULL,
+  `id` bigint(20) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `test_key` (`name`,`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8
+EOF;
+
+        self::assertEquals('index_test', $rows[0]['Table']);
+        self::assertEquals('index_test', $rows[0][0]);
+        self::assertEquals($query, $rows[0]['Create Table']);
+        self::assertEquals($query, $rows[0][1]);
+    }
+
     public function testStmtClass()
     {
         $pdo = $this->getPdo();

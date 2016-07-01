@@ -51,6 +51,11 @@ class ShowQuery extends QueryDecorator
     /**
      * @const string
      */
+    const EXPRESSION_CREATE_TABLE = 'CREATE TABLE';
+
+    /**
+     * @const string
+     */
     const EXPRESSION_INDEX = 'INDEX';
 
     /**
@@ -128,20 +133,21 @@ class ShowQuery extends QueryDecorator
     }
 
     /**
+     * @param string $type
      * @return string
      * @throws Exception
      */
-    public function getDatabaseExpression()
+    public function getCreateObjectExpression($type)
     {
         if ($this->databaseExpression === null) {
-            if ($this->getObject() !== self::EXPRESSION_CREATE_DATABASE) {
-                throw new Exception('Not a SHOW CREATE DATABASE query.');
+            if ($this->getObject() !== $type) {
+                throw new Exception("Not a SHOW {$type} query.");
             }
 
             $expressions = $this->getExpressions();
 
             if ($this->afterObjectIndex === null) {
-                throw new Exception('Invalid SHOW CREATE DATABASE query - database name missing.');
+                throw new Exception("Invalid SHOW {$type} query - object name missing.");
             }
 
             /* @var $databaseExpression Expression */

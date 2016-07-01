@@ -45,6 +45,7 @@ class Chain extends VctldChain
         $databases->setSuccessor($collation = new CollationMember($this->client));
         $collation->setSuccessor($database = new CreateDatabaseMember());
         $database->setSuccessor($indexFrom = new IndexFromMember($this->client));
-        $indexFrom->setSuccessor(new FullColumnsFromMember($this->client));
+        $indexFrom->setSuccessor($fullColumns = new FullColumnsFromMember($this->client));
+        $fullColumns->setSuccessor(new CreateTableMember($this->client));
     }
 }
