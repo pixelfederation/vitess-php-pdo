@@ -135,7 +135,7 @@ final class IndexFrom extends VtCtldResult
                 $row[self::KEY_NAME] = $row[2] = $index->getKeyName();
                 $row[self::KEY_SEQ_IN_INDEX] = $row[3] = $columnIndex + 1;
                 $row[self::KEY_COLUMN_NAME] = $row[4] = $column->getColumnName();
-                $row[self::KEY_NULL] = $row[9] = $column->isNullable() ? 'YES' : '';
+                $row[self::KEY_NULL] = $row[9] = $column->getColumnType()->isNullable() ? 'YES' : '';
 
                 $returnData[] = $row;
             }

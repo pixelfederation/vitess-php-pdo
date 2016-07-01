@@ -97,6 +97,36 @@ abstract class ExpressionDecorator implements ExpressionInterface
     }
 
     /**
+     * @param string $type
+     *
+     * @return ExpressionInterface[]
+     */
+    public function findAllInSubTreeAfterInclusive($type)
+    {
+        return $this->getDecorated()->findAllInSubTreeAfterInclusive($type);
+    }
+
+    /**
+     * @param string $key
+     *
+     * @return mixed
+     */
+    public function getData($key)
+    {
+        return $this->getDecorated()->getData($key);
+    }
+
+    /**
+     * @param string $key
+     *
+     * @return bool
+     */
+    public function hasData($key)
+    {
+        return $this->getDecorated()->hasData($key);
+    }
+
+    /**
      * @return ExpressionInterface
      */
     protected function getDecorated()

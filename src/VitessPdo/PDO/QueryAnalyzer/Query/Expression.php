@@ -6,6 +6,8 @@
 
 namespace VitessPdo\PDO\QueryAnalyzer\Query;
 
+use VitessPdo\PDO\Exception;
+
 /**
  * Description of class Field
  *
@@ -155,5 +157,55 @@ class Expression implements ExpressionInterface
         }
 
         return null;
+    }
+
+    /**
+     * @param string $type
+     *
+     * @return ExpressionInterface[]
+     */
+    public function findAllInSubTreeAfterInclusive($type)
+    {
+        $expressions = [];
+        $skip = true;
+
+        foreach ($this->getSubTree() as $expression) {
+            if ($expression->getType() === $type) {
+                $skip = false;
+            }
+
+            if ($skip) {
+                continue;
+            }
+
+            $expressions[] = $expression;
+        }
+
+        return $expressions;
+    }
+
+    /**
+     * @param string $key
+     *
+     * @return mixed
+     * @throws Exception
+     */
+    public function getData($key)
+    {
+        if (!$this->hasData($key)) {
+            throw new Exception("Data key not found - '{$key}'.");
+        }
+
+        return $this->data[$key];
+    }
+
+    /**
+     * @param string $key
+     *
+     * @return bool
+     */
+    public function hasData($key)
+    {
+        return isset($this->data[$key]);
     }
 }

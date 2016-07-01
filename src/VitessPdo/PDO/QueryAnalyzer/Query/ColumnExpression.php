@@ -23,9 +23,9 @@ class ColumnExpression extends ExpressionDecorator
     private $columnName;
 
     /**
-     * @var bool
+     * @var ColumnTypeExpression
      */
-    private $nullable;
+    private $columnType;
 
     /**
      * @return string
@@ -47,27 +47,21 @@ class ColumnExpression extends ExpressionDecorator
     }
 
     /**
-     * @return bool
+     * @return ColumnTypeExpression
      * @throws Exception
      */
-    public function isNullable()
+    public function getColumnType()
     {
-        if ($this->nullable === null) {
+        if ($this->columnType === null) {
             $columnType = $this->findFirstInSubTree(self::TYPE_COLUMN_TYPE);
 
             if (!$columnType) {
                 throw new Exception('Unable to identify column type.');
             }
 
-            $reserved = $columnType->findFirstInSubTree(self::TYPE_RESERVED);
-
-            if (!$reserved) {
-                throw new Exception('Unable to identify nullable property.');
-            }
-
-            $this->nullable = in_array($reserved->getExpression(), [self::EXPR_NULL, self::EXPR_DEFAULT]);
+            $this->columnType = new ColumnTypeExpression($columnType);
         }
 
-        return $this->nullable;
+        return $this->columnType;
     }
 }

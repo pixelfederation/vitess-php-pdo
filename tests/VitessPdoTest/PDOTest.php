@@ -1232,6 +1232,82 @@ class PDOTest extends \PHPUnit_Framework_TestCase
         self::assertEquals('', $rows[2][12]);
     }
 
+    /**
+     * @group mysql_emulator
+     * @throws Exception
+     * @throws VitessPDOException
+     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+     */
+    public function testShowFullColumnsFrom()
+    {
+        $pdo = $this->getPdoWithVctldSupport();
+        $pdo->query("USE `lookup`");
+        $stmt = $pdo->query("SHOW FULL COLUMNS FROM `index_test`");
+
+        self::assertInstanceOf(PDOStatement::class, $stmt);
+        $rows = $stmt->fetchAll(CorePDO::FETCH_BOTH);
+        self::assertCount(2, $rows);
+
+        foreach ($rows as $row) {
+            self::assertArrayHasKey('Field', $row);
+            self::assertArrayHasKey(0, $row);
+            self::assertArrayHasKey('Type', $row);
+            self::assertArrayHasKey(1, $row);
+            self::assertArrayHasKey('Collation', $row);
+            self::assertArrayHasKey(2, $row);
+            self::assertArrayHasKey('Null', $row);
+            self::assertArrayHasKey(3, $row);
+            self::assertArrayHasKey('Key', $row);
+            self::assertArrayHasKey(4, $row);
+            self::assertArrayHasKey('Default', $row);
+            self::assertArrayHasKey(5, $row);
+            self::assertArrayHasKey('Extra', $row);
+            self::assertArrayHasKey(6, $row);
+            self::assertArrayHasKey('Privileges', $row);
+            self::assertArrayHasKey(7, $row);
+            self::assertArrayHasKey('Comment', $row);
+            self::assertArrayHasKey(8, $row);
+        }
+
+        self::assertEquals('name', $rows[0]['Field']);
+        self::assertEquals('name', $rows[0][0]);
+        self::assertEquals('varchar(128)', $rows[0]['Type']);
+        self::assertEquals('varchar(128)', $rows[0][1]);
+        self::assertEquals('utf8_general_ci', $rows[0]['Collation']);
+        self::assertEquals('utf8_general_ci', $rows[0][2]);
+        self::assertEquals('YES', $rows[0]['Null']);
+        self::assertEquals('YES', $rows[0][3]);
+        self::assertEquals('MUL', $rows[0]['Key']);
+        self::assertEquals('MUL', $rows[0][4]);
+        self::assertNull($rows[0]['Default']);
+        self::assertNull($rows[0][5]);
+        self::assertEquals('', $rows[0]['Extra']);
+        self::assertEquals('', $rows[0][6]);
+        self::assertEquals('select,insert,update,references', $rows[0]['Privileges']);
+        self::assertEquals('select,insert,update,references', $rows[0][7]);
+        self::assertEquals('', $rows[0]['Comment']);
+        self::assertEquals('', $rows[0][8]);
+
+        self::assertEquals('id', $rows[1]['Field']);
+        self::assertEquals('id', $rows[1][0]);
+        self::assertEquals('bigint(20)', $rows[1]['Type']);
+        self::assertEquals('bigint(20)', $rows[1][1]);
+        self::assertNull($rows[1]['Collation']);
+        self::assertNull($rows[1][2]);
+        self::assertEquals('NO', $rows[1]['Null']);
+        self::assertEquals('NO', $rows[1][3]);
+        self::assertEquals('PRI', $rows[1]['Key']);
+        self::assertEquals('PRI', $rows[1][4]);
+        self::assertEquals('0', $rows[1]['Default']);
+        self::assertEquals('0', $rows[1][5]);
+        self::assertEquals('', $rows[1]['Extra']);
+        self::assertEquals('', $rows[1][6]);
+        self::assertEquals('select,insert,update,references', $rows[1]['Privileges']);
+        self::assertEquals('select,insert,update,references', $rows[1][7]);
+        self::assertEquals('', $rows[1]['Comment']);
+        self::assertEquals('', $rows[1][8]);
+    }
+
     public function testStmtClass()
     {
         $pdo = $this->getPdo();

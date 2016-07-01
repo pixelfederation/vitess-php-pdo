@@ -47,6 +47,31 @@ interface ExpressionInterface
     /**
      * @const string
      */
+    const KEY_UNIQUE = 'unique';
+
+    /**
+     * @const string
+     */
+    const KEY_NULLABLE = 'nullable';
+
+    /**
+     * @const string
+     */
+    const KEY_AUTO_INC = 'auto_inc';
+
+    /**
+     * @const string
+     */
+    const KEY_PRIMARY = 'primary';
+
+    /**
+     * @const string
+     */
+    const KEY_DEFAULT = 'default';
+
+    /**
+     * @const string
+     */
     const KEY_NO_QUOTES = 'no_quotes';
 
     /**
@@ -82,7 +107,7 @@ interface ExpressionInterface
     /**
      * @const string
      */
-    const TYPE_BRACKET_EXPRESSION = 'bracket-expression';
+    const TYPE_BRACKET_EXPRESSION = 'bracket_expression';
 
     /**
      * @const string
@@ -98,6 +123,16 @@ interface ExpressionInterface
      * @const string
      */
     const TYPE_RESERVED = 'reserved';
+
+    /**
+     * @const string
+     */
+    const TYPE_DATA_TYPE = 'data-type';
+
+    /**
+     * @const string
+     */
+    const TYPE_DEFAULT_VALUE = 'default-value';
 
     /**
      * @const string
@@ -175,4 +210,25 @@ interface ExpressionInterface
      * @return null|ExpressionInterface
      */
     public function findFirstInSubTree($type);
+
+    /**
+     * @param string $type
+     *
+     * @return ExpressionInterface[]
+     */
+    public function findAllInSubTreeAfterInclusive($type);
+
+    /**
+     * @param string $key
+     *
+     * @return mixed
+     */
+    public function getData($key);
+
+    /**
+     * @param string $key
+     *
+     * @return bool
+     */
+    public function hasData($key);
 }

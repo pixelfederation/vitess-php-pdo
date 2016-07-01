@@ -54,6 +54,11 @@ class ShowQuery extends QueryDecorator
     const EXPRESSION_INDEX = 'INDEX';
 
     /**
+     * @const string
+     */
+    const EXPRESSION_FULL_COLUMNS = 'FULL COLUMNS';
+
+    /**
      * @var string
      */
     private $object;

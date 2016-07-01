@@ -76,6 +76,16 @@ class IndexExpression extends ExpressionDecorator
     }
 
     /**
+     * @param ColumnExpression $column
+     *
+     * @return bool
+     */
+    public function hasColumn(ColumnExpression $column)
+    {
+        return $this->columns->contains($column);
+    }
+
+    /**
      * @return string
      * @throws Exception
      */
