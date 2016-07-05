@@ -700,6 +700,22 @@ class PDOTest extends \PHPUnit_Framework_TestCase
         self::assertArrayHasKey(2, $error);
     }
 
+    public function testErrorInfoInQuery()
+    {
+        $pdo = $this->getPdo();
+        $pdo->setAttribute(CorePDO::ATTR_ERRMODE, CorePDO::ERRMODE_WARNING);
+        $result = $pdo->query("SELECT * FROM non_existent_table");
+        $this->assertError(E_WARNING);
+        $this->assertFalse($result);
+        $error = $pdo->errorInfo();
+
+        self::assertInternalType('array', $error);
+        self::assertNotEmpty($error);
+        self::assertArrayHasKey(0, $error);
+        self::assertArrayHasKey(1, $error);
+        self::assertArrayHasKey(2, $error);
+    }
+
     /**
      * @group mysql_emulator
      * @throws Exception

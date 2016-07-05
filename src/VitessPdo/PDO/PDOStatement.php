@@ -55,6 +55,11 @@ class PDOStatement
     private $queryAnalyzer;
 
     /**
+     * @var PDO\QueryExecutor\ResultInterface
+     */
+    private $result;
+
+    /**
      * @var Cursor
      */
     private $cursor;
@@ -130,6 +135,7 @@ class PDOStatement
         try {
             /* @var $result PDO\QueryExecutor\ResultInterface */
             $result = $this->executor->{$vitessMethod}($query, $this->params);
+            $this->result = $result;
 
             if (!$result->isSuccess()) {
                 return false;
@@ -137,6 +143,8 @@ class PDOStatement
 
             $this->cursor = new Cursor($result->getCursor());
         } catch (CoreException $e) {
+            $this->result = new PDO\Vitess\Result(null, $e);
+
             if ($e instanceof PDOException && $this->attributes->isErrorModeException()) {
                 throw $e;
             }
@@ -439,6 +447,16 @@ class PDOStatement
     public function closeCursor()
     {
         return true;
+    }
+
+    /**
+     * returns tihe internal result containing data and error message/exception
+     *
+     * @return QueryExecutor\ResultInterface
+     */
+    public function getResult()
+    {
+        return $this->result;
     }
 
     /**
