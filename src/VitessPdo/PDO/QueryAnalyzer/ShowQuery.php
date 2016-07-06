@@ -46,6 +46,11 @@ class ShowQuery extends QueryDecorator
     /**
      * @const string
      */
+    const EXPRESSION_ENGINES = 'ENGINES';
+
+    /**
+     * @const string
+     */
     const EXPRESSION_CREATE_DATABASE = 'CREATE DATABASE';
 
     /**

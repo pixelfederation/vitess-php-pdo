@@ -13,12 +13,12 @@ use VitessPdo\PDO\QueryAnalyzer\QueryInterface;
 use VitessPdo\PDO\QueryAnalyzer\ShowQuery;
 
 /**
- * Description of class CollationMember
+ * Description of class EnginesMember
  *
  * @author  mfris
  * @package VitessPdo\PDO\MySql\Handler\Chain
  */
-class CollationMember extends Member
+class EnginesMember extends Member
 {
 
     /**
@@ -26,18 +26,18 @@ class CollationMember extends Member
      */
     private static $data = [
         [
-            'Collation' => 'utf8_bin',
-            0 => 'utf8_bin',
-            'Charset' => 'utf8',
-            1 => 'utf8',
-            'Id' => '83',
-            2 => '83',
-            'Default' => 'Yes',
-            3 => 'Yes',
-            'Compiled' => 'Yes',
-            4 => 'Yes',
-            'Sortlen' => '1',
-            5 => '1',
+            'Engine' => 'InnoDB',
+            0 => 'InnoDB',
+            'Support' => 'DEFAULT',
+            1 => 'DEFAULT',
+            'Comment' => 'Supports transactions, row-level locking, and foreign keys',
+            2 => 'Supports transactions, row-level locking, and foreign keys',
+            'Transactions' => 'YES',
+            3 => 'YES',
+            'XA' => 'YES',
+            4 => 'YES',
+            'Savepoints' => 'YES',
+            5 => 'YES',
         ],
     ];
 
@@ -45,12 +45,12 @@ class CollationMember extends Member
      * @var array
      */
     private static $fields = [
-        'Collation',
-        'Charset',
-        'Id',
-        'Default',
-        'Compiled',
-        'Sortlen',
+        'Engine',
+        'Support',
+        'Comment',
+        'Transactions',
+        'XA',
+        'Savepoints',
     ];
 
     /**
@@ -61,7 +61,7 @@ class CollationMember extends Member
      */
     public function process(QueryInterface $query)
     {
-        if (!$query instanceof ShowQuery || $query->getObject() !== ShowQuery::EXPRESSION_COLLATION) {
+        if (!$query instanceof ShowQuery || $query->getObject() !== ShowQuery::EXPRESSION_ENGINES) {
             return null;
         }
 

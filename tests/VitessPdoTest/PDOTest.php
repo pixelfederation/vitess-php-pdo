@@ -1361,6 +1361,55 @@ EOF;
         self::assertEquals($query, $rows[0][1]);
     }
 
+    /**
+     * @group mysql_emulator
+     * @throws Exception
+     * @throws VitessPDOException
+     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+     */
+    public function testShowEngines()
+    {
+        $pdo = $this->getPdoWithVctldSupport();
+        $stmt = $pdo->query("SHOW ENGINES");
+
+        self::assertInstanceOf(PDOStatement::class, $stmt);
+        $rows = $stmt->fetchAll(CorePDO::FETCH_BOTH);
+        self::assertCount(1, $rows);
+        $row = $rows[0];
+
+        self::assertArrayHasKey('Engine', $row);
+        self::assertArrayHasKey(0, $row);
+        self::assertArrayHasKey('Support', $row);
+        self::assertArrayHasKey(1, $row);
+        self::assertArrayHasKey('Comment', $row);
+        self::assertArrayHasKey(2, $row);
+        self::assertArrayHasKey('Transactions', $row);
+        self::assertArrayHasKey(3, $row);
+        self::assertArrayHasKey('XA', $row);
+        self::assertArrayHasKey(4, $row);
+        self::assertArrayHasKey('Savepoints', $row);
+        self::assertArrayHasKey(5, $row);
+        self::assertArrayHasKey('Extra', $row);
+        self::assertArrayHasKey(6, $row);
+        self::assertArrayHasKey('Privileges', $row);
+        self::assertArrayHasKey(7, $row);
+        self::assertArrayHasKey('Comment', $row);
+        self::assertArrayHasKey(8, $row);
+
+        self::assertEquals('InnoDB', $row['Engine']);
+        self::assertEquals('InnoDB', $row[0]);
+        self::assertEquals('DEFAULT', $row['Support']);
+        self::assertEquals('DEFAULT', $row[1]);
+        self::assertEquals('Supports transactions, row-level locking, and foreign keys', $row['Comment']);
+        self::assertEquals('Supports transactions, row-level locking, and foreign keys', $row[2]);
+        self::assertEquals('YES', $row['Transactions']);
+        self::assertEquals('YES', $row[3]);
+        self::assertEquals('YES', $row['XA']);
+        self::assertEquals('YES', $row[4]);
+        self::assertEquals('YES', $row['Savepoints']);
+        self::assertEquals('YES', $row[5]);
+    }
+
     public function testStmtClass()
     {
         $pdo = $this->getPdo();

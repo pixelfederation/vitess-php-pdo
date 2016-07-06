@@ -17,6 +17,7 @@ use VitessPdo\PDO\QueryAnalyzer\ShowQuery;
  *
  * @author  mfris
  * @package VitessPdo\PDO\MySql\Handler
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class Chain extends VctldChain
 {
@@ -46,6 +47,7 @@ class Chain extends VctldChain
         $collation->setSuccessor($database = new CreateDatabaseMember());
         $database->setSuccessor($indexFrom = new IndexFromMember($this->client));
         $indexFrom->setSuccessor($fullColumns = new FullColumnsFromMember($this->client));
-        $fullColumns->setSuccessor(new CreateTableMember($this->client));
+        $fullColumns->setSuccessor($createTable = new CreateTableMember($this->client));
+        $createTable->setSuccessor(new EnginesMember());
     }
 }
