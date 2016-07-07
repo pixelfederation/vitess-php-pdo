@@ -500,6 +500,14 @@ class PDO
     }
 
     /**
+     * @return PDO\Vitess\ClusterConfig
+     */
+    public function getClusterConfig()
+    {
+        return $this->vitess->getClusterConfig();
+    }
+
+    /**
      * @return void
      */
     public function __destruct()

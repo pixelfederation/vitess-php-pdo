@@ -56,6 +56,11 @@ class Vitess implements ExecutorInterface
     private $attributes;
 
     /**
+     * @var ClusterConfig
+     */
+    private $clusterConfig;
+
+    /**
      * Vitess constructor.
      *
      * @param string $connectionString
@@ -72,6 +77,7 @@ class Vitess implements ExecutorInterface
             $credentials      = ChannelCredentials::createInsecure();
             $this->grpcClient = new Client($connectionString, ['credentials' => $credentials]);
             $this->connection = new VTGateConn($this->grpcClient);
+            $this->clusterConfig = new ClusterConfig();
         } catch (Exception $e) {
             throw new PDOException("Error while connecting to vitess: " . $e->getMessage(), $e->getCode(), $e);
         }
@@ -191,7 +197,7 @@ class Vitess implements ExecutorInterface
 
         try {
             $reader = $this->connection;
-            $tabletType = TabletType::REPLICA;
+            $tabletType = $this->clusterConfig->getReadFrom();
 
             if ($this->isInTransaction()) {
                 $reader = $this->getTransaction();
@@ -206,6 +212,14 @@ class Vitess implements ExecutorInterface
         }
 
         return new Result(new Cursor($cursor));
+    }
+
+    /**
+     * @return ClusterConfig
+     */
+    public function getClusterConfig()
+    {
+        return $this->clusterConfig;
     }
 
     /**
