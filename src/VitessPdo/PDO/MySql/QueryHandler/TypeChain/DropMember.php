@@ -8,23 +8,23 @@ namespace VitessPdo\PDO\MySql\QueryHandler\TypeChain;
 
 use VitessPdo\PDO\Exception;
 use VitessPdo\PDO\MySql\QueryHandler\VtCtldMember;
-use VitessPdo\PDO\MySql\QueryHandler\ShowChain\Chain as ShowChain;
+use VitessPdo\PDO\MySql\QueryHandler\DropChain\Chain as DropChain;
 use VitessPdo\PDO\MySql\Result\Result;
 use VitessPdo\PDO\QueryAnalyzer\QueryInterface;
 
 /**
- * Description of class ShowMember
+ * Description of class CreateMember
  *
  * @author  mfris
  * @package VitessPdo\PDO\MySql\Handler\Chain
  */
-class ShowMember extends VtCtldMember
+class DropMember extends VtCtldMember
 {
 
     /**
-     * @var ShowChain
+     * @var DropChain
      */
-    private $showChain;
+    private $dropChain;
 
     /**
      * @param QueryInterface $query
@@ -34,22 +34,22 @@ class ShowMember extends VtCtldMember
      */
     public function process(QueryInterface $query)
     {
-        if (!$query->isType(QueryInterface::TYPE_SHOW)) {
+        if (!$query->isType(QueryInterface::TYPE_DROP)) {
             return null;
         }
 
-        return $this->getShowChain()->getResult($query);
+        return $this->getDropChain()->getResult($query);
     }
 
     /**
-     * @return ShowChain
+     * @return DropChain
      */
-    private function getShowChain()
+    private function getDropChain()
     {
-        if ($this->showChain === null) {
-            $this->showChain = new ShowChain($this->client);
+        if ($this->dropChain === null) {
+            $this->dropChain = new DropChain($this->client);
         }
 
-        return $this->showChain;
+        return $this->dropChain;
     }
 }

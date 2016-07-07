@@ -7,6 +7,7 @@
 namespace VitessPdo\PDO\VtCtld\Command;
 
 use VitessPdo\PDO\Exception;
+use VitessPdo\PDO\VtCtld\Command\Parameter\NamedParameter;
 
 /**
  * Description of class Command
@@ -56,6 +57,20 @@ abstract class Command
     }
 
     /**
+     * @return string
+     */
+    public function __toString()
+    {
+        $parts = [get_called_class()];
+
+        foreach ($this->getParams() as $param) {
+            $parts[] = (string) $param;
+        }
+
+        return implode('|', $parts);
+    }
+
+    /**
      * @param string $key
      * @param mixed $value
      *
@@ -63,7 +78,7 @@ abstract class Command
      */
     protected function set($key, $value)
     {
-        $this->params[$key] = escapeshellarg($value);
+        $this->params[$key] = $value;
 
         return $this;
     }

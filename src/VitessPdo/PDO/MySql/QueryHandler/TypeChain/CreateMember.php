@@ -8,23 +8,23 @@ namespace VitessPdo\PDO\MySql\QueryHandler\TypeChain;
 
 use VitessPdo\PDO\Exception;
 use VitessPdo\PDO\MySql\QueryHandler\VtCtldMember;
-use VitessPdo\PDO\MySql\QueryHandler\ShowChain\Chain as ShowChain;
+use VitessPdo\PDO\MySql\QueryHandler\CreateChain\Chain as CreateChain;
 use VitessPdo\PDO\MySql\Result\Result;
 use VitessPdo\PDO\QueryAnalyzer\QueryInterface;
 
 /**
- * Description of class ShowMember
+ * Description of class CreateMember
  *
  * @author  mfris
  * @package VitessPdo\PDO\MySql\Handler\Chain
  */
-class ShowMember extends VtCtldMember
+class CreateMember extends VtCtldMember
 {
 
     /**
-     * @var ShowChain
+     * @var CreateChain
      */
-    private $showChain;
+    private $createChain;
 
     /**
      * @param QueryInterface $query
@@ -34,22 +34,22 @@ class ShowMember extends VtCtldMember
      */
     public function process(QueryInterface $query)
     {
-        if (!$query->isType(QueryInterface::TYPE_SHOW)) {
+        if (!$query->isType(QueryInterface::TYPE_CREATE)) {
             return null;
         }
 
-        return $this->getShowChain()->getResult($query);
+        return $this->getCreateChain()->getResult($query);
     }
 
     /**
-     * @return ShowChain
+     * @return CreateChain
      */
-    private function getShowChain()
+    private function getCreateChain()
     {
-        if ($this->showChain === null) {
-            $this->showChain = new ShowChain($this->client);
+        if ($this->createChain === null) {
+            $this->createChain = new CreateChain($this->client);
         }
 
-        return $this->showChain;
+        return $this->createChain;
     }
 }

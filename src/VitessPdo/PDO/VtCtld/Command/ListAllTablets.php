@@ -8,6 +8,7 @@ namespace VitessPdo\PDO\VtCtld\Command;
 
 use VitessPdo\PDO\Dsn\Dsn;
 use VitessPdo\PDO\Exception;
+use VitessPdo\PDO\VtCtld\Command\Parameter\Parameter;
 
 /**
  * Description of class GetVSchema
@@ -38,7 +39,7 @@ class ListAllTablets extends DsnDependent
             throw new Exception("Cell missing.");
         }
 
-        $this->set(self::PARAM_CELL, $cell);
+        $this->set(self::PARAM_CELL, new Parameter(self::PARAM_CELL, $cell));
 
         return $this;
     }

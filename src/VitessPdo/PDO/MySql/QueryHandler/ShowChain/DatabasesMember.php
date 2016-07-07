@@ -7,7 +7,7 @@
 namespace VitessPdo\PDO\MySql\QueryHandler\ShowChain;
 
 use VitessPdo\PDO\Exception;
-use VitessPdo\PDO\MySql\QueryHandler\VctldMember;
+use VitessPdo\PDO\MySql\QueryHandler\VtCtldMember;
 use VitessPdo\PDO\MySql\Result\Result;
 use VitessPdo\PDO\MySql\Result\Show\Databases;
 use VitessPdo\PDO\QueryAnalyzer\QueryInterface;
@@ -21,7 +21,7 @@ use VitessPdo\PDO\VtCtld\Result\GetKeyspaces as GetKeyspacesResult;
  * @author  mfris
  * @package VitessPdo\PDO\MySql\Handler\Chain
  */
-class DatabasesMember extends VctldMember
+class DatabasesMember extends VtCtldMember
 {
 
     /**

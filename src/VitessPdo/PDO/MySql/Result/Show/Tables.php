@@ -8,7 +8,7 @@ namespace VitessPdo\PDO\MySql\Result\Show;
 
 use VitessPdo\PDO\Exception;
 use VitessPdo\PDO\MySql\Result\VtCtldResult;
-use VitessPdo\PDO\VtCtld\Result\GetVSchema;
+use VitessPdo\PDO\VtCtld\Result\GetSchema;
 
 /**
  * Description of class Tables
@@ -22,9 +22,9 @@ final class Tables extends VtCtldResult
     /**
      * Databases constructor.
      *
-     * @param GetVSchema $result
+     * @param GetSchema $result
      */
-    public function __construct(GetVSchema $result)
+    public function __construct(GetSchema $result)
     {
         $this->initFields($result->getKeyspace());
         parent::__construct($result);
@@ -42,7 +42,7 @@ final class Tables extends VtCtldResult
     }
 
     /**
-     * @param array $data
+     * @param mixed $data
      *
      * @return mixed
      * @throws Exception
@@ -50,17 +50,17 @@ final class Tables extends VtCtldResult
      */
     protected function transform($data)
     {
-        if (!isset($data['tables'])) {
-            throw new Exception('Missing vschema data key - tables.');
+        if (!$data instanceof GetSchema\Schema) {
+            throw new Exception('Schema instance missing.');
         }
 
         $field = $this->specializedFIelds[0];
         $returnData = [];
 
-        foreach ($data['tables'] as $table => $config) {
+        foreach ($data->getTableDefinitions() as $definition) {
             $returnData[] = [
-                $field => $table,
-                0 => $table,
+                $field => $definition->getName(),
+                0 => $definition->getName(),
             ];
         }
 

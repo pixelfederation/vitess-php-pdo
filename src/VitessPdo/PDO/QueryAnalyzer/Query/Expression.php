@@ -81,7 +81,7 @@ class Expression implements ExpressionInterface
     public function getSubTree()
     {
         if ($this->subTree === null) {
-            if (!isset($this->data[self::KEY_SUB_TREE])) {
+            if (!isset($this->data[self::KEY_SUB_TREE]) || !$this->data[self::KEY_SUB_TREE]) {
                 $this->subTree = false;
 
                 return $this->subTree;

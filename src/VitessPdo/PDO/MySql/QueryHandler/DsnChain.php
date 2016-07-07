@@ -20,7 +20,7 @@ abstract class DsnChain extends Chain
     use DependencyTrait\Dsn;
 
     /**
-     * VctldMember constructor.
+     * VtCtldMember constructor.
      *
      * @param Dsn $dsn
      */

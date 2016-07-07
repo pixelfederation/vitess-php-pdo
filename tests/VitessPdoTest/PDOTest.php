@@ -1389,12 +1389,6 @@ EOF;
         self::assertArrayHasKey(4, $row);
         self::assertArrayHasKey('Savepoints', $row);
         self::assertArrayHasKey(5, $row);
-        self::assertArrayHasKey('Extra', $row);
-        self::assertArrayHasKey(6, $row);
-        self::assertArrayHasKey('Privileges', $row);
-        self::assertArrayHasKey(7, $row);
-        self::assertArrayHasKey('Comment', $row);
-        self::assertArrayHasKey(8, $row);
 
         self::assertEquals('InnoDB', $row['Engine']);
         self::assertEquals('InnoDB', $row[0]);
@@ -1409,6 +1403,25 @@ EOF;
         self::assertEquals('YES', $row['Savepoints']);
         self::assertEquals('YES', $row[5]);
     }
+
+//    /**
+//     * @group mysql_emulator
+//     * @throws Exception
+//     * @throws VitessPDOException
+//     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+//     */
+//    public function testCreateTable()
+//    {
+//        $this->markTestSkipped('VTCombo doesn\'t support DDL.');
+//        $pdo = $this->getPdoWithVctldSupport();
+//        $pdo->query("USE `lookup`");
+//        $stmt = $pdo->query("CREATE TABLE `test1` (`asd` int NOT NULL DEFAULT '1');");
+//
+//        self::assertInstanceOf(PDOStatement::class, $stmt);
+//        $rows = $stmt->fetchAll(CorePDO::FETCH_BOTH);
+//        self::assertEmpty($rows);
+//        self::assertFalse($pdo->errorInfo());
+//    }
 
     public function testStmtClass()
     {

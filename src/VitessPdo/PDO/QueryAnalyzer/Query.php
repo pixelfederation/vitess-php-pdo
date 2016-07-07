@@ -52,6 +52,8 @@ class Query implements QueryInterface
         self::TYPE_USE    => self::TYPE_USE,
         self::TYPE_SHOW   => self::TYPE_SHOW,
         self::TYPE_CREATE => self::TYPE_CREATE,
+        self::TYPE_ALTER => self::TYPE_ALTER,
+        self::TYPE_DROP => self::TYPE_DROP,
     ];
 
     /**

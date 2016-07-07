@@ -6,6 +6,8 @@
 
 namespace VitessPdo\PDO\VtCtld\Command;
 
+use VitessPdo\PDO\VtCtld\Command\Parameter\Parameter;
+
 /**
  * Description of class GetSchema
  *
@@ -27,6 +29,6 @@ class GetSchema extends Command
      */
     public function __construct($tablet)
     {
-        $this->set(self::PARAM_TABLET, $tablet);
+        $this->set(self::PARAM_TABLET, new Parameter(self::PARAM_TABLET, $tablet));
     }
 }

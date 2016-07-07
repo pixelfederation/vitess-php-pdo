@@ -8,7 +8,7 @@ namespace VitessPdo\PDO\MySql\Result\Show;
 
 use VitessPdo\PDO\Exception;
 use VitessPdo\PDO\MySql\Result\VtCtldResult;
-use VitessPdo\PDO\VtCtld\Result\GetVSchema;
+use VitessPdo\PDO\VtCtld\Result\GetSchema;
 
 /**
  * Description of class TableStatus
@@ -93,10 +93,10 @@ final class TableStatus extends VtCtldResult
     /**
      * Databases constructor.
      *
-     * @param GetVSchema $result
+     * @param GetSchema $result
      * @param string     $fromExpr
      */
-    public function __construct(GetVSchema $result, $fromExpr = '')
+    public function __construct(GetSchema $result, $fromExpr = '')
     {
         $this->likeExpr = trim($fromExpr);
         parent::__construct($result);
@@ -107,19 +107,18 @@ final class TableStatus extends VtCtldResult
      *
      * @return mixed
      * @throws Exception
-     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
      */
     protected function transform($data)
     {
-        if (!isset($data['tables'])) {
-            throw new Exception('Missing vschema data key - tables.');
+        if (!$data instanceof GetSchema\Schema) {
+            throw new Exception('Schema instance missing.');
         }
 
         $returnData = [];
 
-        foreach ($data['tables'] as $table => $config) {
+        foreach ($data->getTableDefinitions() as $definition) {
             $tmp = self::$tplData;
-            $tmp['Name'] = $tmp[0] = $table;
+            $tmp['Name'] = $tmp[0] = $definition->getName();
             $returnData[] = $tmp;
         }
 

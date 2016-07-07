@@ -18,7 +18,7 @@ use VitessPdo\PDO\VtCtld\Result\Result;
  * @author  mfris
  * @package VitessPdo\PDO\VtCtld
  */
-final class Client
+final class Client implements ClientInterface
 {
 
     /**
@@ -59,12 +59,13 @@ final class Client
         }
 
         $shellCmd = self::VTCTLD_EXECUTABLE . ' ' . $this->getServerString() . ' '
-             . $command->getName() . ' ' . implode(" ", $command->getParams());
+             . $command->getName() . ' ' . implode(' ', $command->getParams());
 
-        $output = shell_exec($shellCmd);
+        exec($shellCmd, $output, $return);
+        $output = implode("\n", $output);
 
-        if ($output === null) {
-            throw new Exception("Invalid vtctld command - " . $shellCmd);
+        if ($return !== 0) {
+            throw new Exception('Error running vtctld command - ' . $shellCmd . ', error: ' . $output);
         }
 
         $resultClass = $command->getResultClass();

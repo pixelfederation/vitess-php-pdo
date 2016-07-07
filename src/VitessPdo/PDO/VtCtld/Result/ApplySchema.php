@@ -7,24 +7,15 @@
 namespace VitessPdo\PDO\VtCtld\Result;
 
 use VitessPdo\PDO\Exception;
-use VitessPdo\PDO\VtCtld\Result\GetSchema\Schema;
 
 /**
- * Description of class GetSchema
+ * Description of class ApplySchema
  *
  * @author  mfris
  * @package VitessPdo\PDO\VtCtld\Result
  */
-final class GetSchema extends Result
+final class ApplySchema extends Result
 {
-
-    /**
-     * @return string
-     */
-    public function getKeyspace()
-    {
-        return $this->dsn->getConfig()->getKeyspace();
-    }
 
     /**
      * @throws Exception
@@ -33,6 +24,6 @@ final class GetSchema extends Result
     {
         $data = json_decode(trim($this->responseString), true);
 
-        $this->data = new Schema($data);
+        $this->data = $data;
     }
 }

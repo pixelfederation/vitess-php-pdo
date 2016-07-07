@@ -47,6 +47,10 @@ class ColumnTypeExpression extends ExpressionDecorator
             $dataType = $this->findFirstInSubTree(self::TYPE_DATA_TYPE);
 
             if (!$dataType) {
+                $dataType = $this->findFirstInSubTree(self::TYPE_RESERVED);
+            }
+
+            if (!$dataType || ($dataType->getType() === self::TYPE_RESERVED && $dataType->getExpression() !== 'enum')) {
                 throw new Exception('Unable to find data type.');
             }
 
@@ -65,6 +69,11 @@ class ColumnTypeExpression extends ExpressionDecorator
         if ($this->sqlType === null) {
             $dataType = $this->getDataType();
             $bracketExpr = $this->findFirstInSubTree(self::TYPE_BRACKET_EXPRESSION);
+
+            if (!$bracketExpr && $dataType->getSubTree()) {
+                $bracketExpr = $dataType->findFirstInSubTree(self::TYPE_BRACKET_EXPRESSION);
+            }
+
             $this->sqlType = $dataType->getExpression() . ($bracketExpr ? $bracketExpr->getExpression() : '');
         }
 

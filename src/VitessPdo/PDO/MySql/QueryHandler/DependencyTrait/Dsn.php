@@ -9,7 +9,7 @@ namespace VitessPdo\PDO\MySql\QueryHandler\DependencyTrait;
 use VitessPdo\PDO\Dsn\Dsn as DsnConfig;
 
 /**
- * Description of trait Vctld
+ * Description of trait VtCtld
  *
  * @author  mfris
  * @package VitessPdo\PDO\MySql\QueryHandler\DependencyTrait

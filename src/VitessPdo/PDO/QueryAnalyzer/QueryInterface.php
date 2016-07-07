@@ -21,6 +21,8 @@ interface QueryInterface
     const TYPE_UPDATE = 'UPDATE';
     const TYPE_DELETE = 'DELETE';
     const TYPE_CREATE = 'CREATE';
+    const TYPE_ALTER = 'ALTER';
+    const TYPE_DROP = 'DROP';
     const TYPE_USE    = 'USE';
     const TYPE_SHOW   = 'SHOW';
     const TYPE_UNKNOWN = 'unknown';

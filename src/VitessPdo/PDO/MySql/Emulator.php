@@ -11,6 +11,7 @@ use VitessPdo\PDO\MySql\QueryHandler\TypeChain\Chain;
 use VitessPdo\PDO\MySql\Result\Result;
 use VitessPdo\PDO\PDOStatement;
 use VitessPdo\PDO\QueryAnalyzer\QueryInterface;
+use VitessPdo\PDO\VtCtld\CachingClient;
 use VitessPdo\PDO\VtCtld\Client;
 
 /**
@@ -46,7 +47,7 @@ class Emulator
     public function __construct(Dsn $dsn)
     {
         $this->dsn = $dsn;
-        $this->client = new Client($dsn);
+        $this->client = new CachingClient(new Client($dsn));
     }
 
     /**

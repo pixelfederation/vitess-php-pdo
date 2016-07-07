@@ -6,28 +6,28 @@
 
 namespace VitessPdo\PDO\MySql\QueryHandler\DependencyTrait;
 
-use VitessPdo\PDO\VtCtld\Client;
+use VitessPdo\PDO\VtCtld\ClientInterface;
 
 /**
- * Description of trait Vctld
+ * Description of trait VtCtld
  *
  * @author  mfris
  * @package VitessPdo\PDO\MySql\QueryHandler\DependencyTrait
  */
-trait Vctld
+trait VtCtld
 {
 
     /**
-     * @var Client
+     * @var ClientInterface
      */
     protected $client;
 
     /**
-     * VctldMember constructor.
+     * VtCtldMember constructor.
      *
-     * @param Client $client
+     * @param ClientInterface $client
      */
-    private function setClient(Client $client)
+    private function setClient(ClientInterface $client)
     {
         $this->client = $client;
     }

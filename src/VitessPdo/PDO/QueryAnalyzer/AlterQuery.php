@@ -11,12 +11,12 @@ use VitessPdo\PDO\QueryAnalyzer\Query\CreateExpression;
 use VitessPdo\PDO\QueryAnalyzer\Query\Expression;
 
 /**
- * Description of class CreateQuery
+ * Description of class AlterQuery
  *
  * @author  mfris
  * @package VitessPdo\PDO\QueryAnalyzer
  */
-class CreateQuery extends QueryDecorator
+class AlterQuery extends QueryDecorator
 {
 
     /**
@@ -27,7 +27,7 @@ class CreateQuery extends QueryDecorator
     /**
      * @const string
      */
-    const TYPE = QueryInterface::TYPE_CREATE;
+    const TYPE = QueryInterface::TYPE_ALTER;
 
     /**
      * @const string
@@ -42,26 +42,13 @@ class CreateQuery extends QueryDecorator
     public function getObject()
     {
         if ($this->object === null) {
-            /* @var Expression[] */
-            $expressions = $this->getExpressions();
+            $parsed = $this->getParsedSql();
 
-            if (!isset($expressions[0])) {
+            if (!isset($parsed[1])) {
                 throw new Exception("Object missing.");
             }
 
-            $stopExprs = [];
-            $objectParts = [];
-            /* @var $expr Expression */
-            foreach ($expressions as $index => $expr) {
-                if (in_array($expr->getExpression(), $stopExprs) || $expr->getNoQuotes()) {
-                    $this->afterObjectIndex = $index;
-                    break;
-                }
-
-                $objectParts[] = $expr->getExpression();
-            }
-
-            $this->object = implode(' ', $objectParts);
+            $this->object = $parsed[1];
         }
 
         return $this->object;
@@ -76,6 +63,6 @@ class CreateQuery extends QueryDecorator
         $objectName = $this->getObject();
         $parsedSql = $this->getParsedSql($objectName);
 
-        return new CreateExpression(new Expression($parsedSql));
+        return new Expression($parsedSql);
     }
 }
