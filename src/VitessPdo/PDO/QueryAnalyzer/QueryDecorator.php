@@ -57,16 +57,27 @@ abstract class QueryDecorator implements QueryInterface
     }
 
     /**
-     * @param string $type
      * @return array
      * @throws Exception
      */
-    public function getParsedSql($type = '')
+    public function getParsedSql()
     {
-        if (!$type) {
-            $type = static::TYPE; // not allowed at compile time
+        $type = static::TYPE;
+        $parsedSql = $this->getDecoratedQuery()->getParsedSql();
+
+        if (!isset($parsedSql[$type])) {
+            throw new Exception("{$type} not found in expression.");
         }
 
+        return $parsedSql[$type];
+    }
+
+    /**
+     * @return array
+     * @throws Exception
+     */
+    protected function getParsedSqlByExprType($type)
+    {
         $parsedSql = $this->getDecoratedQuery()->getParsedSql();
 
         if (!isset($parsedSql[$type])) {

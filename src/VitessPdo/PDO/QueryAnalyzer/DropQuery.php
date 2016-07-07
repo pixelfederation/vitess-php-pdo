@@ -81,7 +81,7 @@ class DropQuery extends QueryDecorator
     public function getObjectExpression()
     {
         $objectName = $this->getObject();
-        $parsedSql = $this->getParsedSql($objectName);
+        $parsedSql = $this->getParsedSqlByExprType($objectName);
 
         return new CreateExpression(new Expression($parsedSql));
     }

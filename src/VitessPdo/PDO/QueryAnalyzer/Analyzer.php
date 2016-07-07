@@ -76,8 +76,6 @@ class Analyzer
      */
     public function parseQuery($sql)
     {
-        $parsedData = $this->parser->parse($sql);
-
-        return new Query($sql, $parsedData);
+        return new PartiallyParsedQuery($sql, $this->parser);
     }
 }
