@@ -35,6 +35,18 @@ $pdo = new \VitessPdo\PDO("vitess:cell={$cell};keyspace={$keyspace};host={$host}
 - $host: IP or hostname of Vtgate
 - $port: Vtgate port
 
+If you want to use some limited DDL support, you have to instantiate the PDO instance this way:
+
+```php
+$pdo = new \VitessPdo\PDO("vitess:cell={$cell};keyspace={$keyspace};host={$host};port={$port};vtctld_host={vtcrld_host};vtctld_port={vtctld_port}");
+```
+
+- $vtctld_host: IP or hostname of Vtctld
+- $vtctld_port: Vtctld port
+
+Only a limited subset of DDL queries is supported (the goal of the implementation was to get the PDO driver
+work with [Adminer](https://github.com/pixelfederation/adminer).
+
 ## Contribution
 
 If you'd like to contribtue, we strongly recommend to run
