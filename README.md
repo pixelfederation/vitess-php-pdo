@@ -13,6 +13,10 @@ things.
 Also, the unit tests are currently bound to our Vitess dev instance, there is a plan to change this.
 There's also not much documentation yet, but people requested the driver, so we decided to go open source.
 
+This driver isn't compatible with any official MySql/MariaDB management tools, but 
+we created an [Adminer fork](https://github.com/pixelfederation/adminer), which you can use to have some insight
+about the data in your Vitess cluster.
+
 ## Usage
 
 The [Vitess PHP client](https://github.com/youtube/vitess/tree/master/php), which is used in the PDO implementation 
