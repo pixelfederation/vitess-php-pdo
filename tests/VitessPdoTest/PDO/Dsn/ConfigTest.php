@@ -41,16 +41,16 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
 
     public function testBadConstruct()
     {
-        $configString = "keyspace=testdb;host=localhost;port=15991";
+        $configString = "port=15991";
         $this->expectException(DriverException::class);
-        $this->expectExceptionMessage('Invalid config - cell missing.');
+        $this->expectExceptionMessage('Invalid config - host missing.');
 
         new Config($configString);
     }
 
     public function testConstructWithoutKeyspace()
     {
-        $configString = "host=localhost;port=15991;cell=testcell";
+        $configString = "host=localhost;port=15991";
         $config = null;
 
         try {
@@ -67,25 +67,16 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
 
     public function testParamMissing()
     {
-        $configString = "keyspace=localhost;param1";
+        $configString = "host=localhost;param1";
 
         $this->expectException(DriverException::class);
         $this->expectExceptionMessageRegExp("/^Invalid parameter -.*/");
         new Config($configString);
     }
 
-    public function testCellMissing()
-    {
-        $configString = "keyspace=testdb";
-
-        $this->expectException(DriverException::class);
-        $this->expectExceptionMessage("Invalid config - cell missing.");
-        new Config($configString);
-    }
-
     public function testHostMissing()
     {
-        $configString = "keyspace=testdb;cell=testcell";
+        $configString = "keyspace=testdb";
 
         $this->expectException(DriverException::class);
         $this->expectExceptionMessage("Invalid config - host missing.");
@@ -94,7 +85,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
 
     public function testPortIsNotInteger()
     {
-        $configString = "host=localhost;dbname=testdb;port=asd;cell=testcell";
+        $configString = "host=localhost;dbname=testdb;port=asd";
 
         $this->expectException(DriverException::class);
         $this->expectExceptionMessage("Invalid config - port has to be a positive integer.");

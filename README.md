@@ -28,7 +28,7 @@ composer require pixelfederation/vitess-php-pdo
 After the installation of the dependencies, the PDO class should be instantiated this way:
 
 ```php
-$pdo = new \VitessPdo\PDO("vitess:cell={$cell};keyspace={$keyspace};host={$host};port={$port}");
+$pdo = new \VitessPdo\PDO("keyspace={$keyspace};host={$host};port={$port}");
 ```
 
 - $keyspace: vitess keyspace (alternative to database name)
@@ -41,6 +41,7 @@ If you want to use some limited DDL support, you have to instantiate the PDO ins
 $pdo = new \VitessPdo\PDO("vitess:cell={$cell};keyspace={$keyspace};host={$host};port={$port};vtctld_host={vtcrld_host};vtctld_port={vtctld_port}");
 ```
 
+- $cell: name of the Vitess cell
 - $vtctld_host: IP or hostname of Vtctld
 - $vtctld_port: Vtctld port
 

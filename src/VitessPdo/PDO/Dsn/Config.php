@@ -166,7 +166,7 @@ class Config
      */
     public function hasVtCtldData()
     {
-        return $this->getVtCtlHost() && $this->getVtCtlPort();
+        return $this->getVtCtlHost() && $this->getVtCtlPort() && $this->getCell();
     }
 
     /**
@@ -185,13 +185,11 @@ class Config
 
     /**
      * @param array $config
-     *
-     * @throws Exception
      */
     private function setCell(array $config)
     {
         if (!isset($config[self::CONFIG_CELL]) || trim($config[self::CONFIG_CELL]) === "") {
-            throw new Exception("Invalid config - cell missing.");
+            return;
         }
 
         $this->cell = trim($config[self::CONFIG_CELL]);
