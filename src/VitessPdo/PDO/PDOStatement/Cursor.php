@@ -6,6 +6,8 @@
 
 namespace VitessPdo\PDO\PDOStatement;
 
+use VitessPdo\PDO\Fetcher\Factory as FetcherFactory;
+use VitessPdo\PDO\Fetcher\FetchConfig;
 use VitessPdo\PDO\QueryExecutor\CursorInterface;
 use VitessPdo\PDO\Exception;
 use PDO as CorePDO;
@@ -25,6 +27,11 @@ class Cursor
     private $executorCursor;
 
     /**
+     * @var FetcherFactory
+     */
+    private $fetcherFactory;
+
+    /**
      * @var int
      */
     private $rowIndex = -1;
@@ -35,85 +42,43 @@ class Cursor
     private $data;
 
     /**
-     * @var array
-     */
-    private static $supportedFetchAllStyles = [
-        CorePDO::FETCH_BOTH => CorePDO::FETCH_BOTH,
-        CorePDO::FETCH_ASSOC => CorePDO::FETCH_ASSOC,
-        CorePDO::FETCH_NUM => CorePDO::FETCH_NUM,
-        CorePDO::FETCH_COLUMN => CorePDO::FETCH_COLUMN,
-    ];
-
-    /**
-     * @var array
-     */
-    private static $supportedFetchStyles = [
-        CorePDO::FETCH_BOTH => CorePDO::FETCH_BOTH,
-        CorePDO::FETCH_ASSOC => CorePDO::FETCH_ASSOC,
-        CorePDO::FETCH_NUM => CorePDO::FETCH_NUM,
-    ];
-
-    /**
      * Cursor constructor.
      *
      * @param CursorInterface $executorCursor
+     * @param FetcherFactory $fetcherFactory
      */
-    public function __construct(CursorInterface $executorCursor)
+    public function __construct(CursorInterface $executorCursor, FetcherFactory $fetcherFactory)
     {
         $this->executorCursor = $executorCursor;
+        $this->fetcherFactory = $fetcherFactory;
     }
 
     /**
-     * @param int   $fetchStyle
-     * @param int   $fetchArgument
+     * @param FetchConfig $fetchConfig
      *
      * @return array
      * @throws Exception
      */
-    public function fetchAll(
-        $fetchStyle = CorePDO::FETCH_BOTH,
-        $fetchArgument = CorePDO::FETCH_COLUMN
-    ) {
-        if (!$this->isFetchAllStyleSupported($fetchStyle)) {
-            throw new Exception("Fetch style not supported: {$fetchStyle}");
-        }
-
-        if (!$this->isInitialized()) {
-            $this->initialize();
-        }
-
-        if ($fetchStyle === CorePDO::FETCH_COLUMN) {
-            return $this->data->getSingleColumnRows($fetchArgument);
-        }
-
-        return $this->data->getRowsForFetchStyle($fetchStyle);
-    }
-
-    /**
-     * @return array
-     */
-    public function fetchAllKeyPairs()
+    public function fetchAll(FetchConfig $fetchConfig)
     {
+        $fetcher = $this->fetcherFactory->getByFetchStyle($fetchConfig->getFetchStyle());
+
         if (!$this->isInitialized()) {
             $this->initialize();
         }
 
-        return $this->data->getKeyPairedRows();
+        return $this->data->fetchAll($fetcher, $fetchConfig);
     }
 
     /**
-     * @param int $fetchStyle
+     * @param FetchConfig $fetchConfig
      *
      * @return bool
      * @throws Exception
      */
-    public function fetch($fetchStyle = CorePDO::FETCH_BOTH)
+    public function fetch(FetchConfig $fetchConfig)
     {
-        if (!$this->isFetchStyleSupported($fetchStyle)) {
-            throw new Exception("Fetch style not supported: {$fetchStyle}");
-        }
-
-        $rows = $this->fetchAll($fetchStyle);
+        $rows = $this->fetchAll($fetchConfig);
 
         if (isset($rows[++$this->rowIndex])) {
             return $rows[$this->rowIndex];
@@ -158,25 +123,5 @@ class Cursor
         }
 
         $this->data = new Data($rows);
-    }
-
-    /**
-     * @param int $fetchMode
-     *
-     * @return bool
-     */
-    private function isFetchAllStyleSupported($fetchMode)
-    {
-        return isset(self::$supportedFetchAllStyles[$fetchMode]);
-    }
-
-    /**
-     * @param int $fetchMode
-     *
-     * @return bool
-     */
-    private function isFetchStyleSupported($fetchMode)
-    {
-        return isset(self::$supportedFetchStyles[$fetchMode]);
     }
 }
