@@ -7,6 +7,8 @@
 namespace VitessPdo\PDO;
 
 use VitessPdo\PDO;
+use VitessPdo\PDO\Fetcher\FetchConfig;
+use VitessPdo\PDO\Fetcher\Factory as FetcherFactory;
 use VitessPdo\PDO\PDOStatement\Cursor;
 use VitessPdo\PDO\QueryAnalyzer\Analyzer;
 use VitessPdo\PDO\QueryExecutor\ExecutorInterface;
@@ -55,6 +57,11 @@ class PDOStatement
     private $queryAnalyzer;
 
     /**
+     * @var FetcherFactory
+     */
+    private $fetcherFactory;
+
+    /**
      * @var PDO\QueryExecutor\ResultInterface
      */
     private $result;
@@ -65,6 +72,11 @@ class PDOStatement
     private $cursor;
 
     /**
+     * @var FetchConfig
+     */
+    private $fetchConfig;
+
+    /**
      * PDOStatement constructor.
      *
      * @param string            $query
@@ -72,19 +84,22 @@ class PDOStatement
      * @param Attributes        $attributes
      * @param ParamProcessor    $paramProcessor
      * @param Analyzer          $queryAnalyzer
+     * @param FetcherFactory    $fetcherFactory
      */
     public function __construct(
         $query,
         ExecutorInterface $executor,
         Attributes $attributes,
         ParamProcessor $paramProcessor,
-        Analyzer $queryAnalyzer
+        Analyzer $queryAnalyzer,
+        FetcherFactory $fetcherFactory
     ) {
         $this->query          = $query;
         $this->executor       = $executor;
         $this->attributes     = $attributes;
         $this->paramProcessor = $paramProcessor;
         $this->queryAnalyzer  = $queryAnalyzer;
+        $this->fetcherFactory = $fetcherFactory;
     }
 
     /**
@@ -141,7 +156,7 @@ class PDOStatement
                 return false;
             }
 
-            $this->cursor = new Cursor($result->getCursor());
+            $this->cursor = new Cursor($result->getCursor(), $this->fetcherFactory);
         } catch (CoreException $e) {
             $this->result = new PDO\Vitess\Result(null, $e);
 
@@ -196,7 +211,6 @@ class PDOStatement
      *                  use the WHERE and ORDER BY clauses in SQL to restrict results before retrieving
      *                  and processing them with PHP.
      * @throws Exception
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function fetchAll(
         $fetchStyle = CorePDO::FETCH_BOTH,
@@ -207,11 +221,11 @@ class PDOStatement
             throw new Exception("Statement not executed yet.");
         }
 
-        if ($fetchStyle === CorePDO::FETCH_KEY_PAIR) {
-            return $this->cursor->fetchAllKeyPairs();
+        if (!$this->fetchConfig) {
+            $this->setFetchConfig($fetchStyle, $fetchArgument, $ctorArgs);
         }
 
-        return $this->cursor->fetchAll($fetchStyle, $fetchArgument);
+        return $this->cursor->fetchAll($this->fetchConfig);
     }
 
     /**
@@ -284,7 +298,11 @@ class PDOStatement
             throw new Exception("Statement not executed yet.");
         }
 
-        return $this->cursor->fetch($fetchStyle);
+        if (!$this->fetchConfig) {
+            $this->setFetchConfig($fetchStyle);
+        }
+
+        return $this->cursor->fetch($this->fetchConfig);
     }
 
     /**
@@ -457,6 +475,22 @@ class PDOStatement
     public function getResult()
     {
         return $this->result;
+    }
+
+    /**
+     * Set the default fetch mode for this statement
+     *
+     * @param int   $mode
+     * @param mixed $fetchArgument
+     * @param array $ctorArgs
+     *
+     * @return bool
+     */
+    public function setFetchConfig($mode, $fetchArgument = null, array $ctorArgs = [])
+    {
+        $this->fetchConfig = new FetchConfig($mode, $fetchArgument, $ctorArgs);
+
+        return true;
     }
 
     /**

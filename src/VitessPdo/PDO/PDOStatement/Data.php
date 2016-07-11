@@ -7,6 +7,8 @@
 namespace VitessPdo\PDO\PDOStatement;
 
 use PDO as CorePDO;
+use VitessPdo\PDO\Fetcher\FetchConfig;
+use VitessPdo\PDO\Fetcher\FetcherInterface;
 
 /**
  * Description of class Data
@@ -33,53 +35,20 @@ class Data
     }
 
     /**
-     * @param int $fetchStyle
+     * @param FetcherInterface $fetcher
+     * @param FetchConfig $fetchConfig
      *
      * @return array
      */
-    public function getRowsForFetchStyle($fetchStyle)
+    public function fetchAll(FetcherInterface $fetcher, FetchConfig $fetchConfig)
     {
+        $fetchStyle = $fetchConfig->getFetchStyle();
+
         if (!$this->hasRowsForFetchStyle($fetchStyle)) {
-            switch ($fetchStyle) {
-                case CorePDO::FETCH_ASSOC:
-                    $this->populateAssocData();
-                    break;
-                case CorePDO::FETCH_NUM:
-                    $this->populateNumericData();
-                    break;
-            }
+            $this->rows[$fetchStyle] = $fetcher->fetchAll($this->rows[CorePDO::FETCH_BOTH], $fetchConfig);
         }
 
         return $this->rows[$fetchStyle];
-    }
-
-    /**
-     * @param $colIndex
-     *
-     * @return array
-     */
-    public function getSingleColumnRows($colIndex)
-    {
-        $rows = $this->getRowsForFetchStyle(CorePDO::FETCH_NUM);
-
-        return array_map(function ($row) use ($colIndex) {
-            return isset($row[$colIndex]) ? $row[$colIndex] : null;
-        }, $rows);
-    }
-
-    /**
-     * @return array
-     */
-    public function getKeyPairedRows()
-    {
-        $rows = $this->getRowsForFetchStyle(CorePDO::FETCH_BOTH);
-        $pairedRows = [];
-
-        foreach ($rows as $row) {
-            $pairedRows[$row[0]] = $row[1];
-        }
-
-        return $pairedRows;
     }
 
     /**
@@ -90,42 +59,5 @@ class Data
     private function hasRowsForFetchStyle($fetchStyle)
     {
         return isset($this->rows[$fetchStyle]);
-    }
-
-    /**
-     *
-     */
-    private function populateAssocData()
-    {
-        $rows = $this->getRowsForFetchStyle(CorePDO::FETCH_BOTH);
-        $this->rows[CorePDO::FETCH_ASSOC] = $this->filterRowsKeysByFunction($rows, 'is_string');
-    }
-
-    /**
-     *
-     */
-    private function populateNumericData()
-    {
-        $rows = $this->getRowsForFetchStyle(CorePDO::FETCH_BOTH);
-        $this->rows[CorePDO::FETCH_NUM] = $this->filterRowsKeysByFunction($rows, 'is_numeric');
-    }
-
-    /**
-     * @param $rows
-     * @param $function
-     *
-     * @return array
-     */
-    private function filterRowsKeysByFunction($rows, $function)
-    {
-        if (empty($rows)) {
-            return [];
-        }
-
-        $strKeyEmptyArray = array_flip(array_filter(array_keys($rows[0]), $function));
-
-        return array_map(function ($row) use ($strKeyEmptyArray) {
-            return array_intersect_key($row, $strKeyEmptyArray);
-        }, $rows);
     }
 }

@@ -7,6 +7,7 @@
 namespace VitessPdoTest\PDO;
 
 use VitessPdo\PDO\Attributes;
+use VitessPdo\PDO\Fetcher\Factory as FetcherFactory;
 use VitessPdo\PDO\ParamProcessor;
 use VitessPdo\PDO\QueryAnalyzer\Analyzer;
 use VitessPdo\PDO\Vitess\Result;
@@ -22,6 +23,7 @@ use PDO as CorePDO;
  *
  * @package VitessPdoTest\PDO
  * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class PDOStatementTest extends \PHPUnit_Framework_TestCase
 {
@@ -167,14 +169,13 @@ class PDOStatementTest extends \PHPUnit_Framework_TestCase
      */
     public function testFetchStyleNotImplementedException()
     {
-        $stmt = $this->getNewStatement(CorePDO::FETCH_BOTH);
+        $stmt = $this->getNewStatement(CorePDO::FETCH_BOTH, 0);
         $result = $stmt->execute();
 
         self::assertTrue($result);
         $this->expectException(VitessPDOException::class);
         $this->expectExceptionMessageRegExp('/^Fetch style not supported/');
-        $stmt->fetchAll();
-        $stmt->fetch(CorePDO::FETCH_CLASS);
+        $stmt->fetchAll(CorePDO::FETCH_CLASS);
     }
 
     /**
@@ -207,6 +208,24 @@ class PDOStatementTest extends \PHPUnit_Framework_TestCase
             $count++;
             self::assertInternalType('string', $userId);
             self::assertEquals("user_{$count}", $userId);
+        }
+    }
+
+    public function testSetFetchMode()
+    {
+        $stmt = $this->getNewStatement(CorePDO::FETCH_BOTH);
+        $result = $stmt->execute();
+        $stmt->setFetchConfig(CorePDO::FETCH_ASSOC);
+
+        self::assertTrue($result);
+        $users = $stmt->fetchAll();
+        self::assertInternalType('array', $users);
+        self::assertNotEmpty($users);
+        self::assertCount(2, $users);
+
+        foreach ($users as $user) {
+            self::assertArrayNotHasKey(0, $user);
+            self::assertArrayHasKey('user_id', $user);
         }
     }
 
@@ -271,7 +290,8 @@ class PDOStatementTest extends \PHPUnit_Framework_TestCase
             $vitess,
             new Attributes(),
             new ParamProcessor(),
-            new Analyzer()
+            new Analyzer(),
+            new FetcherFactory()
         );
 
         for ($i = 0; $i < 3; $i++) {
@@ -286,28 +306,31 @@ class PDOStatementTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @param int $fetchMode
+     * @param int $nextCalls
      *
      * @return PDOStatement
      * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
      */
-    private function getNewStatement($fetchMode = null)
+    private function getNewStatement($fetchMode = null, $nextCalls = 3)
     {
         return new PDOStatement(
             "SELECT user_id, name FROM user",
-            $this->getVitessStub($fetchMode),
+            $this->getVitessStub($fetchMode, $nextCalls),
             new Attributes(),
             new ParamProcessor(),
-            new Analyzer()
+            new Analyzer(),
+            new FetcherFactory()
         );
     }
 
     /**
      * @param int $fetchMode
+     * @param int $nextCalls
      *
      * @return Vitess
      * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
      */
-    private function getVitessStub($fetchMode = null)
+    private function getVitessStub($fetchMode = null, $nextCalls = 3)
     {
         $stub = $this->getMockBuilder(Vitess::class)
             ->disableOriginalConstructor()
@@ -315,7 +338,7 @@ class PDOStatementTest extends \PHPUnit_Framework_TestCase
 
         if ($fetchMode) {
             $stub->expects(self::any())->method('executeRead')
-                ->willReturn($this->getResultStubFetchBoth());
+                ->willReturn($this->getResultStubFetchBoth($nextCalls));
 
             $writeCursor = $this->getMockBuilder(Cursor::class)
                 ->disableOriginalConstructor()
@@ -333,15 +356,16 @@ class PDOStatementTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @param int $nextCalls
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
-    private function getResultStubFetchBoth()
+    private function getResultStubFetchBoth($nextCalls = 3)
     {
         $stubCursor = $this->getMockBuilder(Cursor::class)
             ->disableOriginalConstructor()
             ->getMock();
 
-        $stubCursor->expects(self::exactly(3))->method('next')
+        $stubCursor->expects(self::exactly($nextCalls))->method('next')
             ->will(self::onConsecutiveCalls(
                 [
                     0         => '1',

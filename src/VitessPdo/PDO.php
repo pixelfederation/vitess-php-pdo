@@ -8,6 +8,7 @@ namespace VitessPdo;
 
 use VitessPdo\PDO\Attributes;
 use VitessPdo\PDO\Dsn\Dsn;
+use VitessPdo\PDO\Fetcher\Factory as FetcherFactory;
 use VitessPdo\PDO\MySql\Emulator;
 use VitessPdo\PDO\ParamProcessor;
 use VitessPdo\PDO\PDOStatement;
@@ -58,6 +59,11 @@ class PDO
     private $paramProcessor;
 
     /**
+     * @var FetcherFactory
+     */
+    private $fetcherFactory;
+
+    /**
      * @var Attributes
      */
     private $attributes;
@@ -94,6 +100,7 @@ class PDO
         $this->attributes     = new Attributes();
         $this->vitess         = new Vitess($connectionString, $this->attributes);
         $this->executor       = $this->vitess;
+        $this->fetcherFactory = new FetcherFactory();
 
         if ($config->hasVtCtldData()) {
             $emulator = new Emulator($this->dsn);
@@ -333,7 +340,8 @@ class PDO
             $this->executor,
             $this->attributes,
             $this->paramProcessor,
-            $this->queryAnalyzer
+            $this->queryAnalyzer,
+            $this->fetcherFactory
         );
     }
 
