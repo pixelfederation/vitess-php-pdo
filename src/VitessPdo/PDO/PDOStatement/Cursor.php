@@ -96,7 +96,7 @@ class Cursor
     /**
      * @param FetchConfig $fetchConfig
      *
-     * @return bool
+     * @return array|bool
      * @throws Exception
      */
     public function fetch(FetchConfig $fetchConfig)

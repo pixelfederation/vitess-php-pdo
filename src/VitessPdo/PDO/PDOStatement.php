@@ -101,6 +101,11 @@ class PDOStatement
     private $fetchConfig;
 
     /**
+     * @var FetchConfig
+     */
+    private $fetchColumnConfig;
+
+    /**
      * PDOStatement constructor.
      *
      * @param string            $query
@@ -318,15 +323,11 @@ class PDOStatement
         $cursorOrientation = CorePDO::FETCH_ORI_NEXT,
         $cursorOffset = 0
     ) {
-        if (!$this->cursor) {
-            throw new Exception("Statement not executed yet.");
-        }
-
         if (!$this->fetchConfig) {
             $this->setFetchConfig($fetchStyle);
         }
 
-        return $this->cursor->fetch($this->fetchConfig);
+        return $this->fetchByConfig($this->fetchConfig);
     }
 
     /**
@@ -346,12 +347,13 @@ class PDOStatement
      *                            is supplied, PDOStatement::fetchColumn() fetches the first column.
      *
      * @return mixed            - returns a single column in the next row of a result set.
+     * @throws Exception
      */
     public function fetchColumn($columnNumber = 0)
     {
-        $row = $this->fetch(CorePDO::FETCH_NUM);
+        $row = $this->fetchByConfig($this->getFetchColumnConfig());
 
-        if ($row) {
+        if (is_array($row)) {
             return $row[$columnNumber];
         }
 
@@ -539,5 +541,32 @@ class PDOStatement
     private function reset()
     {
         $this->cursor = null;
+    }
+
+    /**
+     * @param FetchConfig $fetchConfig
+     *
+     * @return array|bool
+     * @throws Exception
+     */
+    private function fetchByConfig(FetchConfig $fetchConfig)
+    {
+        if (!$this->cursor) {
+            throw new Exception("Statement not executed yet.");
+        }
+
+        return $this->cursor->fetch($fetchConfig);
+    }
+
+    /**
+     * @return FetchConfig
+     */
+    private function getFetchColumnConfig()
+    {
+        if ($this->fetchColumnConfig === null) {
+            $this->fetchColumnConfig = new FetchConfig(CorePDO::FETCH_NUM);
+        }
+
+        return $this->fetchColumnConfig;
     }
 }
