@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "729c259c5bbc6fd7a2b711cf6cfe2bdb",
-    "content-hash": "c026605b82f038433db4064485a00b4b",
+    "hash": "6d8016fb8eddd7bf3e7e765ca56f00ed",
+    "content-hash": "bc46245832db1b10696fd00d59cb8cbf",
     "packages": [
         {
             "name": "analog/analog",
@@ -61,45 +61,25 @@
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/stanley-cheung/Protobuf-PHP.git",
-                "reference": "dbbe0846ee99e9579a0e5b09abf03e671614f0a8"
+                "url": "https://github.com/pixelfederation/datto-Protobuf-PHP-fake.git",
+                "reference": "e85085f54abad7e30f72c8086adae47c21372e7f"
             },
-            "require": {
-                "php": ">=5.3.0"
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pixelfederation/datto-Protobuf-PHP-fake/zipball/e85085f54abad7e30f72c8086adae47c21372e7f",
+                "reference": "e85085f54abad7e30f72c8086adae47c21372e7f",
+                "shasum": ""
             },
-            "bin": [
-                "protoc-gen-php.bat",
-                "protoc-gen-php.php"
-            ],
             "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.0-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "DrSlump": "library/"
-                }
-            },
             "license": [
                 "MIT"
             ],
-            "authors": [
-                {
-                    "name": "Iván -DrSlump- Montes",
-                    "email": "drslump@pollinimini.net",
-                    "homepage": "https://github.com/drslump/Protobuf-PHP"
-                }
-            ],
-            "description": "PHP implementation of Google's Protocol Buffers",
-            "homepage": "https://github.com/datto/Protobuf-PHP",
-            "keywords": [
-                "protobuf",
-                "protocol buffer",
-                "serializing"
-            ],
-            "time": "2016-05-18 22:11:39"
+            "description": "Fake datto/protobuf-php repository for overriding in youtube/vitess",
+            "support": {
+                "source": "https://github.com/pixelfederation/datto-Protobuf-PHP-fake/tree/master",
+                "issues": "https://github.com/pixelfederation/datto-Protobuf-PHP-fake/issues"
+            },
+            "time": "2016-07-19 22:01:45"
         },
         {
             "name": "doctrine/collections",
@@ -107,12 +87,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/collections.git",
-                "reference": "315485ae4bc22affb75be25709740949460b851a"
+                "reference": "a58af3fd579f850c09a41d4c9fc5be76e9c6a2ab"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/collections/zipball/315485ae4bc22affb75be25709740949460b851a",
-                "reference": "315485ae4bc22affb75be25709740949460b851a",
+                "url": "https://api.github.com/repos/doctrine/collections/zipball/a58af3fd579f850c09a41d4c9fc5be76e9c6a2ab",
+                "reference": "a58af3fd579f850c09a41d4c9fc5be76e9c6a2ab",
                 "shasum": ""
             },
             "require": {
@@ -165,7 +145,7 @@
                 "collections",
                 "iterator"
             ],
-            "time": "2016-06-16 12:51:43"
+            "time": "2016-07-15 10:02:57"
         },
         {
             "name": "firebase/php-jwt",
@@ -262,8 +242,14 @@
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "git@github.com:pixelfederation/PHP-SQL-Parser.git",
-                "reference": "11552094c946d666f3f6b1d524d672df8e59c645"
+                "url": "https://github.com/greenlion/PHP-SQL-Parser.git",
+                "reference": "1c6064d28e6192a16e91ff4de87477d646bb977d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/greenlion/PHP-SQL-Parser/zipball/1c6064d28e6192a16e91ff4de87477d646bb977d",
+                "reference": "1c6064d28e6192a16e91ff4de87477d646bb977d",
+                "shasum": ""
             },
             "require": {
                 "analog/analog": "^1.0.6",
@@ -279,41 +265,33 @@
                     "PHPSQLParser\\": "src/"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "PHPSQLParser\\Test\\": "tests/cases/"
-                }
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "BSD-3-Clause"
             ],
             "authors": [
                 {
-                    "name": "Justin Swanhart",
-                    "email": "greenlion@gmail.com",
-                    "homepage": "http://code.google.com/u/greenlion@gmail.com/",
-                    "role": "Owner"
-                },
-                {
                     "name": "André Rothe",
                     "email": "phosco@gmx.de",
                     "homepage": "https://www.phosco.info",
                     "role": "Committer"
+                },
+                {
+                    "name": "Justin Swanhart",
+                    "email": "greenlion@gmail.com",
+                    "homepage": "http://code.google.com/u/greenlion@gmail.com/",
+                    "role": "Owner"
                 }
             ],
             "description": "A pure PHP SQL (non validating) parser w/ focus on MySQL dialect of SQL",
             "homepage": "https://github.com/greenlion/PHP-SQL-Parser",
             "keywords": [
-                "MySQL",
                 "creator",
+                "mysql",
                 "parser",
                 "sql"
             ],
-            "support": {
-                "issues": "https://github.com/greenlion/PHP-SQL-Parser/issues",
-                "source": "https://github.com/greenlion/PHP-SQL-Parser"
-            },
-            "time": "2016-07-06 15:00:04"
+            "time": "2016-07-08 18:22:23"
         },
         {
             "name": "grpc/grpc",
@@ -619,24 +597,76 @@
             "time": "2016-01-06 21:40:42"
         },
         {
+            "name": "stanley-cheung/protobuf-php",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/stanley-cheung/Protobuf-PHP.git",
+                "reference": "02e2c2ac00f42bc788cedbd10306d3565fec8090"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/stanley-cheung/Protobuf-PHP/zipball/02e2c2ac00f42bc788cedbd10306d3565fec8090",
+                "reference": "02e2c2ac00f42bc788cedbd10306d3565fec8090",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "bin": [
+                "protoc-gen-php.bat",
+                "protoc-gen-php.php"
+            ],
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "DrSlump": "library/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Iván -DrSlump- Montes",
+                    "email": "drslump@pollinimini.net",
+                    "homepage": "https://github.com/drslump/Protobuf-PHP"
+                }
+            ],
+            "description": "PHP implementation of Google's Protocol Buffers",
+            "homepage": "https://github.com/stanley-cheung/Protobuf-PHP",
+            "keywords": [
+                "protobuf",
+                "protocol buffer",
+                "serializing"
+            ],
+            "time": "2016-07-13 23:17:34"
+        },
+        {
             "name": "vitess/php-client",
             "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/youtube/vitess.git",
-                "reference": "17b3634a07ef3222fdc7bbb04e62004dae1028e0"
+                "reference": "a6a7c3e48998ae757487f9312a040585f81ed918"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/youtube/vitess/zipball/17b3634a07ef3222fdc7bbb04e62004dae1028e0",
-                "reference": "17b3634a07ef3222fdc7bbb04e62004dae1028e0",
+                "url": "https://api.github.com/repos/youtube/vitess/zipball/a6a7c3e48998ae757487f9312a040585f81ed918",
+                "reference": "a6a7c3e48998ae757487f9312a040585f81ed918",
                 "shasum": ""
             },
             "require": {
-                "datto/protobuf-php": "dev-master",
                 "google/auth": "v0.7",
                 "grpc/grpc": "dev-release-0_13",
-                "php": ">=5.5.0"
+                "php": ">=5.5.0",
+                "stanley-cheung/protobuf-php": "1.0.x-dev"
             },
             "type": "library",
             "autoload": {
@@ -646,7 +676,7 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "description": "PHP client for Vitess",
-            "time": "2016-07-05 16:35:53"
+            "time": "2016-07-20 05:16:30"
         }
     ],
     "packages-dev": [
@@ -1003,12 +1033,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpspec/prophecy.git",
-                "reference": "58a8137754bc24b25740d4281399a4a3596058e0"
+                "reference": "d883566b83ae601a50b38b249e92450dc57cf875"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpspec/prophecy/zipball/58a8137754bc24b25740d4281399a4a3596058e0",
-                "reference": "58a8137754bc24b25740d4281399a4a3596058e0",
+                "url": "https://api.github.com/repos/phpspec/prophecy/zipball/d883566b83ae601a50b38b249e92450dc57cf875",
+                "reference": "d883566b83ae601a50b38b249e92450dc57cf875",
                 "shasum": ""
             },
             "require": {
@@ -1057,7 +1087,7 @@
                 "spy",
                 "stub"
             ],
-            "time": "2016-06-07 08:13:47"
+            "time": "2016-07-19 16:08:43"
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -1309,12 +1339,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "89a327785353164381c95be2ffef51f4d6cb15dc"
+                "reference": "aace781dea5ca953e210ee21c2b568b7572055fc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/89a327785353164381c95be2ffef51f4d6cb15dc",
-                "reference": "89a327785353164381c95be2ffef51f4d6cb15dc",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/aace781dea5ca953e210ee21c2b568b7572055fc",
+                "reference": "aace781dea5ca953e210ee21c2b568b7572055fc",
                 "shasum": ""
             },
             "require": {
@@ -1379,7 +1409,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2016-06-17 15:20:20"
+            "time": "2016-07-13 17:40:26"
         },
         {
             "name": "phpunit/phpunit-mock-objects",
@@ -1959,12 +1989,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/squizlabs/PHP_CodeSniffer.git",
-                "reference": "19ee67081a15ede42ae080d555d5e953316fcc26"
+                "reference": "e05973af47c51fdcef362bf85ec1ab4e0251221c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/19ee67081a15ede42ae080d555d5e953316fcc26",
-                "reference": "19ee67081a15ede42ae080d555d5e953316fcc26",
+                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/e05973af47c51fdcef362bf85ec1ab4e0251221c",
+                "reference": "e05973af47c51fdcef362bf85ec1ab4e0251221c",
                 "shasum": ""
             },
             "require": {
@@ -2029,7 +2059,7 @@
                 "phpcs",
                 "standards"
             ],
-            "time": "2016-07-05 01:38:25"
+            "time": "2016-07-14 23:16:13"
         },
         {
             "name": "symfony/config",
@@ -2090,12 +2120,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/dependency-injection.git",
-                "reference": "54c33a9e194086202a09907c1a7eaf687fa0faa3"
+                "reference": "cb78f4966572bf6c7fb4c50ffc825eca40ae0228"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/dependency-injection/zipball/54c33a9e194086202a09907c1a7eaf687fa0faa3",
-                "reference": "54c33a9e194086202a09907c1a7eaf687fa0faa3",
+                "url": "https://api.github.com/repos/symfony/dependency-injection/zipball/cb78f4966572bf6c7fb4c50ffc825eca40ae0228",
+                "reference": "cb78f4966572bf6c7fb4c50ffc825eca40ae0228",
                 "shasum": ""
             },
             "require": {
@@ -2145,7 +2175,7 @@
             ],
             "description": "Symfony DependencyInjection Component",
             "homepage": "https://symfony.com",
-            "time": "2016-07-01 16:08:10"
+            "time": "2016-07-19 10:47:02"
         },
         {
             "name": "symfony/filesystem",
@@ -2153,12 +2183,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/filesystem.git",
-                "reference": "45e9008bc169ab89cc031bf723219092838b0b3d"
+                "reference": "4dfc4630390f9a88625f5991a0fc83549767b59d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/filesystem/zipball/45e9008bc169ab89cc031bf723219092838b0b3d",
-                "reference": "45e9008bc169ab89cc031bf723219092838b0b3d",
+                "url": "https://api.github.com/repos/symfony/filesystem/zipball/4dfc4630390f9a88625f5991a0fc83549767b59d",
+                "reference": "4dfc4630390f9a88625f5991a0fc83549767b59d",
                 "shasum": ""
             },
             "require": {
@@ -2194,7 +2224,7 @@
             ],
             "description": "Symfony Filesystem Component",
             "homepage": "https://symfony.com",
-            "time": "2016-06-29 05:43:10"
+            "time": "2016-07-20 05:56:17"
         },
         {
             "name": "symfony/polyfill-mbstring",
@@ -2261,12 +2291,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/var-dumper.git",
-                "reference": "e326274cb9a79c17450b4d040e5136e217dd2c11"
+                "reference": "1492e12700df1fac4af6575bc330bdb5c43cc513"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/var-dumper/zipball/e326274cb9a79c17450b4d040e5136e217dd2c11",
-                "reference": "e326274cb9a79c17450b4d040e5136e217dd2c11",
+                "url": "https://api.github.com/repos/symfony/var-dumper/zipball/1492e12700df1fac4af6575bc330bdb5c43cc513",
+                "reference": "1492e12700df1fac4af6575bc330bdb5c43cc513",
                 "shasum": ""
             },
             "require": {
@@ -2316,7 +2346,7 @@
                 "debug",
                 "dump"
             ],
-            "time": "2016-07-05 11:11:18"
+            "time": "2016-07-19 10:47:02"
         },
         {
             "name": "symfony/yaml",
@@ -2324,12 +2354,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
-                "reference": "b69648974b39cc6f76aea9d3aee8212cd0c0d75d"
+                "reference": "cd3288cd749886aa1ff43038f17db6494e883262"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/yaml/zipball/b69648974b39cc6f76aea9d3aee8212cd0c0d75d",
-                "reference": "b69648974b39cc6f76aea9d3aee8212cd0c0d75d",
+                "url": "https://api.github.com/repos/symfony/yaml/zipball/cd3288cd749886aa1ff43038f17db6494e883262",
+                "reference": "cd3288cd749886aa1ff43038f17db6494e883262",
                 "shasum": ""
             },
             "require": {
@@ -2371,7 +2401,7 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
-            "time": "2016-07-01 16:08:10"
+            "time": "2016-07-17 14:08:33"
         },
         {
             "name": "webmozart/assert",
@@ -2428,6 +2458,7 @@
     "minimum-stability": "dev",
     "stability-flags": {
         "vitess/php-client": 20,
+        "stanley-cheung/protobuf-php": 20,
         "grpc/grpc": 20,
         "greenlion/php-sql-parser": 20,
         "symfony/var-dumper": 20,

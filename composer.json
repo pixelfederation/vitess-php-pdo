@@ -8,20 +8,17 @@
     "Vitess",
     "driver"
   ],
+  "minimum-stability": "dev",
   "repositories": [
     {
-      "type": "git",
-      "url": "https://github.com/stanley-cheung/Protobuf-PHP.git"
-    },
-    {
-      "type": "git",
-      "url": "git@github.com:pixelfederation/PHP-SQL-Parser.git"
+      "type": "vcs",
+      "url": "https://github.com/pixelfederation/datto-Protobuf-PHP-fake"
     }
   ],
-  "minimum-stability": "dev",
   "require": {
     "php": ">=5.6",
     "vitess/php-client": "dev-master",
+    "stanley-cheung/protobuf-php": "1.0.x-dev",
     "grpc/grpc": "dev-release-0_13",
     "greenlion/php-sql-parser": "dev-master",
     "doctrine/collections": "^1.3"
