@@ -13,6 +13,10 @@
     {
       "type": "vcs",
       "url": "https://github.com/pixelfederation/datto-Protobuf-PHP-fake"
+    },
+    {
+      "type": "git",
+      "url": "git@github.com:pixelfederation/PHP-SQL-Parser.git"
     }
   ],
   "require": {
