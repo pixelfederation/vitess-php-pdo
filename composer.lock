@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "6d8016fb8eddd7bf3e7e765ca56f00ed",
-    "content-hash": "bc46245832db1b10696fd00d59cb8cbf",
+    "hash": "a9ffa7338f03f8ce54ba9285c8bed8f8",
+    "content-hash": "bf9fae62c3074b7801e8f45a2e437524",
     "packages": [
         {
             "name": "analog/analog",
@@ -242,14 +242,8 @@
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/greenlion/PHP-SQL-Parser.git",
-                "reference": "1c6064d28e6192a16e91ff4de87477d646bb977d"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/greenlion/PHP-SQL-Parser/zipball/1c6064d28e6192a16e91ff4de87477d646bb977d",
-                "reference": "1c6064d28e6192a16e91ff4de87477d646bb977d",
-                "shasum": ""
+                "url": "git@github.com:pixelfederation/PHP-SQL-Parser.git",
+                "reference": "11552094c946d666f3f6b1d524d672df8e59c645"
             },
             "require": {
                 "analog/analog": "^1.0.6",
@@ -265,33 +259,41 @@
                     "PHPSQLParser\\": "src/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "autoload-dev": {
+                "psr-4": {
+                    "PHPSQLParser\\Test\\": "tests/cases/"
+                }
+            },
             "license": [
                 "BSD-3-Clause"
             ],
             "authors": [
                 {
-                    "name": "André Rothe",
-                    "email": "phosco@gmx.de",
-                    "homepage": "https://www.phosco.info",
-                    "role": "Committer"
-                },
-                {
                     "name": "Justin Swanhart",
                     "email": "greenlion@gmail.com",
                     "homepage": "http://code.google.com/u/greenlion@gmail.com/",
                     "role": "Owner"
+                },
+                {
+                    "name": "André Rothe",
+                    "email": "phosco@gmx.de",
+                    "homepage": "https://www.phosco.info",
+                    "role": "Committer"
                 }
             ],
             "description": "A pure PHP SQL (non validating) parser w/ focus on MySQL dialect of SQL",
             "homepage": "https://github.com/greenlion/PHP-SQL-Parser",
             "keywords": [
+                "MySQL",
                 "creator",
-                "mysql",
                 "parser",
                 "sql"
             ],
-            "time": "2016-07-08 18:22:23"
+            "support": {
+                "issues": "https://github.com/greenlion/PHP-SQL-Parser/issues",
+                "source": "https://github.com/greenlion/PHP-SQL-Parser"
+            },
+            "time": "2016-07-06 15:00:04"
         },
         {
             "name": "grpc/grpc",
