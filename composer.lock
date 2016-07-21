@@ -243,7 +243,7 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:pixelfederation/PHP-SQL-Parser.git",
-                "reference": "2debfaebf42b831bf499bd0784b8a3b6dc5b9630"
+                "reference": "5a1091ddc6b92ea5479a324cb06b74e17050cf25"
             },
             "require": {
                 "analog/analog": "^1.0.6",
@@ -293,7 +293,7 @@
                 "issues": "https://github.com/greenlion/PHP-SQL-Parser/issues",
                 "source": "https://github.com/greenlion/PHP-SQL-Parser"
             },
-            "time": "2016-07-21 13:55:04"
+            "time": "2016-07-21 14:59:23"
         },
         {
             "name": "grpc/grpc",
