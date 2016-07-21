@@ -243,7 +243,7 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:pixelfederation/PHP-SQL-Parser.git",
-                "reference": "11552094c946d666f3f6b1d524d672df8e59c645"
+                "reference": "2debfaebf42b831bf499bd0784b8a3b6dc5b9630"
             },
             "require": {
                 "analog/analog": "^1.0.6",
@@ -293,7 +293,7 @@
                 "issues": "https://github.com/greenlion/PHP-SQL-Parser/issues",
                 "source": "https://github.com/greenlion/PHP-SQL-Parser"
             },
-            "time": "2016-07-06 15:00:04"
+            "time": "2016-07-21 13:55:04"
         },
         {
             "name": "grpc/grpc",
@@ -656,12 +656,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/youtube/vitess.git",
-                "reference": "a6a7c3e48998ae757487f9312a040585f81ed918"
+                "reference": "a1f5e4e535781a8ad51e526253fe4d07e3d53ccf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/youtube/vitess/zipball/a6a7c3e48998ae757487f9312a040585f81ed918",
-                "reference": "a6a7c3e48998ae757487f9312a040585f81ed918",
+                "url": "https://api.github.com/repos/youtube/vitess/zipball/a1f5e4e535781a8ad51e526253fe4d07e3d53ccf",
+                "reference": "a1f5e4e535781a8ad51e526253fe4d07e3d53ccf",
                 "shasum": ""
             },
             "require": {
@@ -678,7 +678,7 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "description": "PHP client for Vitess",
-            "time": "2016-07-20 05:16:30"
+            "time": "2016-07-20 18:01:12"
         }
     ],
     "packages-dev": [
@@ -1341,12 +1341,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "aace781dea5ca953e210ee21c2b568b7572055fc"
+                "reference": "e150756c40f0a1e63b4a26d8461bc9e8412408ba"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/aace781dea5ca953e210ee21c2b568b7572055fc",
-                "reference": "aace781dea5ca953e210ee21c2b568b7572055fc",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/e150756c40f0a1e63b4a26d8461bc9e8412408ba",
+                "reference": "e150756c40f0a1e63b4a26d8461bc9e8412408ba",
                 "shasum": ""
             },
             "require": {
@@ -1411,7 +1411,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2016-07-13 17:40:26"
+            "time": "2016-07-21 06:56:32"
         },
         {
             "name": "phpunit/phpunit-mock-objects",

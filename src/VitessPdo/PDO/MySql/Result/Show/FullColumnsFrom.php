@@ -30,6 +30,7 @@
 
 namespace VitessPdo\PDO\MySql\Result\Show;
 
+use PHPSQLParser\Options;
 use PHPSQLParser\PHPSQLParser;
 use VitessPdo\PDO\Exception;
 use VitessPdo\PDO\MySql\Result\VtCtldResult;
@@ -42,6 +43,7 @@ use VitessPdo\PDO\VtCtld\Result\GetSchema;
  *
  * @author  mfris
  * @package VitessPdo\PDO\MySql\Result\Show
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 final class FullColumnsFrom extends VtCtldResult
 {
@@ -162,7 +164,7 @@ final class FullColumnsFrom extends VtCtldResult
     {
         $definition = $schema->getTableDefinition($this->fromExpr);
         $defSchema = $definition->getSchema();
-        $parser = new PHPSQLParser();
+        $parser = new PHPSQLParser(false, false, [Options::CONSISTENT_SUB_TREES => true]);
         $query = new CreateQuery(new Query($defSchema, $parser->parse($defSchema)));
 
         return $query->getObjectExpression();

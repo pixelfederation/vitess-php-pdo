@@ -30,6 +30,7 @@
 
 namespace VitessPdo\PDO\QueryAnalyzer;
 
+use PHPSQLParser\Options;
 use PHPSQLParser\PHPSQLParser;
 
 /**
@@ -51,7 +52,7 @@ class Analyzer
      */
     public function __construct()
     {
-        $this->parser = new PHPSQLParser();
+        $this->parser = new PHPSQLParser(false, false, [Options::CONSISTENT_SUB_TREES => true]);
     }
 
     /**

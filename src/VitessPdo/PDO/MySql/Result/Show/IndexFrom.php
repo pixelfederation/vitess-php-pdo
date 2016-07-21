@@ -30,6 +30,7 @@
 
 namespace VitessPdo\PDO\MySql\Result\Show;
 
+use PHPSQLParser\Options;
 use PHPSQLParser\PHPSQLParser;
 use VitessPdo\PDO\Exception;
 use VitessPdo\PDO\MySql\Result\VtCtldResult;
@@ -143,7 +144,7 @@ final class IndexFrom extends VtCtldResult
 
         $definition = $data->getTableDefinition($this->fromExpr);
         $defSchema = $definition->getSchema();
-        $parser = new PHPSQLParser();
+        $parser = new PHPSQLParser(false, false, [Options::CONSISTENT_SUB_TREES => true]);
         $query = new CreateQuery(new Query($defSchema, $parser->parse($defSchema)));
         $createExpr = $query->getObjectExpression();
         $indices = $createExpr->getIndices();
