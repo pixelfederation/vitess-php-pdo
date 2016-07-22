@@ -243,7 +243,7 @@ class PDOStatement
      */
     public function fetchAll(
         $fetchStyle = CorePDO::FETCH_BOTH,
-        $fetchArgument = CorePDO::FETCH_COLUMN,
+        $fetchArgument = 0,
         array $ctorArgs = []
     ) {
         if (!$this->cursor) {

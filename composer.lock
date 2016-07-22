@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "6d8016fb8eddd7bf3e7e765ca56f00ed",
-    "content-hash": "bc46245832db1b10696fd00d59cb8cbf",
+    "hash": "eb385eaa6aaf53544f95a0f5e304ef87",
+    "content-hash": "cb0da4316dadbf0ea8470ec407d2bfaf",
     "packages": [
         {
             "name": "analog/analog",
@@ -243,12 +243,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/greenlion/PHP-SQL-Parser.git",
-                "reference": "1c6064d28e6192a16e91ff4de87477d646bb977d"
+                "reference": "29bdef6fed5ba7fdfe3c9f942adfe73d6bdffa88"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/greenlion/PHP-SQL-Parser/zipball/1c6064d28e6192a16e91ff4de87477d646bb977d",
-                "reference": "1c6064d28e6192a16e91ff4de87477d646bb977d",
+                "url": "https://api.github.com/repos/greenlion/PHP-SQL-Parser/zipball/29bdef6fed5ba7fdfe3c9f942adfe73d6bdffa88",
+                "reference": "29bdef6fed5ba7fdfe3c9f942adfe73d6bdffa88",
                 "shasum": ""
             },
             "require": {
@@ -291,7 +291,7 @@
                 "parser",
                 "sql"
             ],
-            "time": "2016-07-08 18:22:23"
+            "time": "2016-07-21 15:32:47"
         },
         {
             "name": "grpc/grpc",
@@ -602,12 +602,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/stanley-cheung/Protobuf-PHP.git",
-                "reference": "02e2c2ac00f42bc788cedbd10306d3565fec8090"
+                "reference": "e5d3b55b1898233e36abb552281d2dd0ce86c5e7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stanley-cheung/Protobuf-PHP/zipball/02e2c2ac00f42bc788cedbd10306d3565fec8090",
-                "reference": "02e2c2ac00f42bc788cedbd10306d3565fec8090",
+                "url": "https://api.github.com/repos/stanley-cheung/Protobuf-PHP/zipball/e5d3b55b1898233e36abb552281d2dd0ce86c5e7",
+                "reference": "e5d3b55b1898233e36abb552281d2dd0ce86c5e7",
                 "shasum": ""
             },
             "require": {
@@ -646,7 +646,7 @@
                 "protocol buffer",
                 "serializing"
             ],
-            "time": "2016-07-13 23:17:34"
+            "time": "2016-07-22 02:12:15"
         },
         {
             "name": "vitess/php-client",
@@ -654,12 +654,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/youtube/vitess.git",
-                "reference": "a1f5e4e535781a8ad51e526253fe4d07e3d53ccf"
+                "reference": "1d870d7f8362c1fbba628f127d86e29e5cbd5370"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/youtube/vitess/zipball/a1f5e4e535781a8ad51e526253fe4d07e3d53ccf",
-                "reference": "a1f5e4e535781a8ad51e526253fe4d07e3d53ccf",
+                "url": "https://api.github.com/repos/youtube/vitess/zipball/1d870d7f8362c1fbba628f127d86e29e5cbd5370",
+                "reference": "1d870d7f8362c1fbba628f127d86e29e5cbd5370",
                 "shasum": ""
             },
             "require": {
@@ -676,7 +676,7 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "description": "PHP client for Vitess",
-            "time": "2016-07-20 18:01:12"
+            "time": "2016-07-21 21:00:42"
         }
     ],
     "packages-dev": [

@@ -20,7 +20,7 @@
     "vitess/php-client": "dev-master",
     "stanley-cheung/protobuf-php": "1.0.x-dev",
     "grpc/grpc": "dev-release-0_13",
-    "greenlion/php-sql-parser": "dev-master",
+    "greenlion/php-sql-parser": "dev-master#29bdef6fed5ba7fdfe3c9f942adfe73d6bdffa88",
     "doctrine/collections": "^1.3"
   },
 
