@@ -250,11 +250,9 @@ class PDOStatement
             throw new Exception("Statement not executed yet.");
         }
 
-        if (!$this->fetchConfig) {
-            $this->setFetchConfig($fetchStyle, $fetchArgument, $ctorArgs);
-        }
+        $fetchConfig = $this->getFetchConfig($fetchStyle, $fetchArgument, $ctorArgs);
 
-        return $this->cursor->fetchAll($this->fetchConfig);
+        return $this->cursor->fetchAll($fetchConfig);
     }
 
     /**
@@ -323,11 +321,9 @@ class PDOStatement
         $cursorOrientation = CorePDO::FETCH_ORI_NEXT,
         $cursorOffset = 0
     ) {
-        if (!$this->fetchConfig) {
-            $this->setFetchConfig($fetchStyle);
-        }
+        $fetchConfig = $this->getFetchConfig($fetchStyle);
 
-        return $this->fetchByConfig($this->fetchConfig);
+        return $this->fetchByConfig($fetchConfig);
     }
 
     /**
@@ -514,9 +510,37 @@ class PDOStatement
      */
     public function setFetchConfig($mode, $fetchArgument = null, array $ctorArgs = [])
     {
-        $this->fetchConfig = new FetchConfig($mode, $fetchArgument, $ctorArgs);
+        $this->fetchConfig = $this->createFetchConfig($mode, $fetchArgument, $ctorArgs);
 
         return true;
+    }
+
+    /**
+     * @param int   $mode
+     * @param mixed $fetchArgument
+     * @param array $ctorArgs
+     *
+     * @return FetchConfig
+     */
+    private function getFetchConfig($mode, $fetchArgument = null, array $ctorArgs = [])
+    {
+        if ($this->fetchConfig) {
+            return $this->fetchConfig;
+        }
+
+        return $this->createFetchConfig($mode, $fetchArgument, $ctorArgs);
+    }
+
+    /**
+     * @param int   $mode
+     * @param mixed $fetchArgument
+     * @param array $ctorArgs
+     *
+     * @return mixed
+     */
+    private function createFetchConfig($mode, $fetchArgument = null, array $ctorArgs = [])
+    {
+        return new FetchConfig($mode, $fetchArgument, $ctorArgs);
     }
 
     /**

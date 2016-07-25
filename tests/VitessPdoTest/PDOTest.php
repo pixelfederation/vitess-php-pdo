@@ -617,6 +617,34 @@ class PDOTest extends \PHPUnit_Framework_TestCase
         self::assertEquals(2, $count);
     }
 
+    /**
+     *
+     */
+    public function testFetchAllInFetchColumnMode2()
+    {
+        $pdo = $this->getPdo();
+        $id1 = self::TEST_USER_ID1;
+        $id2 = self::TEST_USER_ID2;
+        $stmt = $pdo->query("SELECT * FROM user WHERE user_id IN ({$id1}, {$id2})", CorePDO::FETCH_ASSOC);
+
+        self::assertInstanceOf(PDOStatement::class, $stmt);
+
+        $userIds = $stmt->fetchAll(CorePDO::FETCH_COLUMN, 0);
+        $count = 0;
+
+        foreach ($userIds as $key => $userId) {
+            // order is not ensured and ORDER BY cannot be used because of the multi shard query
+            self::assertTrue(in_array($userId, [$id1, $id2]));
+            self::assertTrue(in_array($key, [0, 1]));
+            $count++;
+
+            self::assertInternalType('string', $userId);
+        }
+
+        // warning! this doesn't have to work on sharded tables, if the data is in multiple shards
+        self::assertEquals(2, $count);
+    }
+
     public function testPrepareWithEmptyResult()
     {
         $pdo = $this->getPdo();
