@@ -402,11 +402,11 @@ class PDOStatement
      *                           placeholders, this will be the 1-indexed position of the parameter.
      *
      * @param mixed $value     - The value to bind to the parameter.
-     * @param int $dataType    - The value to bind to the parameter.
+     * @param null|int $dataType    - The value to bind to the parameter.
      *
      * @return bool            - Returns TRUE on success or FALSE on failure.
      */
-    public function bindValue($parameter, $value, $dataType = CorePDO::PARAM_STR)
+    public function bindValue($parameter, $value, $dataType = null)
     {
         try {
             if (is_int($parameter)) {
