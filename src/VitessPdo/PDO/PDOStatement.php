@@ -397,8 +397,8 @@ class PDOStatement
      * Binds a value to a corresponding named or question mark placeholder in the SQL statement that was used
      * to prepare the statement.
      *
-     * @param mixed    $parameter - Parameter identifier. For a prepared statement using named placeholders, this will be
-     *                              a parameter name of the form :name. For a prepared statement using question mark
+     * @param mixed $parameter      - Parameter identifier. For a prepared statement using named placeholders, this will
+     *                              be a parameter name of the form :name. For a prepared statement using question mark
      *                              placeholders, this will be the 1-indexed position of the parameter.
      *
      * @param mixed    $value     - The value to bind to the parameter.
