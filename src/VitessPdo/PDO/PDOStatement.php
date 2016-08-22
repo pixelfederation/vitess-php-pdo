@@ -397,14 +397,14 @@ class PDOStatement
      * Binds a value to a corresponding named or question mark placeholder in the SQL statement that was used
      * to prepare the statement.
      *
-     * @param mixed $parameter - Parameter identifier. For a prepared statement using named placeholders, this will be
-     *                           a parameter name of the form :name. For a prepared statement using question mark
-     *                           placeholders, this will be the 1-indexed position of the parameter.
+     * @param mixed    $parameter - Parameter identifier. For a prepared statement using named placeholders, this will be
+     *                              a parameter name of the form :name. For a prepared statement using question mark
+     *                              placeholders, this will be the 1-indexed position of the parameter.
      *
-     * @param mixed $value     - The value to bind to the parameter.
-     * @param null|int $dataType    - The value to bind to the parameter.
+     * @param mixed    $value     - The value to bind to the parameter.
+     * @param null|int $dataType  - The value to bind to the parameter.
      *
-     * @return bool            - Returns TRUE on success or FALSE on failure.
+     * @return bool               - Returns TRUE on success or FALSE on failure.
      */
     public function bindValue($parameter, $value, $dataType = null)
     {
