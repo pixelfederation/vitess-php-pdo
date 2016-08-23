@@ -36,9 +36,11 @@ use VitessPdo\PDO\Fetcher\Factory as FetcherFactory;
 use VitessPdo\PDO\PDOStatement\Cursor;
 use VitessPdo\PDO\QueryAnalyzer\Analyzer;
 use VitessPdo\PDO\QueryExecutor\ExecutorInterface;
+use VitessPdo\PDO\QueryExecutor\ResultInterface;
 use PDO as CorePDO;
 use Exception as CoreException;
 use PDOException;
+use Closure;
 
 /**
  * Represents a prepared statement and, after the statement is executed, an associated result set.
@@ -106,6 +108,11 @@ class PDOStatement
     private $fetchColumnConfig;
 
     /**
+     * @var Closure
+     */
+    private $lastResultClosure;
+
+    /**
      * PDOStatement constructor.
      *
      * @param string            $query
@@ -114,6 +121,7 @@ class PDOStatement
      * @param ParamProcessor    $paramProcessor
      * @param Analyzer          $queryAnalyzer
      * @param FetcherFactory    $fetcherFactory
+     * @param Closure           $lastResultClosure
      */
     public function __construct(
         $query,
@@ -121,7 +129,8 @@ class PDOStatement
         Attributes $attributes,
         ParamProcessor $paramProcessor,
         Analyzer $queryAnalyzer,
-        FetcherFactory $fetcherFactory
+        FetcherFactory $fetcherFactory,
+        Closure $lastResultClosure
     ) {
         $this->query          = $query;
         $this->executor       = $executor;
@@ -129,6 +138,7 @@ class PDOStatement
         $this->paramProcessor = $paramProcessor;
         $this->queryAnalyzer  = $queryAnalyzer;
         $this->fetcherFactory = $fetcherFactory;
+        $this->lastResultClosure = $lastResultClosure;
     }
 
     /**
@@ -177,9 +187,9 @@ class PDOStatement
         }
 
         try {
-            /* @var $result PDO\QueryExecutor\ResultInterface */
+            /* @var $result ResultInterface */
             $result = $this->executor->{$vitessMethod}($query, $this->params);
-            $this->result = $result;
+            $this->setResult($result);
 
             if (!$result->isSuccess()) {
                 return false;
@@ -187,7 +197,7 @@ class PDOStatement
 
             $this->cursor = new Cursor($result->getCursor(), $this->fetcherFactory);
         } catch (CoreException $e) {
-            $this->result = new PDO\Vitess\Result(null, $e);
+            $this->setResult(new PDO\Vitess\Result(null, $e));
 
             if ($e instanceof PDOException && $this->attributes->isErrorModeException()) {
                 throw $e;
@@ -592,5 +602,15 @@ class PDOStatement
         }
 
         return $this->fetchColumnConfig;
+    }
+
+    /**
+     * @param ResultInterface $result
+     */
+    private function setResult(ResultInterface $result)
+    {
+        $this->result = $result;
+        $closure = $this->lastResultClosure;
+        $closure($result);
     }
 }

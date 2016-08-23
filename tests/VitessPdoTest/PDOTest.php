@@ -284,6 +284,15 @@ class PDOTest extends \PHPUnit_Framework_TestCase
         self::assertEquals('0', $pdo->lastInsertId());
     }
 
+    public function testLastInsertIdFromStmt()
+    {
+        $pdo = $this->getPdo();
+
+        $result = $pdo->prepare("INSERT INTO user (name) VALUES (:name)")->execute(['name' => 'test_user_insert_stmt']);
+        self::assertTrue($result);
+        self::assertNotEquals('0', $pdo->lastInsertId());
+    }
+
     public function testPrepare()
     {
         $pdo = $this->getPdo();

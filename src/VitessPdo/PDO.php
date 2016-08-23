@@ -39,6 +39,7 @@ use VitessPdo\PDO\PDOStatement;
 use VitessPdo\PDO\QueryAnalyzer\Analyzer;
 use VitessPdo\PDO\QueryExecutor\Executor;
 use VitessPdo\PDO\QueryExecutor\ExecutorInterface;
+use VitessPdo\PDO\QueryExecutor\ResultInterface;
 use VitessPdo\PDO\Vitess\Vitess;
 use VitessPdo\PDO\Vitess\Result;
 use PDO as CorePDO;
@@ -365,7 +366,10 @@ class PDO
             $this->attributes,
             $this->paramProcessor,
             $this->queryAnalyzer,
-            $this->fetcherFactory
+            $this->fetcherFactory,
+            function (ResultInterface $result) {
+                $this->lastResult = $result;
+            }
         );
     }
 

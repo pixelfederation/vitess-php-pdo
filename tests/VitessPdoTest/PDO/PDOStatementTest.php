@@ -34,6 +34,7 @@ use VitessPdo\PDO\Attributes;
 use VitessPdo\PDO\Fetcher\Factory as FetcherFactory;
 use VitessPdo\PDO\ParamProcessor;
 use VitessPdo\PDO\QueryAnalyzer\Analyzer;
+use VitessPdo\PDO\QueryExecutor\ResultInterface;
 use VitessPdo\PDO\Vitess\Result;
 use VitessPdo\PDO\Vitess\Cursor;
 use VitessPdo\PDO\Vitess\Vitess;
@@ -315,7 +316,10 @@ class PDOStatementTest extends \PHPUnit_Framework_TestCase
             new Attributes(),
             new ParamProcessor(),
             new Analyzer(),
-            new FetcherFactory()
+            new FetcherFactory(),
+            function (ResultInterface $result) {
+                $result;
+            }
         );
 
         for ($i = 0; $i < 3; $i++) {
@@ -343,7 +347,10 @@ class PDOStatementTest extends \PHPUnit_Framework_TestCase
             new Attributes(),
             new ParamProcessor(),
             new Analyzer(),
-            new FetcherFactory()
+            new FetcherFactory(),
+            function (ResultInterface $result) {
+                $result;
+            }
         );
     }
 
