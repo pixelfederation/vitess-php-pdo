@@ -64,11 +64,29 @@ from the project directory. This script will set up a commit hook, which checks 
 using [PHPCS](https://github.com/squizlabs/PHP_CodeSniffer) and also runs PHP linter and 
 PHP Mess Detector [PHPMD](http://phpmd.org/)
 
+To be able to run the unit tests, you need to have installed Vitess locally for now (there is a guide 
+for [Ubuntu and OS X](http://vitess.io/getting-started/local-instance.html)). 
+
+The tests need to be run from a shell which has set all the environment variables from the guide,
+to be ready to run vitess instances. After setting the enviroment variables, 
+just got to the library root folder and run the following command:
+
+```bash
+./bin/phpunit
+```
+
+If there is a need to perform any sql queries in the newly written unit tests,
+there is a database schema provided in the **tests/vitess/schema** folder.
+The schema contains two shards - **lookup** and **user**.
+
 ## Known issues
 
-On OS X there is "sometimes" a problem with the current GRPC version (0.13) and PHP GRPC extension (0.8)
+On OS X there ~~is~~ was "sometimes" a problem with the current GRPC version (0.13) and PHP GRPC extension (0.8)
 (both of the versions are mandatory for the PDO driver and Vitess), meaning
 that the GRPC requests to Vitess are a little bit slower [for an unknown reason](https://github.com/grpc/grpc/issues/4806). 
 Linux is unaffected.
 
-Also, there is no PHP 7 GRPC extension yet.
+~~Also, there is no PHP 7 GRPC extension yet.~~
+
+The first issue was resolved in grpc [1.0.0RC1 and 1.0.0RC2](https://pecl.php.net/package/gRPC), 
+the extension should be stable now.
