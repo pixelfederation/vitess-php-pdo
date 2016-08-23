@@ -63,14 +63,18 @@ class ParamProcessor
     ];
 
     /**
-     * @param mixed $value
-     * @param int   $type
+     * @param mixed    $value
+     * @param null|int $type
      *
      * @return mixed
      * @throws Exception
      */
-    public function process($value, $type = CorePDO::PARAM_STR)
+    public function process($value, $type = null)
     {
+        if (is_null($type)) {
+            $type = $this->determineValueType($value);
+        }
+
         $handler = $this->getHandler($type);
 
         return $this->{$handler}($value);
@@ -105,6 +109,35 @@ class ParamProcessor
         }
 
         return self::$typeHandlers[$type];
+    }
+
+    /**
+     * @param $value
+     *
+     * @return int
+     */
+    private function determineValueType($value){
+            switch (gettype($value)) {
+                case 'boolean':
+                    $type = CorePDO::PARAM_BOOL;
+                    break;
+                case 'integer':
+                    $type = CorePDO::PARAM_INT;
+                    break;
+                case 'NULL':
+                    $type = CorePDO::PARAM_NULL;
+                    break;
+                case 'double':
+                case 'string':
+                case 'array':
+                case 'object':
+                case 'resource':
+                case 'unknown type':
+                default:
+                    $type = CorePDO::PARAM_STR;
+            }
+
+            return $type;
     }
 
     /**
