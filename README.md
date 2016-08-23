@@ -88,5 +88,5 @@ Linux is unaffected.
 
 ~~Also, there is no PHP 7 GRPC extension yet.~~
 
-The first issue was resolved in grpc [1.0.0RC1 and 1.0.0RC2](https://pecl.php.net/package/gRPC), 
+Both issues were resolved in grpc [1.0.0RC1 and 1.0.0RC2](https://pecl.php.net/package/gRPC), 
 the extension should be stable now.
