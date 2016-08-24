@@ -407,18 +407,36 @@ class PDOStatement
      * Binds a value to a corresponding named or question mark placeholder in the SQL statement that was used
      * to prepare the statement.
      *
-     * @param mixed $parameter - Parameter identifier. For a prepared statement using named placeholders, this will be
-     *                           a parameter name of the form :name. For a prepared statement using question mark
-     *                           placeholders, this will be the 1-indexed position of the parameter.
+     * @param mixed $parameter     - Parameter identifier. For a prepared statement using named placeholders, this will
+     *                               be a parameter name of the form :name. For a prepared statement using question mark
+     *                               placeholders, this will be the 1-indexed position of the parameter.
      *
-     * @param mixed $value     - The value to bind to the parameter.
-     * @param int $dataType    - The value to bind to the parameter.
+     * @param mixed $value         - The value to bind to the parameter.
+     * @param int   $dataType      - Explicit data type for the parameter using the CorePDO::PARAM_* constants. If this
+     *                               parameter defaults to CorePDO::PARAM_STR, the type of the value will be analyzed
+     *                               and possibly changed
      *
-     * @return bool            - Returns TRUE on success or FALSE on failure.
+     * @return bool                - Returns TRUE on success or FALSE on failure.
      */
     public function bindValue($parameter, $value, $dataType = CorePDO::PARAM_STR)
     {
         try {
+            if (func_num_args() == 2) {
+                switch (gettype($value)) {
+                    case 'boolean':
+                        $dataType = CorePDO::PARAM_BOOL;
+                        break;
+                    case 'integer':
+                        $dataType = CorePDO::PARAM_INT;
+                        break;
+                    case 'NULL':
+                        $dataType = CorePDO::PARAM_NULL;
+                        break;
+                    default:
+                        $dataType = CorePDO::PARAM_STR;
+                }
+            }
+
             if (is_int($parameter)) {
                 $parameter = "v{$parameter}";
             }
