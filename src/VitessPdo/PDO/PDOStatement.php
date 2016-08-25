@@ -500,16 +500,6 @@ class PDOStatement
     }
 
     /**
-     * returns tihe internal result containing data and error message/exception
-     *
-     * @return QueryExecutor\ResultInterface
-     */
-    public function getResult()
-    {
-        return $this->result;
-    }
-
-    /**
      * Set the default fetch mode for this statement
      *
      * @param int   $mode

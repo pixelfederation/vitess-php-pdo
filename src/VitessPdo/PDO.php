@@ -214,9 +214,7 @@ class PDO
         try {
             $pdoStatement->execute();
             $pdoStatement->fetchAll($fetchStyle, $fetchArgument, $ctorArgs);
-            $this->lastResult = $pdoStatement->getResult();
         } catch (Exception $e) {
-            $this->lastResult = $pdoStatement->getResult();
             if ($this->attributes->isErrorModeException()) {
                 throw $e;
             }
