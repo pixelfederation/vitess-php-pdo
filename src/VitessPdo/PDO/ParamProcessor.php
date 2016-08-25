@@ -71,6 +71,10 @@ class ParamProcessor
      */
     public function process($value, $type = CorePDO::PARAM_STR)
     {
+        if ($value === null) {
+            return null;
+        }
+
         $handler = $this->getHandler($type);
 
         return $this->{$handler}($value);

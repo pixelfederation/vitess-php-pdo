@@ -1551,6 +1551,82 @@ EOF;
         self::assertNotEmpty($users);
     }
 
+    public function testStmtBindNullValueWithoutParamType()
+    {
+        $pdo = $this->getPdo();
+
+        $stmt = $pdo->prepare("INSERT INTO user (name, test_str) VALUES (:name, :test_str)");
+        $stmt->bindValue('name', 'test_str_null_1');
+        $stmt->bindValue('test_str', null);
+        $result = $stmt->execute();
+        self::assertTrue($result);
+        self::assertNotEquals('0', $pdo->lastInsertId());
+
+        $stmt = $pdo->prepare("SELECT * FROM user WHERE user_id = :id");
+        $result = $stmt->execute(['id' => $pdo->lastInsertId()]);
+        self::assertTrue($result);
+        $row = $stmt->fetch();
+        self::assertInternalType('array', $row);
+        self::assertArrayHasKey('test_str', $row);
+        self::assertNull($row['test_str']);
+    }
+
+    public function testStmtExecuteNullValueWithoutParamType()
+    {
+        $pdo = $this->getPdo();
+
+        $stmt = $pdo->prepare("INSERT INTO user (name, test_str) VALUES (:name, :test_str)");
+        $result = $stmt->execute(['name' => 'test_str_null_2', 'test_str' => null]);
+        self::assertTrue($result);
+        self::assertNotEquals('0', $pdo->lastInsertId());
+
+        $stmt = $pdo->prepare("SELECT * FROM user WHERE user_id = :id");
+        $result = $stmt->execute(['id' => $pdo->lastInsertId()]);
+        self::assertTrue($result);
+        $row = $stmt->fetch();
+        self::assertInternalType('array', $row);
+        self::assertArrayHasKey('test_str', $row);
+        self::assertNull($row['test_str']);
+    }
+
+    public function testStmtBindIntValueWithoutParamType()
+    {
+        $pdo = $this->getPdo();
+
+        $stmt = $pdo->prepare("INSERT INTO user (name, test_int) VALUES (:name, :test_int)");
+        $stmt->bindValue('name', 'test_int_1');
+        $stmt->bindValue('test_int', 1);
+        $result = $stmt->execute();
+        self::assertTrue($result);
+        self::assertNotEquals('0', $pdo->lastInsertId());
+
+        $stmt = $pdo->prepare("SELECT * FROM user WHERE user_id = :id");
+        $result = $stmt->execute(['id' => $pdo->lastInsertId()]);
+        self::assertTrue($result);
+        $row = $stmt->fetch();
+        self::assertInternalType('array', $row);
+        self::assertArrayHasKey('test_int', $row);
+        self::assertEquals('1', $row['test_int']);
+    }
+
+    public function testStmtExecuteIntValueWithoutParamType()
+    {
+        $pdo = $this->getPdo();
+
+        $stmt = $pdo->prepare("INSERT INTO user (name, test_int) VALUES (:name, :test_int)");
+        $result = $stmt->execute(['name' => 'test_int_2', 'test_int' => 2]);
+        self::assertTrue($result);
+        self::assertNotEquals('0', $pdo->lastInsertId());
+
+        $stmt = $pdo->prepare("SELECT * FROM user WHERE user_id = :id");
+        $result = $stmt->execute(['id' => $pdo->lastInsertId()]);
+        self::assertTrue($result);
+        $row = $stmt->fetch();
+        self::assertInternalType('array', $row);
+        self::assertArrayHasKey('test_int', $row);
+        self::assertEquals('2', $row['test_int']);
+    }
+
     /**
      * @return PDO
      * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
