@@ -89,7 +89,7 @@ class ParamProcessor
      */
     public function processEscaped($value, $type = CorePDO::PARAM_STR)
     {
-        if ($type !== CorePDO::PARAM_STR) {
+        if (!in_array($type, [CorePDO::PARAM_STR, CorePDO::PARAM_LOB])) {
             return $this->process($value, $type);
         }
 
