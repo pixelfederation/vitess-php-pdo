@@ -11,7 +11,7 @@
   "minimum-stability": "dev",
   "require": {
     "php": ">=5.6",
-    "vitess/php-client": "dev-master",
+    "vitess/php-client": "dev-master#292d5cecdde1a6baba0341a2f8e33a953c739b15",
     "greenlion/php-sql-parser": "dev-master#29bdef6fed5ba7fdfe3c9f942adfe73d6bdffa88",
     "doctrine/collections": "^1.3"
   },
@@ -20,7 +20,8 @@
     "symfony/var-dumper": "^3.0@dev",
     "phpunit/phpunit": "^5.1",
     "squizlabs/php_codesniffer": "2.*",
-    "phpmd/phpmd": "@stable"
+    "phpmd/phpmd": "@stable",
+    "phpunit/php-code-coverage": "^4"
   },
 
   "config": {
