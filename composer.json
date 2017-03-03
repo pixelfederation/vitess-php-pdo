@@ -11,7 +11,7 @@
   "minimum-stability": "dev",
   "require": {
     "php": ">=5.6",
-    "vitess/php-client": "dev-master#292d5cecdde1a6baba0341a2f8e33a953c739b15",
+    "vitess/php-client": "dev-master",
     "greenlion/php-sql-parser": "dev-master#29bdef6fed5ba7fdfe3c9f942adfe73d6bdffa88",
     "doctrine/collections": "^1.3"
   },

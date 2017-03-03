@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "73f0f344ad0840c1bcdac354bb39b311",
+    "content-hash": "81fb4d2eb6f809e83530c1a688f4a54e",
     "packages": [
         {
             "name": "analog/analog",
@@ -689,12 +689,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/youtube/vitess.git",
-                "reference": "292d5cecdde1a6baba0341a2f8e33a953c739b15"
+                "reference": "9c793e28e6dbab16c02bd104ca95ae782215ae7d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/youtube/vitess/zipball/292d5cecdde1a6baba0341a2f8e33a953c739b15",
-                "reference": "292d5cecdde1a6baba0341a2f8e33a953c739b15",
+                "url": "https://api.github.com/repos/youtube/vitess/zipball/9c793e28e6dbab16c02bd104ca95ae782215ae7d",
+                "reference": "9c793e28e6dbab16c02bd104ca95ae782215ae7d",
                 "shasum": ""
             },
             "require": {
@@ -711,7 +711,7 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "description": "PHP client for Vitess",
-            "time": "2017-01-11 17:10:36"
+            "time": "2017-03-03 07:36:08"
         }
     ],
     "packages-dev": [
@@ -1455,7 +1455,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2017-03-02T16:53:36+00:00"
+            "time": "2017-03-02 16:53:36"
         },
         {
             "name": "phpunit/phpunit-mock-objects",
