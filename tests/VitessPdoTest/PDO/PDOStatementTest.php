@@ -29,6 +29,7 @@ use VitessPdo\PDO\PDOStatement;
 use VitessPdo\PDO\Exception as VitessPDOException;
 use Exception;
 use PDO as CorePDO;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Class PDOStatementTest
@@ -37,7 +38,7 @@ use PDO as CorePDO;
  * @SuppressWarnings(PHPMD.TooManyPublicMethods)
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
-class PDOStatementTest extends \PHPUnit_Framework_TestCase
+class PDOStatementTest extends TestCase
 {
 
     /**

@@ -18,13 +18,14 @@
 namespace VitessPdoTest\PDO;
 
 use VitessPdo\PDO\QueryAnalyzer\Analyzer;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Class QueryAnalyzerTest
  *
  * @package VitessPdoTest\PDO
  */
-class QueryAnalyzerTest extends \PHPUnit_Framework_TestCase
+class QueryAnalyzerTest extends TestCase
 {
 
     /**"SELECT * FROM user"

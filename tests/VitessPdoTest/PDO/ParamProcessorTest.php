@@ -19,13 +19,14 @@ namespace VitessPdoTest\PDO;
 
 use VitessPdo\PDO\ParamProcessor;
 use PDO as CorePDO;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Class ParamProcessorTest
  * @author mfris
  * @package VitessPdo\PDO
  */
-class ParamProcessorTest extends \PHPUnit_Framework_TestCase
+class ParamProcessorTest extends TestCase
 {
 
     /**
