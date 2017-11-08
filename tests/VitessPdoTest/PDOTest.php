@@ -25,6 +25,7 @@ use VitessPdoTest\Helper\VTComboRunner;
 use Exception;
 use PDOException;
 use PDO as CorePDO;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Class PDOTest
@@ -37,7 +38,7 @@ use PDO as CorePDO;
  * @SuppressWarnings(PHPMD.ExcessiveClassLength)
  * @SuppressWarnings(PHPMD.ExcessivePublicCount)
  */
-class PDOTest extends \PHPUnit_Framework_TestCase
+class PDOTest extends TestCase
 {
 
     /**

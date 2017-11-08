@@ -20,13 +20,14 @@ namespace VitessPdoTest\PDO\Dsn;
 use VitessPdo\PDO\Dsn\Config;
 use VitessPdo\PDO\Exception as DriverException;
 use Exception;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Class ConfigTest
  *
  * @package VitessPdoTest\PDO\Dsn
  */
-class ConfigTest extends \PHPUnit_Framework_TestCase
+class ConfigTest extends TestCase
 {
 
     /**
